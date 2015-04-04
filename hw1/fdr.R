@@ -12,7 +12,7 @@ fdr_cut <- function(pvals, q, plotit=FALSE){
     o <- order(pvals)
     plot(pvals[o], log="xy", col=c("grey60","red")[sig[o]], pch=20, 
        ylab="p-values", xlab="tests ordered by p-value", main = paste('FDR =',q))
-    lines(1:n, q*(1:N)/N)
+    lines(1:N, q*(1:N)/N)
   }
   
   return(alpha)
