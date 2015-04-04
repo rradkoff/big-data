@@ -1,13 +1,12 @@
-
 ## extract p-value cutoff for E[fdf] < q
-fdr_cut <- function(pvals, q, plotit=FALSE){
+fdr_cut <- function(pvals, q, plotit=FALSE) {
   pvals <- pvals[!is.na(pvals)]
   N <- length(pvals)
   
   k <- rank(pvals, ties.method="min")
-  alpha <- max(pvals[ pvals<= (q*k/N) ])
+  alpha <- max(pvals[ pvals <= (q*k/N) ])
   
-  if(plotit){
+  if (plotit) {
     sig <- factor(pvals<=alpha)
     o <- order(pvals)
     plot(pvals[o], log="xy", col=c("grey60","red")[sig[o]], pch=20, 
@@ -17,4 +16,3 @@ fdr_cut <- function(pvals, q, plotit=FALSE){
   
   return(alpha)
 }
-
