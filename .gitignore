@@ -16,3 +16,6 @@ vignettes/*.pdf
 
 # RStudio files
 .Rproj.user
+
+# Output Folders
+output/
