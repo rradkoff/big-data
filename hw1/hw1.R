@@ -1,5 +1,7 @@
 ## source the fdr_cut function
 source("fdr.R")
+source('../utils/source_me.R', chdir = T)
+OutputToFile = T
 
 #### Purchases of Ben and Jerry's Ice Cream
 benjer <- read.csv("BenAndJerry.csv")
