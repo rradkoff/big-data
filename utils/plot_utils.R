@@ -28,6 +28,8 @@ GetFilename <- function(filename, plotOpts. = plotOpts) {
 
 # Call this before plotting, note, name should be unique so that it is not overwritten
 PlotSetup <- function(filename, plotOpts. = plotOpts) {
+  if (OutputToFile == F) return()
+
   png(filename = GetFilename(paste(filename, 'png', sep = '.'), plotOpts = plotOpts.), 
       width = plotOpts.$Width, height = plotOpts.$Height,
       units = plotOpts.$Units, pointsize = plotOpts.$PointSize,
@@ -36,5 +38,7 @@ PlotSetup <- function(filename, plotOpts. = plotOpts) {
 
 # Call this after plotting
 PlotDone <- function() {
+  if (OutputToFile == F) return()
+
   dev.off()
 }

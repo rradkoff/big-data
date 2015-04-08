@@ -1,3 +1,6 @@
+# OutputToFile is a global flag that enables
+OutputToFile = T
+
 # Creates the plotOpts data frame, and an output directory based on the current working
 # directory.
 plotOpts <- data.frame(Prefix = "output/", Width = 6, Height = 4, Units = "in",
