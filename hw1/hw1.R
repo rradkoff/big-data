@@ -28,14 +28,14 @@ x <- benjer[,c("size1_descr",
 # See the following for factor definitions:
 # http://faculty.chicagobooth.edu/matt.taddy/teaching/HomescanDocs.htm
 x$usecoup <- factor(benjer$coupon_value>0)
-x$couponper1 <- benjer$coupon_value/benjer$quantity
+#x$couponper1 <- benjer$coupon_value/benjer$quantity
 ## organize some demographics
 x$region <- factor(benjer$region, levels=1:4,
                    labels=c("East","Central","South","West"))
-x$married <- factor(benjer$marital_status == 1)
+#x$married <- factor(benjer$marital_status == 1)
 x$race <- factor(benjer$race, levels=1:4,
                  labels=c("white","black","asian","other"))
-x$hispanic_origin <- benjer$hispanic_origin == 1
+#x$hispanic_origin <- benjer$hispanic_origin == 1
 #x$microwave <- benjer$kitchen_appliances %in% c(1,4,5,7)
 #x$dishwasher <- benjer$kitchen_appliances %in% c(2,4,6,7)
 #x$sfh <- benjer$type_of_residence == 1

@@ -4,6 +4,10 @@ benjer <- read.csv("BenAndJerry.csv")
 # dependent variable
 y <- log(benjer$total_spent)
 
+## create a new variable for price per unit
+priceper1 = (benjer$price_paid_deal + benjer$price_paid_non_deal)/benjer$quantity
+y <- log(1+priceper1)
+
 # possible independent variables
 x <- benjer[,c("household_income","household_size","marital_status","region",
                  "age_and_presence_of_children")]
