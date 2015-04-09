@@ -1,0 +1,35 @@
+\documentclass[11pt, fleqn]{article}
+
+\usepackage[margin=1in]{geometry} % To set the margin widths 
+\usepackage{booktabs} % To use /toprule /midrule /bottomrule commands in printing tables
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{tabularx}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{tikz}
+
+\setlength{\parskip}{12pt} % Sets a blank line in between paragraphs
+\setlength\parindent{0pt} % Sets the indent for each paragraph to zero
+
+\begin{document}
+
+Big Data HW1
+
+\textbf{Describe the regression model in the code. Improve it?}
+
+The dependent variable is the log of price paid per unit of ice cream purchased. Independent variables describe:
+\begin{itemize}
+  \item flavor and size of unit purchased
+  \item household demographics (size, income, marital status, race) and type (single family home or not)
+  \item coupon use
+  \item geographic region
+  \item household appliances (microwave, dishwaer) and amenities (internet, cable TV)
+\end{itemize}
+
+Some issues with this regression:
+\begin{itemize}
+  \item Being married correlates highly with household income and household size 
+\end{itemize}
+
+\end{document}

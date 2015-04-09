@@ -31,6 +31,21 @@ x$sfh <- benjer$type_of_residence==1
 x$internet <- benjer$household_internet_connection==1
 x$tvcable <- benjer$tv_items>1
 
+## for TV cable, replace NA with zero
+x$tvcable[is.na(x$tvcable)] <- 0
+
+## look for multicollinearity
+# check for correlations
+cc <- cor( cbind(x$flavor_descr, x$size1_descr, x$household_income, x$household_size, 
+                 x$married, x$race, x$usecoup, x$couponper1, x$region, x$hispanic_origin,
+                x$microwave, x$dishwasher, x$sfh, x$internet, x$tvcable) )
+# highlight correlations larger than [0.4]
+cc[cc<0.4] <- 0
+# 3+5, 4+5, 7+8, 6+10
+# married correlates w/ household income and size
+# use coupon and coupon per 1 are highly correlated
+# race and hispanic origin correlate
+
 ## combine x and y, just to follow my recommended `way to use glm'
 ## cbind is `column bind'.  It takes two dataframes and makes one.
 xy <- cbind(x,y)
