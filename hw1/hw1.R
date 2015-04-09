@@ -19,11 +19,11 @@ y <- log(1+priceper1)
 
 ## grab some covariates of interest
 ## we'll create a properly formatted data.frame
-x <- benjer[,c("flavor_descr","size1_descr",
+x <- benjer[,c("size1_descr",
                "household_income","household_size")]
 
 ## relevel 'flavor' to have baseline of vanilla
-x$flavor_descr <- relevel(x$flavor_descr,"VAN")
+# x$flavor_descr <- relevel(x$flavor_descr,"VAN")
 ## coupon usage
 # See the following for factor definitions:
 # http://faculty.chicagobooth.edu/matt.taddy/teaching/HomescanDocs.htm
@@ -42,13 +42,17 @@ x$hispanic_origin <- benjer$hispanic_origin == 1
 x$internet <- benjer$household_internet_connection == 1
 x$tvcable <- benjer$tv_items > 1
 
-# Most popular flavors
-numFlavorsToConsider = 5
-flavorDesc <- benjer$flavor_descr
-flavorsToConsider <- levels(flavorDesc)[
-  order(summary(flavorDesc), decreasing = T)][1:numFlavorsToConsider]
+CollapseFlavors <- function(initialFlavors, numFlavorsToConsider = 5) {
+  # Most popular flavors
+  flavorDesc <- initialFlavors
+  flavorsToConsider <- levels(flavorDesc)[
+    order(summary(flavorDesc), decreasing = T)][1:numFlavorsToConsider]
 
-#flavorDesc2 <- factor(flavorDesc, levels=c(levels(flavorDesc), "OTHER"))
+  levels(flavorDesc) <- list("OTHER" = levels(flavorDesc)[!levels(flavorDesc) %in% flavorsToConsider], 
+                             "POPULAR" = flavorsToConsider)
+  return(flavorDesc)
+}
+x$flavorDesc <- CollapseFlavors(benjer$flavor_descr)
 
 print(paste(numFlavorsToConsider, " most popular flavors: ", paste(flavorsToConsider, collapse = ", ")))
 
