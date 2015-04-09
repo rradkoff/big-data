@@ -25,6 +25,8 @@ x <- benjer[,c("flavor_descr","size1_descr",
 ## relevel 'flavor' to have baseline of vanilla
 x$flavor_descr <- relevel(x$flavor_descr,"VAN")
 ## coupon usage
+# See the following for factor definitions:
+# http://faculty.chicagobooth.edu/matt.taddy/teaching/HomescanDocs.htm
 x$usecoup <- factor(benjer$coupon_value>0)
 x$couponper1 <- benjer$coupon_value/benjer$quantity
 ## organize some demographics
@@ -40,6 +42,7 @@ x$sfh <- benjer$type_of_residence == 1
 x$internet <- benjer$household_internet_connection == 1
 x$tvcable <- benjer$tv_items > 1
 
+
 ## combine x and y, just to follow my recommended `way to use glm'
 ## cbind is `column bind'.  It takes two dataframes and makes one.
 xy <- cbind(x,y)
@@ -53,5 +56,8 @@ print(summary(fit))
 pvals <- summary(fit)$coef[-1,4] 
 
 # Calculate the False Discovery Rate Alpha Parameter
-alpha <- fdr_cut(pvals, q = 0.1, plotit = TRUE)
-print(alpha)
+q = 0.1
+alpha <- fdr_cut(pvals, q = q, plotit = TRUE)
+
+print(paste("Explanatory Variables (q<", q, ")", sep=""))
+print(summary(fit)$coef[pvals < alpha,])
