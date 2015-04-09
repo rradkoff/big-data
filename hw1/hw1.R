@@ -15,7 +15,7 @@ priceper1 = (benjer$price_paid_deal + benjer$price_paid_non_deal)/benjer$quantit
 y <- log(1+priceper1)
 
 ## create a new variable for log of total spent
-y <- log(benjer$total_spent)
+#y <- log(benjer$total_spent)
 
 ## grab some covariates of interest
 ## we'll create a properly formatted data.frame
@@ -36,11 +36,21 @@ x$married <- factor(benjer$marital_status == 1)
 x$race <- factor(benjer$race, levels=1:4,
                  labels=c("white","black","asian","other"))
 x$hispanic_origin <- benjer$hispanic_origin == 1
-x$microwave <- benjer$kitchen_appliances %in% c(1,4,5,7)
-x$dishwasher <- benjer$kitchen_appliances %in% c(2,4,6,7)
-x$sfh <- benjer$type_of_residence == 1
+#x$microwave <- benjer$kitchen_appliances %in% c(1,4,5,7)
+#x$dishwasher <- benjer$kitchen_appliances %in% c(2,4,6,7)
+#x$sfh <- benjer$type_of_residence == 1
 x$internet <- benjer$household_internet_connection == 1
 x$tvcable <- benjer$tv_items > 1
+
+# Most popular flavors
+numFlavorsToConsider = 5
+flavorDesc <- benjer$flavor_descr
+flavorsToConsider <- levels(flavorDesc)[
+  order(summary(flavorDesc), decreasing = T)][1:numFlavorsToConsider]
+
+#flavorDesc2 <- factor(flavorDesc, levels=c(levels(flavorDesc), "OTHER"))
+
+print(paste(numFlavorsToConsider, " most popular flavors: ", paste(flavorsToConsider, collapse = ", ")))
 
 ## combine x and y, just to follow my recommended `way to use glm'
 ## cbind is `column bind'.  It takes two dataframes and makes one.
@@ -66,7 +76,7 @@ hist(pvals, xlab = 'P-Values', main = 'Histogram of P-Values')
 PlotDone()
 
 # Calculate the False Discovery Rate Alpha Parameter
-q = 10/100
+q = 5/100
 alpha <- fdr_cut(pvals, q = q, plotit = TRUE)
 
 # Get a list of just the significant variables.
@@ -75,3 +85,4 @@ significant <- coefs[coefs[,4] < alpha,]
 # Now order that list by increasing p-values.
 print(paste("'Significant Explanatory' Variables (q<", q, ", alpha<", alpha, ")", sep=""))
 print(significant[order(significant[,4]),])
+
