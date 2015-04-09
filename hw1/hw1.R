@@ -36,9 +36,9 @@ x$region <- factor(benjer$region, levels=1:4,
 x$race <- factor(benjer$race, levels=1:4,
                  labels=c("white","black","asian","other"))
 #x$hispanic_origin <- benjer$hispanic_origin == 1
-#x$microwave <- benjer$kitchen_appliances %in% c(1,4,5,7)
-#x$dishwasher <- benjer$kitchen_appliances %in% c(2,4,6,7)
-#x$sfh <- benjer$type_of_residence == 1
+x$microwave <- benjer$kitchen_appliances %in% c(1,4,5,7)
+x$dishwasher <- benjer$kitchen_appliances %in% c(2,4,6,7)
+x$sfh <- benjer$type_of_residence == 1
 x$internet <- benjer$household_internet_connection == 1
 x$tvcable <- benjer$tv_items > 1
 
@@ -80,7 +80,7 @@ hist(pvals, xlab = 'P-Values', main = 'Histogram of P-Values')
 PlotDone()
 
 # Calculate the False Discovery Rate Alpha Parameter
-q = 5/100
+q = 1/100
 alpha <- fdr_cut(pvals, q = q, plotit = TRUE)
 
 # Get a list of just the significant variables.
@@ -89,4 +89,9 @@ significant <- coefs[coefs[,4] < alpha,]
 # Now order that list by increasing p-values.
 print(paste("'Significant Explanatory' Variables (q<", q, ", alpha<", alpha, ")", sep=""))
 print(significant[order(significant[,4]),])
+
+fit2 <- glm(y ~ size1_descr + household_income + region + household_size +
+              microwave + sfh + usecoup + race + tvcable,
+            data = xy)
+print(summary(fit2))
 
