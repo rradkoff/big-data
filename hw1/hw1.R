@@ -7,8 +7,8 @@ OutputToFile = T
 benjer <- read.csv("BenAndJerry.csv")
 
 ## explore a bit
-print('Names:')
-print(names(benjer))
+# print('Names:')
+# print(names(benjer))
 
 ## create a new variable for price per unit
 priceper1 = (benjer$price_paid_deal + benjer$price_paid_non_deal)/benjer$quantity
@@ -42,22 +42,36 @@ x$sfh <- benjer$type_of_residence == 1
 x$internet <- benjer$household_internet_connection == 1
 x$tvcable <- benjer$tv_items > 1
 
-
 ## combine x and y, just to follow my recommended `way to use glm'
 ## cbind is `column bind'.  It takes two dataframes and makes one.
 xy <- cbind(x,y)
 
+print("XY Names:")
+print(paste(names(xy), collapse=', '))
+
 ## fit the regression
 fit <- glm(y~., data=xy) 
-print(summary(fit))
+# print(summary(fit))
+
+## -1 to drop the intercept
+coefs <- summary(fit)$coef
+coefs <- coefs[-1,]
 
 ## grab the non-intercept p-values from a glm
-## -1 to drop the intercept, 4 is 4th column
-pvals <- summary(fit)$coef[-1,4] 
+# Extract just the p-values from the 4th column
+pvals <- coefs[,4]
+
+PlotSetup('pvalue_hist')
+hist(pvals, xlab = 'P-Values', main = 'Histogram of P-Values')
+PlotDone()
 
 # Calculate the False Discovery Rate Alpha Parameter
-q = 0.1
+q = 10/100
 alpha <- fdr_cut(pvals, q = q, plotit = TRUE)
 
-print(paste("Explanatory Variables (q<", q, ")", sep=""))
-print(summary(fit)$coef[pvals < alpha,])
+# Get a list of just the significant variables.
+significant <- coefs[coefs[,4] < alpha,]
+
+# Now order that list by increasing p-values.
+print(paste("'Significant Explanatory' Variables (q<", q, ", alpha<", alpha, ")", sep=""))
+print(significant[order(significant[,4]),])
