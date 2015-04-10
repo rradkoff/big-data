@@ -19,25 +19,31 @@ Big Data HW1
 \textbf{Data Visualization}
 
 \begin{figure}[!htb]
-\centering
-\includegraphics[scale=.5]{income.eps}
-\caption{Log of price by Income Classification}
-\label{fig:income}
+  \centering
+  \includegraphics[scale=.5]{income.eps}
+  \caption{Log of price by Income Classification}
+  \label{fig:income}
 \end{figure}
 
 \begin{figure}[!htb]
-\centering
-\includegraphics[scale=.5]{race.eps}
-\caption{Log of price by Race}
-\label{fig:race}
+  \centering
+  \includegraphics[scale=.5]{race.eps}
+  \caption{Log of price by Race}
+  \label{fig:race}
 \end{figure}
 
 \begin{figure}[!htb]
-\centering
-\includegraphics[scale=.5]{region.eps}
-\caption{Log of price vs. Region}
-\label{fig:region}
+  \centering
+  \includegraphics[scale=.5]{region.eps}
+  \caption{Log of price vs. Region}
+  \label{fig:region}
 \end{figure}
+
+Figure \ref{fig:income} shows the relation between the $log(price)$ paid for a unit of ice-cream and various income factors.  For the most part, customers at various income brackets are paying the same amounts, with the median of the higher income groups beginning to trend upward, indicating that income may be slightly significant.
+
+Figure \ref{fig:race} shows the relation between race and $log(price)$.  From these data we see that there is little relation between race the price paid.  If anything, the median of the ``white'' population is a little lower, indicating that they pay less than other races.
+
+Figure \ref{fig:region} shows the relation between geographic regions and $log(price)$.  These data indicate that the ``East'' pays more for ice-cream than the rest of the country.  While interesting, this may just by a proxy for a higher cost-of-living on the East coast.
 
 \textbf{Baseline Regression Model and Improvements}
 
@@ -47,14 +53,14 @@ The dependent variable is the log of price paid per unit of ice cream purchased.
   \item household demographics (size, income, marital status, race) and type (single family home or not)
   \item coupon use
   \item geographic region
-  \item household appliances (microwave, dishwaer) and amenities (internet, cable TV)
+  \item household appliances (microwave, dishwasher) and amenities (internet, cable TV)
 \end{itemize}
 
-One issue with this regression is that it includes many independent variables that covary highly with each other, which can make the estimates of each coefficient innacurate. Specifically:
+One issue with this regression is that it includes many independent variables that co-vary highly with each other, which can make the estimates of each coefficient inaccurate. Specifically:
 \begin{itemize}
   \item being married correlates highly with household income and household size (0.402 and 0.499, respectively);
   \item there are two variables for coupon use (each contains similar information);
-  \item there are two variables to keep track of race (the second tracks hispanic origin which is almost redundant given the classificantions of the first)
+  \item there are two variables to keep track of race (the second tracks Hispanic origin which is almost redundant given the classifications of the first)
 \end{itemize}
 Removing these redundant variables should increase the accuracy of the estimated coefficients for the remaining variables. 
 
@@ -67,11 +73,11 @@ There is also a risk of identifying false positives given that there are a large
 \label{fig:pvalue}
 \end{figure}
 
-There are tractability issues with the high number of flavors that are used as explanatory variables. By grouping the flavors into a popular group (the five most purchased) and an other group, we find that being a popular or unpopular flavor is not a significant predictor of purchsae behavior (the p-values are greater than 0.0022).
+There are tractability issues with the high number of flavors that are used as explanatory variables. By grouping the flavors into a popular group (the five most purchased) and an other group, we find that being a popular or unpopular flavor is not a significant predictor of purchase behavior (the p-values are greater than 0.0022).
 
 \textbf{Our Regression Model}
 
-We omit variables with high collinearity and include only variables that the B-H algorithm identifies as significant. The results from our final regression are presented in Table 1.
+We omit variables with high col-linearity and include only variables that the B-H algorithm identifies as significant. The results from our final regression are presented in Table 1.
 
 \begin{tabular}{l l l l l l}
 \toprule
@@ -104,7 +110,7 @@ Some noteworthy conclusions from the regression:
   \item People spend more on ice cream in the East region than in any other region;
   \item Spending on ice cream falls as household size increases;
   \item Having a coupon increases spending on ice cream;
-  \item Black and other races spend more on ice cream that white people (we cannot draw conclusions about asian spending due to statistical insignificance);
+  \item Black and other races spend more on ice cream that white people (we cannot draw conclusions about Asian spending due to statistical insignificance);
   \item Households with cable TV spend more on ice cream than those without; households with a microwave spend less than those with one.
 \end{itemize}
 
