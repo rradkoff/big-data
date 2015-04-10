@@ -50,7 +50,7 @@ The dependent variable is the log of price paid per unit of ice cream purchased.
   \item household appliances (microwave, dishwaer) and amenities (internet, cable TV)
 \end{itemize}
 
-One issue with this regression is that it includes many independent variables that covary highly with each other, which can make the estimates of each coefficient innacruate. Specifically:
+One issue with this regression is that it includes many independent variables that covary highly with each other, which can make the estimates of each coefficient innacurate. Specifically:
 \begin{itemize}
   \item being married correlates highly with household income and household size (0.402 and 0.499, respectively);
   \item there are two variables for coupon use (each contains similar information);
@@ -60,7 +60,12 @@ Removing these redundant variables should increase the accuracy of the estimated
 
 There is also a risk of identifying false positives given that there are a large number of proposed explanatory variables. Using the Benjamini Horchberg algorithm, we find that to ensure a false positive rate of 1 percent or less, we should only accept p-values less than 0.0022.
 
-[p value histogram]
+\begin{figure}[!htb]
+\centering
+\includegraphics[scale=.5]{pvalue_hist.eps}
+\caption{P-value Histogram}
+\label{fig:pvalue}
+\end{figure}
 
 There are tractability issues with the high number of flavors that are used as explanatory variables. By grouping the flavors into a popular group (the five most purchased) and an other group, we find that being a popular or unpopular flavor is not a significant predictor of purchsae behavior (the p-values are greater than 0.0022).
 
