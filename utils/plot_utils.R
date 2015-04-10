@@ -30,10 +30,12 @@ GetFilename <- function(filename, plotOpts. = plotOpts) {
 PlotSetup <- function(filename, plotOpts. = plotOpts) {
   if (OutputToFile == F) return()
 
-  png(filename = GetFilename(paste(filename, 'png', sep = '.'), plotOpts = plotOpts.), 
-      width = plotOpts.$Width, height = plotOpts.$Height,
-      units = plotOpts.$Units, pointsize = plotOpts.$PointSize,
-      res = plotOpts.$Res)
+  setEPS()
+  postscript(GetFilename(paste(filename, 'eps', sep = '.'), plotOpts = plotOpts.))
+#   png(filename = GetFilename(paste(filename, 'png', sep = '.'), plotOpts = plotOpts.), 
+#       width = plotOpts.$Width, height = plotOpts.$Height,
+#       units = plotOpts.$Units, pointsize = plotOpts.$PointSize,
+#       res = plotOpts.$Res)
 }
 
 # Call this after plotting
