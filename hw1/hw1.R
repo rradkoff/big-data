@@ -95,3 +95,35 @@ fit2 <- glm(y ~ size1_descr + household_income + region + household_size +
             data = xy)
 print(summary(fit2))
 
+PlotSetup('race')
+boxplot(y ~ xy$race, outline = F, varwidth = T, ylab = 'log(price)', main = 'log(price) vs Race')
+PlotDone()
+
+PlotSetup('region')
+boxplot(y ~ xy$region, outline = F, varwidth = T, ylab = 'log(price)', main = 'log(price) vs Region')
+PlotDone()
+
+# incomeLevels <- c("<$5000",
+#                   "$5000-$7999",
+#                   "$8000-$9999",
+#                   "$10,000-$11,999",
+#                   "$12,000-$14,999",
+#                   "$15,000-$19,999",
+#                   "$20,000-$24,999",
+#                   "$25,000-$29,999",
+#                   "$30,000-$34,999",
+#                   "$35,000-$39,999",
+#                   "$40,000-$44,999",
+#                   "$45,000-$49,999",
+#                   "$50,000-$59,999",
+#                   "$60,000-$69,999",
+#                   "$70,000-$99,999",
+#                   "$100,000-$124,999",
+#                   "$125,000-$149,999",
+#                   "$150,000-$199,999",
+#                   ">$200,000")
+# income <- factor(xy$household_income, labels = incomeLevels)
+PlotSetup('income')
+boxplot(y ~ xy$household_income, varwidth = T, outline = F, 
+        xlab = "Income Factor", ylab = "log(price)", main = "log(price) vs Income")
+PlotDone()
