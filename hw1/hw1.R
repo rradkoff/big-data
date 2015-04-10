@@ -50,11 +50,12 @@ CollapseFlavors <- function(initialFlavors, numFlavorsToConsider = 5) {
 
   levels(flavorDesc) <- list("OTHER" = levels(flavorDesc)[!levels(flavorDesc) %in% flavorsToConsider], 
                              "POPULAR" = flavorsToConsider)
+  print(paste(numFlavorsToConsider, " most popular flavors: ", 
+              paste(flavorsToConsider, collapse = ", ")))
   return(flavorDesc)
 }
 x$flavorDesc <- CollapseFlavors(benjer$flavor_descr)
 
-print(paste(numFlavorsToConsider, " most popular flavors: ", paste(flavorsToConsider, collapse = ", ")))
 
 ## combine x and y, just to follow my recommended `way to use glm'
 ## cbind is `column bind'.  It takes two dataframes and makes one.
