@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2015.3.4)  9 APR 2015 17:59
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2015.3.4)  9 APR 2015 19:58
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -540,32 +540,95 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 ABD: EveryShipout initializing macros
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 23.
+Package epstopdf Info: Source file: <income.eps>
+(epstopdf)                    date: 2015-04-09 19:50:29
+(epstopdf)                    size: 11551 bytes
+(epstopdf)             Output file: <income-eps-converted-to.pdf>
+(epstopdf)                    date: 2015-04-09 19:54:14
+(epstopdf)                    size: 13225 bytes
+(epstopdf)             Command: <repstopdf --outfile=income-eps-converted-to.pd
+f income.eps>
+(epstopdf)             \includegraphics on input line 23.
+Package epstopdf Info: Output file is already uptodate.
+
+<income-eps-converted-to.pdf, id=4, 505.89pt x 505.89pt>
+File: income-eps-converted-to.pdf Graphic file (type pdf)
+
+<use income-eps-converted-to.pdf>
+Package pdftex.def Info: income-eps-converted-to.pdf used on input line 23.
+(pdftex.def)             Requested size: 252.94437pt x 252.94437pt.
+Package epstopdf Info: Source file: <race.eps>
+(epstopdf)                    date: 2015-04-09 19:50:29
+(epstopdf)                    size: 5683 bytes
+(epstopdf)             Output file: <race-eps-converted-to.pdf>
+(epstopdf)                    date: 2015-04-09 19:56:26
+(epstopdf)                    size: 12169 bytes
+(epstopdf)             Command: <repstopdf --outfile=race-eps-converted-to.pdf 
+race.eps>
+(epstopdf)             \includegraphics on input line 30.
+Package epstopdf Info: Output file is already uptodate.
+
+<race-eps-converted-to.pdf, id=5, 505.89pt x 505.89pt>
+File: race-eps-converted-to.pdf Graphic file (type pdf)
+
+<use race-eps-converted-to.pdf>
+Package pdftex.def Info: race-eps-converted-to.pdf used on input line 30.
+(pdftex.def)             Requested size: 252.94437pt x 252.94437pt.
+Package epstopdf Info: Source file: <region.eps>
+(epstopdf)                    date: 2015-04-09 19:50:29
+(epstopdf)                    size: 5757 bytes
+(epstopdf)             Output file: <region-eps-converted-to.pdf>
+(epstopdf)                    date: 2015-04-09 19:56:26
+(epstopdf)                    size: 12367 bytes
+(epstopdf)             Command: <repstopdf --outfile=region-eps-converted-to.pd
+f region.eps>
+(epstopdf)             \includegraphics on input line 37.
+Package epstopdf Info: Output file is already uptodate.
+
+<region-eps-converted-to.pdf, id=6, 505.89pt x 505.89pt>
+File: region-eps-converted-to.pdf Graphic file (type pdf)
+
+<use region-eps-converted-to.pdf>
+Package pdftex.def Info: region-eps-converted-to.pdf used on input line 37.
+(pdftex.def)             Requested size: 252.94437pt x 252.94437pt.
+ [1
+
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./income-eps-converted-to.
+pdf> <./race-eps-converted-to.pdf>]
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 46.
 
 (/usr/share/texlive/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 23.
- [1
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 46.
+ [2 <./region-eps-converted-to.pdf>]
+LaTeX Font Info:    Try loading font information for U+msa on input line 71.
+ (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 71.
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] (./hw1_writeup.aux) ) 
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+) [3] [4]
+(./hw1_writeup.aux) ) 
 Here is how much of TeX's memory you used:
- 11016 strings out of 493304
- 201892 string characters out of 6139872
- 253772 words of memory out of 5000000
- 14251 multiletter control sequences out of 15000+600000
- 4505 words of font info for 17 fonts, out of 8000000 for 9000
+ 11076 strings out of 493304
+ 202953 string characters out of 6139872
+ 260796 words of memory out of 5000000
+ 14290 multiletter control sequences out of 15000+600000
+ 8596 words of font info for 33 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 56i,5n,55p,401b,144s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr
-/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share
-/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texliv
-e/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on hw1_writeup.pdf (1 page, 37617 bytes).
+ 56i,7n,55p,472b,223s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
+/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cm
+mi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pf
+b></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
+Output written on hw1_writeup.pdf (4 pages, 84780 bytes).
 PDF statistics:
- 23 PDF objects out of 1000 (max. 8388607)
- 16 compressed objects within 1 object stream
+ 69 PDF objects out of 1000 (max. 8388607)
+ 46 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 13 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 28 words of extra memory for PDF output out of 10000 (max. 10000000)
 
