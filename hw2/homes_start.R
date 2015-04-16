@@ -43,7 +43,7 @@ names(pvals)[pvals>.2]
 # this is your training sample
 gt100 <- which(homes$VALUE>1e5)
 # ybar and null deviance
-source("deviance.R")
+source("../utils/deviance.R")
 
 ybar <- mean(homes$gt20dwn[-gt100]==TRUE)
 D0 <- deviance(y=homes$gt20dwn[-gt100], pred=ybar, family="binomial")
