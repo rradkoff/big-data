@@ -2,6 +2,7 @@
 
 source('../utils/source_me.R', chdir = T)
 source("../utils/fdr.R")
+source("../utils/deviance.R")
 OutputToFile = T
 
 ## READ DATA
@@ -130,9 +131,11 @@ alpha <- fdr_cut(pvals, q = q, plotit = TRUE)
 signif <- coef(reg1)[-1][pvals<=alpha]
 
 # How many true discoveries?
-print(paste("True discoveries:", length(signif)))
+print(paste("True discoveries:", length(signif), " out of ", nrow(coefs)))
 
 ## Re-fit model with only significant covariates
 mm <- model.matrix( ~.-AMMORT-LPRICE, data=homes)[,-1]
 reg2 <- glm( log(mm[,"VALUE"]) ~ ., data=as.data.frame(mm)[, names(signif)])
 print(summary(reg2))
+print(paste("reg1 R^2=", 1-reg1$deviance/reg1$null.deviance,
+            ", reg2 R^2=", 1-reg2$deviance/reg2$null.deviance))
