@@ -1,0 +1,37 @@
+% latex table generated in R 3.1.2 by xtable 1.7-4 package
+% Thu Apr 16 18:40:22 2015
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrr}
+  \hline
+ & Estimate & Std. Error & t value & Pr($>$$|$t$|$) \\ 
+  \hline
+(Intercept) & 0.1925 & 0.0261 & 7.37 & 0.0000 \\ 
+  ECOM1Y & -0.0285 & 0.0096 & -2.96 & 0.0031 \\ 
+  ECOM2Y & -0.0439 & 0.0248 & -1.77 & 0.0763 \\ 
+  ESFDY & -0.0566 & 0.0151 & -3.74 & 0.0002 \\ 
+  HOWNgood & 0.0166 & 0.0105 & 1.59 & 0.1122 \\ 
+  STRNAY & -0.0164 & 0.0083 & -1.97 & 0.0489 \\ 
+  PER & -0.0208 & 0.0025 & -8.34 & 0.0000 \\ 
+  HHGRADBach & 0.0354 & 0.0082 & 4.31 & 0.0000 \\ 
+  HHGRADGrad & 0.0563 & 0.0103 & 5.45 & 0.0000 \\ 
+  INTW & -0.0094 & 0.0023 & -4.11 & 0.0000 \\ 
+  STATECT & 0.1423 & 0.0128 & 11.08 & 0.0000 \\ 
+  STATEGA & -0.0476 & 0.0130 & -3.66 & 0.0003 \\ 
+  STATEIL & 0.1045 & 0.0286 & 3.66 & 0.0003 \\ 
+  STATEIN & 0.0332 & 0.0127 & 2.61 & 0.0091 \\ 
+  STATELA & 0.0953 & 0.0166 & 5.73 & 0.0000 \\ 
+  STATEMO & 0.0926 & 0.0146 & 6.36 & 0.0000 \\ 
+  STATEOH & 0.1342 & 0.0139 & 9.63 & 0.0000 \\ 
+  STATEPA & 0.1028 & 0.0148 & 6.96 & 0.0000 \\ 
+  STATETX & 0.0406 & 0.0148 & 2.75 & 0.0059 \\ 
+  BATHS & 0.0433 & 0.0058 & 7.49 & 0.0000 \\ 
+  MATBUYY & 0.0493 & 0.0071 & 6.94 & 0.0000 \\ 
+  `DWNPAYprev home` & 0.1605 & 0.0094 & 17.15 & 0.0000 \\ 
+  VALUE & 0.0000 & 0.0000 & 12.89 & 0.0000 \\ 
+  FRSTHOY & -0.0579 & 0.0090 & -6.43 & 0.0000 \\ 
+   \hline
+\end{tabular}
+\caption{Probability of Down Payment > 20% (No Interaction Terms)} 
+\label{tab:reg3_fdr}
+\end{table}

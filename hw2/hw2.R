@@ -5,6 +5,7 @@ source('../utils/source_me.R', chdir = T)
 source("../utils/fdr.R")
 source("../utils/deviance.R")
 require('xtable')
+plotOpts$Prefix="writeup/"
 OutputToFile = T
 
 q=0.1
