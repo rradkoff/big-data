@@ -28,12 +28,12 @@ PlotDone()
 # for plotting only, make a dummy var for has college degree
 homes$COLLEGE <- homes$HHGRAD
 levels(homes$COLLEGE) <- list("No College"=c("No HS", "HS Grad", "Assoc"), 
-                          "College"=c("Bach", "Grad"))
+                              "College"=c("Bach", "Grad"))
 
 PlotSetup('income')
 plot(y~log(homes$ZINC2), col=c("blue","red")[as.numeric(homes$COLLEGE)],
-     main="", xlab="Income of Homeowner (log)", ylab="Current market value (log)")
-legend("bottomleft", legend=levels(homes$COLLEGE), pch=c(1,1),
+     main="", xlab="Income of Homeowner (log)", ylab="Current market value (log)", pch=16)
+legend("bottomleft", legend=levels(homes$COLLEGE), pch=16,
        col=c("blue","red"))
 PlotDone()
 
@@ -74,6 +74,22 @@ PlotSetup('hown')
 boxplot(y~homes$HOWN, outline=F, varwidth=T, col=c("red", "blue"),
         main="", xlab="Neighborhood Quality", ylab="Current market value (log)")
 PlotDone()
+
+PlotSetup('first_home_vs_property_type')
+multifamily = factor(homes$NUNITS>1, labels = c('House', 'Condo'))
+plot(homes$FRSTHO ~ multifamily, xlab="Property Type", ylab="Buyer's First Home?")
+PlotDone()
+
+PlotSetup('home_quality_vs_education')
+plot(homes$HOWH ~ homes$HHGRAD, xlab="Education Level", ylab="Unit Quality")
+PlotDone()
+
+PlotSetup('neighborhood_quality_vs_education')
+plot(homes$HOWN ~ homes$HHGRAD, xlab="Education Level", ylab="Neighborhood Quality")
+PlotDone()
+
+PlotSetup('first_home_vs_home_quality')
+plot(homes$FRSTHO ~ homes$HOWH, xlab="Unit Quality", ylab="Buyer's First Home?")
 
 # plot some neighborhood quality metrics
 # cheap way to see which difference is largest between these three
