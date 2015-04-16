@@ -32,16 +32,13 @@ glm_fdr <- function(reg_in, q, plotit=FALSE) {
   
   # Calculate the False Discovery Rate Alpha Parameter
   alpha <- fdr_cut(pvals, q = q, plotit)
-  print(alpha)
   
   # Get a list of just the significant variables.
-  signif <- coef(reg1)[-1][pvals<=alpha]
+  signif <- coef(reg_in)[-1][pvals<=alpha]
   
   ## Re-fit model with only significant covariates
-  mm <- model.matrix(~., data=reg_in$model) #[,-1] # -1 to drop the intercept
+  mm <- model.matrix(reg_in$formula, data=reg_in$model) #[,-1] # -1 to drop the intercept
   reg_out <- glm( reg_in$y ~ ., data=as.data.frame(mm)[, names(signif)])
-  
-  print(summary(reg_out))
-  
-  #return(reg_out)
+   
+  return(reg_out)
 }
