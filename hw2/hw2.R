@@ -139,3 +139,45 @@ reg2 <- glm( log(mm[,"VALUE"]) ~ ., data=as.data.frame(mm)[, names(signif)])
 print(summary(reg2))
 print(paste("reg1 R^2=", 1-reg1$deviance/reg1$null.deviance,
             ", reg2 R^2=", 1-reg2$deviance/reg2$null.deviance))
+
+##
+# Q3
+##
+homes$gt20dwn <- factor(0.2<(homes$LPRICE-homes$AMMORT)/homes$LPRICE)
+reg3 <- glm(gt20dwn ~ .-AMMORT-LPRICE, data=homes, family='binomial')
+print(summary(reg3))
+
+reg4 <- glm(gt20dwn ~ .-AMMORT-LPRICE+FRSTHO*BATHS, data=homes, family='binomial')
+print(summary(reg4))
+
+# -1 to drop the intercept
+coefs <- summary(reg4)$coef
+coefs <- coefs[-1,]
+
+## grab the non-intercept p-values from a glm
+# Extract just the p-values from the 4th column
+pvals <- coefs[,4]
+
+# Calculate the False Discovery Rate Alpha Parameter
+q = 10/100
+alpha <- fdr_cut(pvals, q = q, plotit = TRUE, filename = 'binom_fdr')
+
+# Get a list of just the significant variables.
+signif <- coef(reg4)[-1][pvals<=alpha]
+
+# How many true discoveries?
+print(paste("True discoveries:", length(signif), " out of ", nrow(coefs)))
+
+mm <- model.matrix( ~.-AMMORT-LPRICE+FRSTHO*BATHS, data=homes)[,-1]
+reg5 <- glm( log(mm[,"VALUE"]) ~ ., data=as.data.frame(mm)[, names(signif)])
+print(summary(reg5))
+
+##
+# Q4
+##
+gt100 <- which(homes$VALUE>1e5)
+
+reg6 <- glm(gt20dwn ~ .-AMMORT-LPRICE+FRSTHO*BATHS, data=homes[gt100,], family='binomial')
+print(summary(reg6))
+pred_gt20wn <- predict.glm(reg6, newdata = homes[-gt100,], type='response')
+print(paste("R^2=", R2(homes[-gt100], pred = pred_gt20wn, family = "binomial")))
