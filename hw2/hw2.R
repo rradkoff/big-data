@@ -4,6 +4,7 @@ rm(list=ls())
 source('../utils/source_me.R', chdir = T)
 source("../utils/fdr.R")
 source("../utils/deviance.R")
+require('xtable')
 OutputToFile = T
 
 q=0.1
@@ -98,6 +99,11 @@ Q1 <- function() {
   plot(homes$FRSTHO ~ homes$HOWH, xlab="Unit Quality", ylab="Buyer's First Home?")
   PlotDone()
   
+  PlotSetup('first_home_vs_20_down')
+  plot(factor(0.2<(homes$LPRICE-homes$AMMORT)/homes$LPRICE) ~ homes$FRSTHO,
+       xlab="Buyer's First Home?", ylab="20% Down Payment")
+  PlotDone()
+  
   # plot some neighborhood quality metrics
   
   PlotSetup('eaban')
@@ -110,6 +116,7 @@ Q1 <- function() {
        main="", xlab="Trash/Junk in Street?", ylab="Current market value (log)")
   PlotDone()
 }
+# Q1()
 
 ##
 # Q2
@@ -123,40 +130,17 @@ Q2 <- function() {
   
   reg1 <- glm(log(VALUE) ~ .-AMMORT-LPRICE, data=homes)
   reg1_fdr <- glm_fdr(reg1, q)
+  print(xtable(reg1_fdr, label = 'tab:reg1_fdr',
+               caption = 'Value of Purchased Homes (in logs)'), 
+        file=GetFilename('reg1_fdr.tab'))
   
   print(paste("True discoveries:", dim(summary(reg1_fdr)$coef)[1], 
               " out of ", dim(summary(reg1)$coef)[1]))
   
   print(paste("reg1 R^2=", 1-reg1$deviance/reg1$null.deviance,
               ", reg2 R^2=", 1-reg1_fdr$deviance/reg1_fdr$null.deviance))
-  
-  # # -1 to drop the intercept
-  # coefs <- summary(reg1)$coef
-  # coefs <- coefs[-1,]
-  # 
-  # ## grab the non-intercept p-values from a glm
-  # # Extract just the p-values from the 4th column
-  # pvals <- coefs[,4]
-  # 
-  # # Calculate the False Discovery Rate Alpha Parameter
-  # q = 10/100
-  # alpha <- fdr_cut(pvals, q = q, plotit = TRUE)
-  # 
-  # # Get a list of just the significant variables.
-  # signif <- coef(reg1)[-1][pvals<=alpha]
-  # 
-  # # How many true discoveries?
-  # print(paste("True discoveries:", length(signif), " out of ", nrow(coefs)))
-  # 
-  # ## Re-fit model with only significant covariates
-  # mm <- model.matrix( ~.-AMMORT-LPRICE, data=homes)[,-1]
-  # reg2 <- glm( log(mm[,"VALUE"]) ~ ., data=as.data.frame(mm)[, names(signif)])
-  # print(summary(reg2))
-  # print(paste("reg1 R^2=", 1-reg1$deviance/reg1$null.deviance,
-  #             ", reg2 R^2=", 1-reg2$deviance/reg2$null.deviance))
-  # 
-  # reg2b <- glm_fdr(reg1, q)
 }
+# Q2()
 
 ##
 # Q3
@@ -170,28 +154,32 @@ Q3 <- function() {
   
   reg3 <- glm(gt20dwn ~ .-AMMORT-LPRICE, data=homes, family='binomial')
   reg3_fdr <- glm_fdr(reg3, q)
-#   print(summary(reg3_fdr))
+  print(xtable(reg3_fdr, label='tab:reg3_fdr', 
+               caption = 'Probability of Down Payment > 20% (No Interaction Terms)'), 
+        file=GetFilename('reg3_fdr.tab'))
   
   # add interaction term
   reg4 <- glm(gt20dwn ~ .-AMMORT-LPRICE+FRSTHO*BATHS, data=homes, family='binomial')
   reg4_fdr <- glm_fdr(reg4, q)
-  print(summary(reg4_fdr))
+  print(xtable(reg4_fdr, label='tab:reg4_fdr', 
+               caption = 'Probability of Down Payment > 20% (With Interaction Term)'), 
+        file=GetFilename('reg4_fdr.tab'))
   print(paste("R^2=", 1-reg4_fdr$deviance/reg4_fdr$null.deviance))
 }
-Q3()
+# Q3()
 
 ##
 # Q4
 # Re-fit your model from Q3 for only homes worth > 100k
 # Compare in-sample fit to R^2 for predicting homes worth <100k
 ##
-# Q4 <- function() {
+Q4sample <- function() {
   gt100 <- which(homes$VALUE>1e5)
   homes$gt20dwn <- factor(0.2<(homes$LPRICE-homes$AMMORT)/homes$LPRICE)
 
-  sampleIndex <- sample(1:length(gt100), size = 1000)
+  sampleIndex <- sample(1:length(gt100), size = 100)
   
-  mm <- model.matrix( ~. -AMMORT-LPRICE + FRSTHO*BATHS, data=homes)[,-1]
+  mm <- model.matrix( ~. -AMMORT-LPRICE + FRSTHO*BATHS, data=homes)
   reg6 <- glm(gt20dwnTRUE ~., 
               data=as.data.frame(mm)[gt100[-sampleIndex],], 
               family='binomial')
@@ -202,9 +190,41 @@ Q3()
   print(paste("Model R^2=", 1-reg6$deviance/reg6$null.deviance))
 #   #print(paste("R^2=", R2(homes[-gt100], pred = pred_gt20wn, family = "binomial")))
 #   
-  PlotSetup("oos")
+  PlotSetup("oos_subsample_100k")
   plot(pred_gt20wn ~ homes$gt20dwn[gt100[sampleIndex]], 
        xlab="", ylab=c("predicted probability of down payment > 20 percent"), 
        varwidth=T, col=c("navy","red"))
   PlotDone()
-# }
+}
+# Q4sample()
+
+Q4 <- function() {
+  gt100 <- which(homes$VALUE>1e5)
+  homes$gt20dwn <- factor(0.2<(homes$LPRICE-homes$AMMORT)/homes$LPRICE)
+  
+  reg <- glm(gt20dwn ~. -AMMORT-LPRICE + FRSTHO*BATHS, data=homes, family="binomial")
+  signif <- fdr_signif(reg, q, TRUE, 'gt20dwn_gt100k_fdr')
+
+  mm <- model.matrix( ~. -AMMORT-LPRICE + FRSTHO*BATHS, data=homes)
+  reg6 <- glm(gt20dwnTRUE ~., 
+              data=as.data.frame(mm)[gt100, append(names(signif), "gt20dwnTRUE")], 
+              family='binomial')
+  print(summary(reg6))
+
+  pred_gt20wn <- predict.glm(reg6, newdata = as.data.frame(mm)[-gt100,], type='response')
+  print(paste("OOS R^2=", R2(y=homes$gt20dwn[-gt100], pred = pred_gt20wn, family = "binomial")))
+  print(paste("Model R^2=", 1-reg6$deviance/reg6$null.deviance))
+  #   #print(paste("R^2=", R2(homes[-gt100], pred = pred_gt20wn, family = "binomial")))
+  #   
+  PlotSetup("oos_lt100k")
+  plot(pred_gt20wn ~ homes$gt20dwn[-gt100], 
+       xlab="", ylab=c("predicted probability of down payment > 20 percent"), 
+       varwidth=T, col=c("navy","red"))
+  PlotDone()
+}
+
+Q1()
+Q2()
+Q3()
+Q4sample()
+Q4()

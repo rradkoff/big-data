@@ -21,7 +21,7 @@ fdr_cut <- function(pvals, q, plotit=FALSE, filename='fdr_cut') {
 }
 
 ## re-compute glm for covariates above p-value cutoff for a given FDR (q)
-glm_fdr <- function(reg_in, q, plotit=FALSE) {
+fdr_signif <- function(reg_in, q, plotit=FALSE, filename='fdr_cut') {
   
   coefs <- summary(reg_in)$coef # -1 to drop the intercept
   coefs <- coefs[-1,]
@@ -31,10 +31,14 @@ glm_fdr <- function(reg_in, q, plotit=FALSE) {
   pvals <- coefs[,4]
   
   # Calculate the False Discovery Rate Alpha Parameter
-  alpha <- fdr_cut(pvals, q = q, plotit)
+  alpha <- fdr_cut(pvals, q = q, plotit, filename)
   
   # Get a list of just the significant variables.
   signif <- coef(reg_in)[-1][pvals<=alpha]
+}
+
+glm_fdr <- function(reg_in, q, plotit=FALSE, filename='fdr_cut') {
+  signif <- fdr_signif(reg_in, q, plotit, filename)
   
   ## Re-fit model with only significant covariates
   mm <- model.matrix(reg_in$formula, data=reg_in$model) #[,-1] # -1 to drop the intercept
