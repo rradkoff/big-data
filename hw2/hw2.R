@@ -1,4 +1,5 @@
 ## Big Data HW 2
+rm(list=ls())
 
 source('../utils/source_me.R', chdir = T)
 source("../utils/fdr.R")
