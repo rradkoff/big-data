@@ -194,7 +194,7 @@ Q4sample <- function() {
 #   
   PlotSetup("oos_subsample_100k")
   plot(pred_gt20wn ~ homes$gt20dwn[gt100[sampleIndex]], 
-       xlab="", ylab=c("predicted probability of down payment > 20 percent"), 
+       xlab="Down Payment Actually >20%", ylab=c("Pr(Down Payment >20%)"), 
        varwidth=T, col=c("navy","red"))
   PlotDone()
 }
@@ -220,7 +220,7 @@ Q4 <- function() {
   #   
   PlotSetup("oos_lt100k")
   plot(pred_gt20wn ~ homes$gt20dwn[-gt100], 
-       xlab="", ylab=c("predicted probability of down payment > 20 percent"), 
+       xlab="Down Payment Actually >20%", ylab=c("Pr(Down Payment >20%)"), 
        varwidth=T, col=c("navy","red"))
   PlotDone()
 }
