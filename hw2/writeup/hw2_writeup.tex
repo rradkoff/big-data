@@ -10,6 +10,7 @@
 \usepackage{tikz}
 \usepackage{varioref}
 \usepackage{siunitx}
+\usepackage{subcaption}
 
 \sisetup{output-exponent-marker=\textsc{e}}
 
@@ -36,18 +37,20 @@ We identified three sets of covariates that affect housing prices:
 
 Unsurprisingly, buyers with higher income and more education are able to afford more expensive homes. We see in Figure~\vref{fig:hhgrad} that the purchase price of a home increases with each additional level of educaiton achieved. In Figure~\vref{fig:income}, we see that home value rises with income, but much of the variation in income is explained by having a college degree. Red dots, signifying purchasers with a college or graduate degree, are concentrated in the northeast corner, signifying high incomes and expensive homes. Blue dots, signifying purchasers without a college degree, have lower incomes and (expectedly) less expensive homes.
 
-\begin{figure}[!htb]
+\begin{figure}
   \centering
-  \includegraphics[scale=.5]{hhgrad.eps}
-  \caption{Home Value and Education}
-  \label{fig:hhgrad}
-\end{figure}
-
-\begin{figure}[!htb]
-  \centering
-  \includegraphics[scale=.5]{income.eps}
-  \caption{Home Value and Income}
-  \label{fig:income}
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth]{hhgrad.eps}
+    \caption{Home Value and Education}
+    \label{fig:hhgrad}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth]{income.eps}
+    \caption{Home Value and Income}
+    \label{fig:income}
+  \end{subfigure}
+  \caption{Education and Income}
 \end{figure}
 
 In addition to more expensive homes, more education correlates with neighborhood quality. Figure~\vref{fig:education_qual} shows the share of households by terminal degree level in good and bad neighborhoods. More educated buyers are more likely to have homes in good neighborhoods; we expect that this is really an income story, as education increases income which affords higher neighborhood quality.
@@ -63,40 +66,46 @@ In addition to more expensive homes, more education correlates with neighborhood
 
 The value of a home is also driven by the quality of the home and the surrounding neighborhood. We expect that nicer homes in nicer neighborhoods will cost more. We see in Figure~\vref{fig:ejunk} and Figure~\vref{fig:eaban} that two proxies for neighborhood quality\textemdash the presence of junk in the street and proximity to abandoned buldings\textemdash both lower home value. 
 
-\begin{figure}[!htb]
+\begin{figure}
   \centering
-  \includegraphics[scale=.5]{ejunk.eps}
-  \caption{Near Street Trash}
-  \label{fig:ejunk}
-\end{figure}
-
-\begin{figure}[!htb]
-  \centering
-  \includegraphics[scale=.5]{eaban.eps}
-  \caption{Near Abandoned Buildings}
-  \label{fig:eaban}
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth]{ejunk.eps}
+    \caption{Near Street Trash}
+    \label{fig:ejunk}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth]{eaban.eps}
+    \caption{Near Abandoned Buildings}
+    \label{fig:eaban}
+  \end{subfigure}
+  \caption{Neighborhood Quality}
 \end{figure}
 
 As we would expect, homes that are identified as ``good'' quality cost more than those that are not, and good neighborhoods carry a premium over bad neighborhoods (Figure~\ref{fig:howh} and Figure~\ref{fig:hown}, respectively).
 
-\begin{figure}[!htb]
+\begin{figure}
   \centering
-  \includegraphics[scale=.5]{howh.eps}
-  \caption{Home Quality}
-  \label{fig:howh}
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth]{howh.eps}
+    \caption{Home Ratings}
+    \label{fig:howh}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth]{hown.eps}
+    \caption{Neighborhood Ratings}
+    \label{fig:hown}
+  \end{subfigure}
+  \caption{Home and Neighborhood Quality}
 \end{figure}
 
-\begin{figure}[!htb]
-  \centering
-  \includegraphics[scale=.5]{hown.eps}
-  \caption{Neighborhood Quality}
-  \label{fig:hown}
-\end{figure}
+We can begin looking at the difference between first-time and repeat home buyers through this lense as well. We see in Figure~\vref{fig:first_qual} that first-time home buyers are more likely than not to purchase a home with a ``bad'' rating, while repeat purchasers are more likely to purchase a home with a ``good''rating. In the next section, we look more closely at the characteristics of first-time buyers that could explain this quality difference.
 
 \begin{figure}[!htb]
   \centering
   \includegraphics[scale=.5]{first_home_vs_home_quality.eps}
-  \caption{}
+  \caption{Unit Quality for First-Time Buyers}
   \label{fig:first_qual}
 \end{figure}
 
@@ -106,18 +115,20 @@ Finally, we examine the difference paid for first-time home buyers versus repeat
 
 We see that the source of financing for a down payment tells a very similar story. Buyers that use a previous home to pay down their purchase buy more expensive homes (see Figure~\vref{fig:dwnpay}). We expect that this is capturing the same effect as described above: namely, that if a previous home is used as a source of financing, that signals an older buyer with higher income and greater wealth.
 
-\begin{figure}[!htb]
+\begin{figure}
   \centering
-  \includegraphics[scale=.5]{frstho.eps}
-  \caption{First Time Buyers}
-  \label{fig:frstho}
-\end{figure}
-
-\begin{figure}[!htb]
-  \centering
-  \includegraphics[scale=.5]{dwnpay.eps}
-  \caption{Mortgage Financing}
-  \label{fig:dwnpay}
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth]{frstho.eps}
+    \caption{First-Time Buyers}
+    \label{fig:frstho}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth]{dwnpay.eps}
+    \caption{Mortgage Financing}
+    \label{fig:dwnpay}
+  \end{subfigure}
+  \caption{Repeat Purchaser Status and Financing}
 \end{figure}
 
 \section{Linear Model}
