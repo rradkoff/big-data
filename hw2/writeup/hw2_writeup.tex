@@ -19,7 +19,7 @@
 \begin{document}
 
 \title{Big Data: Homework 2}
-\author{Will Clark \& Matthew DeLio \\ Section 01}
+\author{Will Clark \& Matthew DeLio \\ 41201-01}
 \date{\today}
 \maketitle
 
@@ -121,9 +121,20 @@ We see that the source of financing for a down payment tells a very similar stor
 \end{figure}
 
 \section{Linear Model}
-\input{reg1_fdr.tex}
 
-hi
+We begin by regressing the log of home value onto all possible co-variates (excluding mortgage amount and purchase price, which are known functions of home value). If we apply a false discover rate of 10 percent, we find that there are 34 true discoveries. We regress log of home value on these 34 covariates; the results are displayed in Table~\vref{tab:reg1_fdr}.
+
+The model fit does not change meaningfully between estimates; the R-squared of the first model is 0.3053 and the R-squared of the second model is 0.3050. Removing the extraneous covariates should give us more accurate estimates for the effects of each covariate on home value.
+
+Some notes on the linear regression model:
+\begin{itemize}
+  \item Every state included in the model (there were 13) is a significant covariate. California is the most expensive state; Texas is the cheapest.
+  \item More education increases the value of home purchased, but income seems to have very little effect (that is not already included in educaiton).
+  \item Number of bedrooms and bathrooms both increase home value, but the relationship is stronger for number of bathrooms (i.e. it is the best proxy of home size).
+  \item The neighborhood and home quality measures that we saw in the first section appear in our regression results. Junk in the street lowers home value, as do nearby abandoned buildings. Good homes and neighborhoods cost more than bad ones.
+\end{itemize}
+
+\input{reg1_fdr.tex}
 
 \section{Logit Model}
 
