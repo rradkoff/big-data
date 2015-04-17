@@ -153,7 +153,7 @@ Some notes on the linear regression model:
 \input{reg1_fdr.tex}
 
 \section{Logistic Model}
-For this model, we regress, using all covariates, whether or not a home-buyer had a down payment of 20\% or more when purchasing a home.  As before we apply a false discovery rate of 10\%, and find that there are 23 true discoveries.  We again, applied the same regression using these 23 covariates with the results shown in Table~\vref{tab:reg3_fdr}.
+For this model, we regress, using the same covariates as the linear model, whether or not a home-buyer had a down payment of 20\% or more when purchasing a home.  As before we apply a false discovery rate of 10\%, and find that there are 23 true discoveries.  We again, applied the same regression using these 23 covariates with the results shown in Table~\vref{tab:reg3_fdr}.
 
 \input{reg3_fdr.tex}
 
@@ -164,7 +164,7 @@ The effects of two of the variables, one a factor (``FRSTHOY'') the other contin
   logit(p) = log(\frac{p}{1-p}) = \beta_0 + ... + \beta_{FRSTHOY}FRSTHOY + \beta_{BATHS}BATHS
 }
 
-Holding all other covariates fixed (including ``BATHS''), we will first examine the effects of being a first-time home-buyer (``FRSTHOY==TRUE'').  From the definition of the logit we know that being a first-time home-buyer will have the following effect: $odds(p)=p/(1-p)=\exp(\beta_FRSTHOY)=\exp(-0.0579)=0.943$.  In other words, being a first-time home-buyer will decrease the odds by $\sim5.6\%$ that a $>20\%$ down-payment was made.  This is unsurprising since as we mentioned earlier, first-time home-buyers tend to have less wealth than people who have owned homes in the past.
+Holding all other covariates fixed (including ``BATHS''), we first examine the effects of being a first-time home-buyer (``FRSTHOY==TRUE'').  From the definition of the logit we know that being a first-time home-buyer will have the following effect: $odds(p)=p/(1-p)=\exp(\beta_{FRSTHOY})=\exp(-0.0579)=0.943$.  In other words, being a first-time home-buyer will decrease the odds by $\sim5.6\%$ that a $>20\%$ down-payment was made.  This is unsurprising since as we mentioned earlier, first-time home-buyers tend to have less wealth than people who have owned homes in the past.
 
 Turning our attention now to the number of baths in a house, we can perform a similar analysis.  Again from the logit definition $odds(p)=\exp(0.0433)=1.044$.  Put another way, each additional bath will increase the odds of having a $>20\%$ down-payment by $\sim4.4\%$.
 
@@ -194,7 +194,7 @@ Here we create a new model that is trained using data for home values $>100k$, w
 
 We then use this model to predict some out-of-sample homes with value $<100k$.  These results are shown in Figure~\vref{fig:oos_lt100k}.  Looking that this figure more carefully we see that our model correctly predicts most of the times when the actual down payment is $<20\%$ (both our 3rd quartile and statistical max are well below the 0.5 threshold).  However, when the down-payment is $>20\%$ we mis-predict it to be false; our statistical min and 1st/3rd quartiles are well below 0.5 and the max is just above at $\sim0.55$.  Therefore the model seems to only be a good predictor of when a buyer will not put down a substantial down-payment.
 
-The $R^2$ for the model itself (for the training data) is $=10.3\%$; however for the out-of-sample data being predicted this value drops to $R^2=3.99\%$.  Therefore we expect to have little predictive power when predicting this different data.  Indeed, the raw statistics on down-payment vs home-value illustrated in Figure~\vref{fig:value_20dwn} show that, as a fraction of homes sold, cheaper homes actually have lower down-payments on average.  
+The $R^2$ for the model itself (for the training data) is $=10.3\%$; however for the out-of-sample data being predicted this value drops to $R^2=3.99\%$.  Therefore we expect to have little predictive power when predicting this different data.  Indeed, the raw statistics on down-payment vs home-value illustrated in Figure~\vref{fig:value_20dwn} show that, as a fraction of homes sold, cheaper homes actually have lower down-payments on average. It is important to note that the unconditional expectation is that \textit{all} homes will have less than 20\% down payments, and our model does reflect this.
 
 \begin{figure}
   \centering
@@ -213,7 +213,12 @@ The $R^2$ for the model itself (for the training data) is $=10.3\%$; however for
 \end{figure}
 
 \subsection{Sample Predictions on Homes $>100k$}
-We wanted to see how the model faired when predicting a sample of 1,000 homes with value $>100k$, again training the model on the remaining homes with this higher value.  Since a random sampling is performed on each iteration the $R^2$ for both the model and the out-of-sample prediction vary.  However, again we see that $R^2$ hovers around $\sim10\%$ with an out-of-sample $R^2$ anywhere between $\sim[1\%,18\%]$.  Figure~\vref{fig:oos_sample_gt100k} shows the result of one such run.  Again it seems to indicate that our prediction of down-payments $<20\%$ tends to be more accurate than our prediction of those $>20\%$.  However, both the mean and 1st/3rd quartiles for the prediction for a $>20\%$ down-payment are a bit higher, indicating that the model is slightly better, but, by no measure good, with these higher-priced homes.
+
+One possibile explanation for the model's poor performace is that the training and out-of-sample data sets are fundamentally different. The class of purchasers for expensive homes could be different enough from the class of purchasers for inexpensive homes that calibrating the model on the former set does not tell us anything about the latter set. To see if this is the case, we train the model on a sub-sample of home buyers who only purchase homes $>$ 100k and predict for other home buyers who also purchase expensive homes.
+
+Since a random sampling is performed on each iteration the $R^2$ for both the model and the out-of-sample prediction vary.  However, again we see that $R^2$ hovers around $\sim10\%$ with an out-of-sample $R^2$ anywhere between $\sim[1\%,18\%]$.  Figure~\vref{fig:oos_sample_gt100k} shows the result of one such run.  Again it seems to indicate that our prediction of down-payments $<20\%$ tends to be more accurate than our prediction of those $>20\%$.  However, both the mean and 1st/3rd quartiles for the prediction for a $>20\%$ down-payment are a bit higher, indicating that the model is slightly better, but, by no measure good, with these higher-priced homes.
+
+This does indicate that perhaps the training sample we used in the prior section was too fundamentaly different from the prediction sample to make meaningful forecasts, and that training the model on a random sample of all homeowners would be a better strategy.
 
 \begin{figure}[!htb]
   \centering

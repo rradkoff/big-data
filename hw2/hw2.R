@@ -231,8 +231,8 @@ Q4 <- function() {
   PlotDone()
 }
 
-# Q1()
-# Q2()
-# Q3()
-Q4sample()
-# Q4()
+Q1()
+Q2()
+Q3()
+#Q4sample()
+Q4()
