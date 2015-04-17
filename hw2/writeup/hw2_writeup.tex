@@ -214,11 +214,11 @@ The $R^2$ for the model itself (for the training data) is $=10.3\%$; however for
 
 \subsection{Sample Predictions on Homes $>100k$}
 
-One possibile explanation for the model's poor performace is that the training and out-of-sample data sets are fundamentally different. The class of purchasers for expensive homes could be different enough from the class of purchasers for inexpensive homes that calibrating the model on the former set does not tell us anything about the latter set. To see if this is the case, we train the model on a sub-sample of home buyers who only purchase homes $>$ 100k and predict for other home buyers who also purchase expensive homes.
+One possible explanation for the model's poor performance is that the training and out-of-sample data sets are fundamentally different. The class of purchasers for expensive homes could be different enough from the class of purchasers for inexpensive homes that calibrating the model on the former set does not tell us anything about the latter set. To see if this is the case, we train the model on a sub-sample of home buyers who only purchase homes $>$ 100k and predict for other home buyers who also purchase expensive homes.
 
 Since a random sampling is performed on each iteration the $R^2$ for both the model and the out-of-sample prediction vary.  However, again we see that $R^2$ hovers around $\sim10\%$ with an out-of-sample $R^2$ anywhere between $\sim[1\%,18\%]$.  Figure~\vref{fig:oos_sample_gt100k} shows the result of one such run.  Again it seems to indicate that our prediction of down-payments $<20\%$ tends to be more accurate than our prediction of those $>20\%$.  However, both the mean and 1st/3rd quartiles for the prediction for a $>20\%$ down-payment are a bit higher, indicating that the model is slightly better, but, by no measure good, with these higher-priced homes.
 
-This does indicate that perhaps the training sample we used in the prior section was too fundamentaly different from the prediction sample to make meaningful forecasts, and that training the model on a random sample of all homeowners would be a better strategy.
+This does indicate that perhaps the training sample we used in the prior section was too fundamentally different from the prediction sample to make meaningful forecasts, and that training the model on a random sample of all homeowners would be a better strategy.
 
 \begin{figure}[!htb]
   \centering
