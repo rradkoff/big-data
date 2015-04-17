@@ -133,7 +133,7 @@ Q2 <- function() {
   reg1_fdr <- glm_fdr(reg1, q)
   print(xtable(reg1_fdr, label = 'tab:reg1_fdr',
                caption = 'Value of Purchased Homes (in logs)'), 
-        file=GetFilename('reg1_fdr.tab'))
+        file=GetFilename('reg1_fdr.tex'))
   
   print(paste("True discoveries:", dim(summary(reg1_fdr)$coef)[1], 
               " out of ", dim(summary(reg1)$coef)[1]))
@@ -156,15 +156,15 @@ Q3 <- function() {
   reg3 <- glm(gt20dwn ~ .-AMMORT-LPRICE, data=homes, family='binomial')
   reg3_fdr <- glm_fdr(reg3, q)
   print(xtable(reg3_fdr, label='tab:reg3_fdr', 
-               caption = 'Probability of Down Payment > 20% (No Interaction Terms)'), 
-        file=GetFilename('reg3_fdr.tab'))
+               caption = 'Probability of Down Payment $>$ 20\\% (No Interaction Terms)'), 
+        file=GetFilename('reg3_fdr.tex'))
   
   # add interaction term
   reg4 <- glm(gt20dwn ~ .-AMMORT-LPRICE+FRSTHO*BATHS, data=homes, family='binomial')
   reg4_fdr <- glm_fdr(reg4, q)
   print(xtable(reg4_fdr, label='tab:reg4_fdr', 
-               caption = 'Probability of Down Payment > 20% (With Interaction Term)'), 
-        file=GetFilename('reg4_fdr.tab'))
+               caption = 'Probability of Down Payment $>$ 20\\% (With Interaction Term)'), 
+        file=GetFilename('reg4_fdr.tex'))
   print(paste("R^2=", 1-reg4_fdr$deviance/reg4_fdr$null.deviance))
 }
 # Q3()
