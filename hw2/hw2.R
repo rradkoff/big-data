@@ -100,9 +100,10 @@ Q1 <- function() {
   plot(homes$FRSTHO ~ homes$HOWH, xlab="Unit Quality", ylab="Buyer's First Home?")
   PlotDone()
   
-  PlotSetup('first_home_vs_20_down')
-  plot(factor(0.2<(homes$LPRICE-homes$AMMORT)/homes$LPRICE) ~ homes$FRSTHO,
-       xlab="Buyer's First Home?", ylab="20% Down Payment")
+  PlotSetup('home_value_vs_20_down')
+  plot(factor(0.2<(homes$LPRICE-homes$AMMORT)/homes$LPRICE, labels= c("No", "Yes")) ~ 
+         factor(homes$VALUE > 1e5, labels = c("No", "Yes")),
+       xlab="Home Value > 100k", ylab="20% Down Payment")
   PlotDone()
   
   # plot some neighborhood quality metrics

@@ -1,0 +1,65 @@
+\documentclass[11pt, fleqn]{article}
+
+\usepackage{booktabs} % To use /toprule /midrule /bottomrule commands in printing tables
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage[margin=1in]{geometry} % To set the margin widths
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{tikz}
+\usepackage{varioref}
+\usepackage{siunitx}
+
+\sisetup{output-exponent-marker=\textsc{e}}
+
+\setlength{\parskip}{12pt} % Sets a blank line in between paragraphs
+\setlength\parindent{0pt} % Sets the indent for each paragraph to zero
+
+\begin{document}
+
+\title{Big Data: HW2}
+\author{Will Clark, Matthew DeLio}
+\date{\today}
+\maketitle
+
+\section{Data Visualization}
+
+
+\section{Linear Model}
+\input{reg1_fdr.tex}
+
+\section{Logit Model}
+
+\subsection{Interpret Effects}
+\input{reg3_fdr.tex}
+
+\subsection{Interpret Interaction}
+\input{reg4_fdr.tex}
+
+\section{Out-of-Sample Prediction}
+\subsection{Predicting Downpayments on Homes $<$100k}
+\begin{figure}[!htb]
+  \centering
+  \includegraphics[scale=.5]{oos_lt100k.eps}
+  \caption{}
+  \label{fig:oos_lt100k}
+\end{figure}
+
+\begin{figure}[!htb]
+  \centering
+  \includegraphics[scale=.5]{home_value_vs_20_down.eps}
+  \caption{}
+  \label{fig:value_20dwn}
+\end{figure}
+
+\subsection{Sample Predictions on Homes $>$100k}
+
+\begin{figure}[!htb]
+  \centering
+  \includegraphics[scale=.5]{oos_subsample_100k.eps}
+  \caption{}
+  \label{fig:oos_sample_gt100k}
+\end{figure}
+
+\end{document}
