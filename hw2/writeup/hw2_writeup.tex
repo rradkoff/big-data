@@ -5,6 +5,7 @@
 \usepackage{amsfonts}
 \usepackage[margin=1in]{geometry} % To set the margin widths
 \usepackage{graphicx}
+\usepackage{listings}
 \usepackage{multirow}
 \usepackage{tabularx}
 \usepackage{tikz}
@@ -12,6 +13,10 @@
 \usepackage{siunitx}
 \usepackage{subcaption}
 
+\lstset{
+  language=R,
+  literate = {<-}{{$\gets$}}1 {~}{{$\sim$}}1
+}
 \sisetup{output-exponent-marker=\textsc{e}}
 
 \setlength{\parskip}{12pt} % Sets a blank line in between paragraphs
@@ -28,14 +33,14 @@
 
 We identified three sets of covariates that affect housing prices:
 \begin{enumerate}
-\item Income/education level: home price tends to rise with income (and with education, which correlates highly with income);
-\item Home/neighborhood quality: nice homes and nice neighborhoods demand a price premium; and
-\item First-time status: first-time home buyers tend to purchase less expensive homes.
+\item \textbf{Income/education level:} home price tends to rise with income (and with education, which correlates highly with income);
+\item \textbf{Home/neighborhood quality:} nice homes and nice neighborhoods demand a price premium; and
+\item \textbf{First-time status:} first-time home buyers tend to purchase less expensive homes.
 \end{enumerate}
 
 \subsection{Income \& Education}
 
-Unsurprisingly, buyers with higher income and more education are able to afford more expensive homes. We see in Figure~\vref{fig:hhgrad} that the purchase price of a home increases with each additional level of educaiton achieved. In Figure~\vref{fig:income}, we see that home value rises with income, but much of the variation in income is explained by having a college degree. Red dots, signifying purchasers with a college or graduate degree, are concentrated in the northeast corner, signifying high incomes and expensive homes. Blue dots, signifying purchasers without a college degree, have lower incomes and (expectedly) less expensive homes.
+Unsurprisingly, buyers with higher income and more education are able to afford more expensive homes. We see in Figure~\vref{fig:hhgrad} that the purchase price of a home increases with each additional level of education achieved. In Figure~\vref{fig:income}, we see that home value rises with income, but much of the variation in income is explained by having a college degree. Red dots, signifying purchasers with a college or graduate degree, are concentrated in the northeast corner, signifying high incomes and expensive homes. Blue dots, signifying purchasers without a college degree, have lower incomes and (expectedly) less expensive homes.
 
 \begin{figure}
   \centering
@@ -64,7 +69,7 @@ In addition to more expensive homes, more education correlates with neighborhood
 
 \subsection{Neighborhood \& Home}
 
-The value of a home is also driven by the quality of the home and the surrounding neighborhood. We expect that nicer homes in nicer neighborhoods will cost more. We see in Figure~\vref{fig:ejunk} and Figure~\vref{fig:eaban} that two proxies for neighborhood quality\textemdash the presence of junk in the street and proximity to abandoned buldings\textemdash both lower home value. 
+The value of a home is also driven by the quality of the home and the surrounding neighborhood. We expect that nicer homes in nicer neighborhoods will cost more. We see in Figure~\vref{fig:ejunk} and Figure~\vref{fig:eaban} that two proxies for neighborhood quality\textemdash the presence of junk in the street and proximity to abandoned buildings\textemdash both lower home value. 
 
 \begin{figure}
   \centering
@@ -100,7 +105,7 @@ As we would expect, homes that are identified as ``good'' quality cost more than
   \caption{Home and Neighborhood Quality}
 \end{figure}
 
-We can begin looking at the difference between first-time and repeat home buyers through this lense as well. We see in Figure~\vref{fig:first_qual} that first-time home buyers are more likely than not to purchase a home with a ``bad'' rating, while repeat purchasers are more likely to purchase a home with a ``good''rating. In the next section, we look more closely at the characteristics of first-time buyers that could explain this quality difference.
+We can begin looking at the difference between first-time and repeat home buyers through this lens as well. We see in Figure~\vref{fig:first_qual} that first-time home buyers are more likely than not to purchase a home with a ``bad'' rating, while repeat purchasers are more likely to purchase a home with a ``good''rating. In the next section, we look more closely at the characteristics of first-time buyers that could explain this quality difference.
 
 \begin{figure}[!htb]
   \centering
@@ -133,50 +138,87 @@ We see that the source of financing for a down payment tells a very similar stor
 
 \section{Linear Model}
 
-We begin by regressing the log of home value onto all possible co-variates (excluding mortgage amount and purchase price, which are known functions of home value). If we apply a false discover rate of 10 percent, we find that there are 34 true discoveries. We regress log of home value on these 34 covariates; the results are displayed in Table~\vref{tab:reg1_fdr}.
+We begin by regressing the log of home value onto all possible co-variates (excluding mortgage amount and purchase price, which are known functions of home value). If we apply a false discovery rate of 10 percent, we find that there are 34 true discoveries. We regress log of home value on these 34 covariates; the results are displayed in Table~\vref{tab:reg1_fdr}.
 
 The model fit does not change meaningfully between estimates; the R-squared of the first model is 0.3053 and the R-squared of the second model is 0.3050. Removing the extraneous covariates should give us more accurate estimates for the effects of each covariate on home value.
 
 Some notes on the linear regression model:
 \begin{itemize}
   \item Every state included in the model (there were 13) is a significant covariate. California is the most expensive state; Texas is the cheapest.
-  \item More education increases the value of home purchased, but income seems to have very little effect (that is not already included in educaiton).
+  \item More education increases the value of home purchased, but income seems to have very little effect (that is not already included in education).
   \item Number of bedrooms and bathrooms both increase home value, but the relationship is stronger for number of bathrooms (i.e. it is the best proxy of home size).
   \item The neighborhood and home quality measures that we saw in the first section appear in our regression results. Junk in the street lowers home value, as do nearby abandoned buildings. Good homes and neighborhoods cost more than bad ones.
 \end{itemize}
 
 \input{reg1_fdr.tex}
 
-\section{Logit Model}
+\section{Logistic Model}
+For this model, we regress, using all covariates, whether or not a home-buyer had a down payment of 20\% or more when purchasing a home.  As before we apply a false discovery rate of 10\%, and find that there are 23 true discoveries.  We again, applied the same regression using these 23 covariates with the results shown in Table~\vref{tab:reg3_fdr}.
 
-\subsection{Interpret Effects}
 \input{reg3_fdr.tex}
 
+\subsection{Interpret Effects}
+The effects of two of the variables, one a factor (``FRSTHOY'') the other continuous (``BATHS'') yields some insights into the logistic regression model as a whole.  The following is a simplification of the model that will be used to discuss the interpretation of these variables:
+
+\math{
+  logit(p) = log(\frac{p}{1-p}) = \beta_0 + ... + \beta_{FRSTHOY}FRSTHOY + \beta_{BATHS}BATHS
+}
+
+Holding all other covariates fixed (including ``BATHS''), we will first examine the effects of being a first-time home-buyer (``FRSTHOY==TRUE'').  From the definition of the logit we know that being a first-time home-buyer will have the following effect: $odds(p)=p/(1-p)=\exp(\beta_FRSTHOY)=\exp(-0.0579)=0.943$.  In other words, being a first-time home-buyer will decrease the odds by $\sim5.6\%$ that a $>20\%$ down-payment was made.  This is unsurprising since as we mentioned earlier, first-time home-buyers tend to have less wealth than people who have owned homes in the past.
+
+Turning our attention now to the number of baths in a house, we can perform a similar analysis.  Again from the logit definition $odds(p)=\exp(0.0433)=1.044$.  Put another way, each additional bath will increase the odds of having a $>20\%$ down-payment by $\sim4.4\%$.
+
 \subsection{Interpret Interaction}
+A new model was formed to include determine the interaction between the buyer's first home and the number of baths in predicting the down-payment.
+
+\begin{lstlisting}[language=R]
+model <- glm(gt20dwn ~ . - AMMORT - LPRICE + FRSTHO*BATHS, 
+             data=homes, family='binomial')
+\end{lstlisting}
+
+As before we apply a false discovery rate of 10\%, and find 23 covariates above the threshold.  We then created a final model using these covariates; the results are shown in Table~\vref{tab:reg4_fdr}.  It is worth noting in that table, that FRSTHOY's effect on the intercept has been eliminated during the false discovery rate detection and is not included in the model.  However, the interaction term ``BATHS:FRSTHOY'' is included.  The following is a simplification of the model that will be used to discuss the interpretation of the interaction variables:
+
+\math{
+  logit(p) = \beta_0 + ... + (\beta_{BATHS} + \beta_{BATHS:FRSTHOY}FRSTHOY) * BATHS
+}
+
+Interpreting these coefficients and their effects on the log-odds is similar to the situation discussed earlier.  If not a first-time buyer, each bath will have the following effect on the odds:  $odds(p)=\exp(\beta_{BATHS})=\exp(0.0556) = 1.057$, or a $\sim5.7\%$ increase in the odds that $>20\%$ was made.  However, if a first-time home-buyer purchases a house, each additional bath will have the following effect: $odds(p)=\exp(\beta_{BATHS}+\beta_{BATHS:FRSTHOY})=\exp(0.0556-0.0367)=1.019$, or a $\sim1.9\%$ increase in odds.  Put another way, with respect to the number of baths (as a proxy for the value of the house), first-time home-buyers are less likely to have a substantial down-payment when houses have more value.  Again, this agrees with our notion that first-time home-buyers have less wealth to put into a home purchase.
+
 \input{reg4_fdr.tex}
 
 \section{Out-of-Sample Prediction}
-\subsection{Predicting Downpayments on Homes $<$100k}
-\begin{figure}[!htb]
+\subsection{Predicting Down-Payments on Homes $<100k$}
+Here we create a new model that is trained using data for home values $>100k$, which will then be used to predict the $20\%$ down-payment rate for homes worth $<100k$.  We begin by including using all covariates and including the interaction between first-time home-buyers and # of baths from the previous section.  Again, using a 10\% false discovery rate cutoff, 23 covariates are significant and included in the final model (see Table~\vref{tab:reg6_fdr}).  From the coefficients, we clearly see more pronounced effects for the number of baths and first-time home-buyers.  For a first-time home-buyer of a home whose value is $>100k$ each bath will increase the odds of having a substantial down-payment by $\sim9.7\%$.  For a seasoned home-buyer these odds increase to $\sim31.3\%$.
+
+\input{reg6_fdr.tex}
+
+We then use this model to predict some out-of-sample homes with value $<100k$.  These results are shown in Figure~\vref{fig:oos_lt100k}.  Looking that this figure more carefully we see that our model correctly predicts most of the times when the actual down payment is $<20\%$ (both our 3rd quartile and statistical max are well below the 0.5 threshold).  However, when the down-payment is $>20\%$ we mis-predict it to be false; our statistical min and 1st/3rd quartiles are well below 0.5 and the max is just above at $\sim0.55$.  Therefore the model seems to only be a good predictor of when a buyer will not put down a substantial down-payment.
+
+The $R^2$ for the model itself (for the training data) is $=10.3\%$; however for the out-of-sample data being predicted this value drops to $R^2=3.99\%$.  Therefore we expect to have little predictive power when predicting this different data.  Indeed, the raw statistics on down-payment vs home-value illustrated in Figure~\vref{fig:value_20dwn} show that, as a fraction of homes sold, cheaper homes actually have lower down-payments on average.  
+
+\begin{figure}
   \centering
-  \includegraphics[scale=.5]{oos_lt100k.eps}
-  \caption{}
-  \label{fig:oos_lt100k}
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[scale=.5]{oos_lt100k.eps}
+    \caption{Prediction Results for Homes $<100k$}
+    \label{fig:oos_lt100k}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[scale=.5]{home_value_vs_20_down.eps}
+    \caption{$20\%$ Down-Payment vs. Home Value}
+    \label{fig:value_20dwn}
+  \end{subfigure}
+  \caption{Down-Payment Predictions}
 \end{figure}
 
-\begin{figure}[!htb]
-  \centering
-  \includegraphics[scale=.5]{home_value_vs_20_down.eps}
-  \caption{}
-  \label{fig:value_20dwn}
-\end{figure}
-
-\subsection{Sample Predictions on Homes $>$100k}
+\subsection{Sample Predictions on Homes $>100k$}
+We wanted to see how the model faired when predicting a sample of 1,000 homes with value $>100k$, again training the model on the remaining homes with this higher value.  Since a random sampling is performed on each iteration the $R^2$ for both the model and the out-of-sample prediction vary.  However, again we see that $R^2$ hovers around $\sim10\%$ with an out-of-sample $R^2$ anywhere between $\sim[1\%,18\%]$.  Figure~\vref{fig:oos_sample_gt100k} shows the result of one such run.  Again it seems to indicate that our prediction of down-payments $<20\%$ tends to be more accurate than our prediction of those $>20\%$.  However, both the mean and 1st/3rd quartiles for the prediction for a $>20\%$ down-payment are a bit higher, indicating that the model is slightly better, but, by no measure good, with these higher-priced homes.
 
 \begin{figure}[!htb]
   \centering
   \includegraphics[scale=.5]{oos_subsample_100k.eps}
-  \caption{}
+  \caption{Prediction Results for Out-of-Sample Homes $>100k$}
   \label{fig:oos_sample_gt100k}
 \end{figure}
 

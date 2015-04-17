@@ -159,6 +159,8 @@ Q3 <- function() {
   print(xtable(reg3_fdr, label='tab:reg3_fdr', 
                caption = 'Probability of Down Payment $>$ 20\\% (No Interaction Terms)'), 
         file=GetFilename('reg3_fdr.tex'))
+  print(paste("(reg3) R^2=", 1-reg3$deviance/reg3$null.deviance))
+  print(paste("(reg3 fdr) R^2=", 1-reg3_fdr$deviance/reg3_fdr$null.deviance))
   
   # add interaction term
   reg4 <- glm(gt20dwn ~ .-AMMORT-LPRICE+FRSTHO*BATHS, data=homes, family='binomial')
@@ -166,7 +168,8 @@ Q3 <- function() {
   print(xtable(reg4_fdr, label='tab:reg4_fdr', 
                caption = 'Probability of Down Payment $>$ 20\\% (With Interaction Term)'), 
         file=GetFilename('reg4_fdr.tex'))
-  print(paste("R^2=", 1-reg4_fdr$deviance/reg4_fdr$null.deviance))
+  print(paste("(reg4) R^2=", 1-reg4$deviance/reg4$null.deviance))
+  print(paste("(reg4 fdr) R^2=", 1-reg4_fdr$deviance/reg4_fdr$null.deviance))
 }
 # Q3()
 
@@ -179,7 +182,7 @@ Q4sample <- function() {
   gt100 <- which(homes$VALUE>1e5)
   homes$gt20dwn <- factor(0.2<(homes$LPRICE-homes$AMMORT)/homes$LPRICE)
 
-  sampleIndex <- sample(1:length(gt100), size = 100)
+  sampleIndex <- sample(1:length(gt100), size = 1000)
   
   mm <- model.matrix( ~. -AMMORT-LPRICE + FRSTHO*BATHS, data=homes)
   reg6 <- glm(gt20dwnTRUE ~., 
@@ -212,7 +215,10 @@ Q4 <- function() {
               data=as.data.frame(mm)[gt100, append(names(signif), "gt20dwnTRUE")], 
               family='binomial')
   print(summary(reg6))
-
+  print(xtable(reg6, label='tab:reg6_fdr', 
+               caption = 'Probability of Down Payment $>20\\%$ (for Home Value $>100k$)'), 
+        file=GetFilename('reg6_fdr.tex'))
+  
   pred_gt20wn <- predict.glm(reg6, newdata = as.data.frame(mm)[-gt100,], type='response')
   print(paste("OOS R^2=", R2(y=homes$gt20dwn[-gt100], pred = pred_gt20wn, family = "binomial")))
   print(paste("Model R^2=", 1-reg6$deviance/reg6$null.deviance))
@@ -225,8 +231,8 @@ Q4 <- function() {
   PlotDone()
 }
 
-Q1()
-Q2()
-Q3()
+# Q1()
+# Q2()
+# Q3()
 Q4sample()
-Q4()
+# Q4()
