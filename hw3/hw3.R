@@ -140,6 +140,10 @@ GetICs <- function(reg.gamlr, reg.cv.gamlr) {
     row.names = 'ic'))
 }
 print(GetICs(nhlreg_std, cv.nhlreg))
+ICs <- GetICs(nhlreg_std, cv.nhlreg)
+colnames(ICs) <- c('$log(\\lambda)$')
+print(xtable(ICs, label="tab:ic", caption="ICs for NHL Data"),
+      sanitize.text.function=function(x){x}, file=GetFilename('ic.tex'))
 
 PlotIC <- function(reg.gamlr, reg.cv.gamlr, n, file, ylim=NULL) {
   ll <- log(reg.gamlr$lambda) ## the sequence of lambdas
@@ -179,4 +183,9 @@ plot(cv.pl.nhlreg$gamlr)
 PlotDone()
 
 print(GetICs(pl.nhlreg, cv.pl.nhlreg))
+ICs <- GetICs(pl.nhlreg, cv.pl.nhlreg)
+colnames(ICs) <- c('$log(\\lambda)$')
+print(xtable(ICs, label="tab:pl_ic", caption="ICs for Player-Only Data"),
+      sanitize.text.function=function(x){x}, file=GetFilename('pl_ic.tex'))
+
 PlotIC(pl.nhlreg, cv.pl.nhlreg, n, 'ic_pl_nhl')
