@@ -1,5 +1,5 @@
 ##
-# Big Data HW 3
+## Big Data HW 3
 ##
 
 rm(list=ls())
@@ -50,9 +50,8 @@ colnames(best_tab) <- c("Player", "Rank", "$\\beta_j$", "$\\exp(\\beta_j)$", "G"
 print(xtable(best_tab, label="tab:best10", caption="Top 10 NHL Players (2002-2014)"),
       sanitize.text.function=function(x){x}, file=GetFilename('best10.tex'))
 
-n <- length(Baicc)
-print("The 10 worst players are:")
 worst10 <- tail(Baicc,n=10)
+n <- length(Baicc)
 worst_tab <- (cbind(str_replace(names(worst10), "_", " "), (n-9):n, 
                    sprintf(worst10, fmt='%#.4f'),
                    sprintf(exp(worst10), fmt='%#.4f'),
@@ -62,10 +61,10 @@ print(xtable(worst_tab, label="tab:worst10", caption="Bottom 10 NHL Players (200
       sanitize.text.function=function(x){x}, file=GetFilename('worst10.tex'))
 
 ## vizualize
-#PlotSetup('player_rtg')
+PlotSetup('player_rtg')
 plot(Baicc, main="Player Rating Coefficients",
      xlab="Players [Ranked Best to Worst]", ylab="Rating Coefficient")
-#PlotDone()
+PlotDone()
 
 ## 
 ## Q2
@@ -83,3 +82,33 @@ nhlreg_std <- gamlr(x, y,
 Baicc_std <- coef(nhlreg_std)[colnames(player),]   
 Baicc_std <- sort(Baicc_std, decreasing=TRUE)
 
+best10 <- head(Baicc_std,n=10)
+best_tab <- (cbind(str_replace(names(best10), "_", " "), 1:10, 
+                   sprintf(best10, fmt='%#.4f'),
+                   sprintf(exp(best10), fmt='%#.4f'),
+                   colSums(abs(player[, match(names(best10), colnames(player))]))))
+colnames(best_tab) <- c("Player", "Rank", "$\\beta_j$", "$\\exp(\\beta_j)$", "G")
+print(xtable(best_tab, label="tab:best10", caption="Top 10 NHL Players (2002-2014)"),
+      sanitize.text.function=function(x){x}, file=GetFilename('best10_std.tex'))
+
+worst10 <- tail(Baicc_std,n=10)
+worst_tab <- (cbind(str_replace(names(worst10), "_", " "), (n-9):n, 
+                    sprintf(worst10, fmt='%#.4f'),
+                    sprintf(exp(worst10), fmt='%#.4f'),
+                    colSums(abs(player[, match(names(worst10), colnames(player))]))))
+colnames(worst_tab) <- c("Player", "Rank", "$\\beta_j$", "$\\exp(\\beta_j)$", "G")
+print(xtable(worst_tab, label="tab:worst10", caption="Bottom 10 NHL Players (2002-2014)"),
+      sanitize.text.function=function(x){x}, file=GetFilename('worst10_std.tex'))
+
+## plot of lasso to build intuition
+## example players: Pavel Datsyuk, Jeff Toms
+bet <- seq(-20, 20, 0.1)
+pen_pd <- abs(bet)*sqrt(var(player[,"PAVEL_DATSYUK"]))
+pen_jt <- abs(bet)*sqrt(var(player[,"JEFF_TOMS"]))
+
+PlotSetup('cost_fcn')
+plot(pen_pd ~ bet, type="l", col=1, main="Cost Function with Standardization", 
+     xlab="beta", ylab="penalty")
+lines(pen_jt ~ bet, col=2)
+legend("top", c("Pavel Datsyuk", "Jeff Toms"), lty=c(1,1), col=c(1,2), bty = "n")
+PlotDone()
