@@ -133,18 +133,51 @@ log(nhlreg_std$lambda[which.min(BIC(nhlreg_std))])
 log(cv.nhlreg$lambda.min)
 log(cv.nhlreg$lambda.1se)
 
-## plot CV results and the various IC
-PlotSetup('cv_nhl_ic')
-ll <- log(nhlreg_std$lambda) ## the sequence of lambdas
+PlotIC <- function(reg.gamlr, reg.cv.gamlr, n, file, ylim=NULL) {
+  PlotSetup(file)
+  ll <- log(reg.gamlr$lambda) ## the sequence of lambdas
+  plot(reg.cv.gamlr)
+  plot(ll, AIC(reg.gamlr)/n, ylim = ylim,
+       xlab="log lambda", ylab="IC/n", pch=19, col="orange")
+  abline(v=ll[which.min(AIC(reg.gamlr))], col="orange", lty=3)
+  abline(v=ll[which.min(BIC(reg.gamlr))], col="green", lty=3)
+  abline(v=ll[which.min(AICc(reg.gamlr))], col="black", lty=3)
+  points(ll, BIC(reg.gamlr)/n, pch=19, col="green")
+  points(ll, AICc(reg.gamlr)/n, pch=19, col="black")
+  legend("topleft", bty="n",
+         fill=c("black","orange","green"),legend=c("AICc","AIC","BIC"))
+  PlotDone()
+}
+PlotIC(nhlreg_std, cv.nhlreg, n, 'ic_nhl', ylim = c(33, 35.5))
+
+# PlotSetup('cv_nhl_ic')
+# ## plot CV results and the various IC
+# ll <- log(nhlreg_std$lambda) ## the sequence of lambdas
+# par(mfrow=c(1,2))
+# plot(cv.nhlreg)
+# plot(ll, AIC(nhlreg_std)/n, ylim = c(33,35.5),
+#      xlab="log lambda", ylab="IC/n", pch=19, col="orange")
+# abline(v=ll[which.min(AIC(nhlreg_std))], col="orange", lty=3)
+# abline(v=ll[which.min(BIC(nhlreg_std))], col="green", lty=3)
+# abline(v=ll[which.min(AICc(nhlreg_std))], col="black", lty=3)
+# points(ll, BIC(nhlreg_std)/n, pch=19, col="green")
+# points(ll, AICc(nhlreg_std)/n, pch=19, col="black")
+# legend("topleft", bty="n",
+#        fill=c("black","orange","green"),legend=c("AICc","AIC","BIC"))
+# PlotDone()
+
+##
+## We’ve controlled our estimates for confounding information
+## from team effects and special play configuration. How do things
+## change if we ignored this info (i.e., fit a player-only model)?
+## Which scheme is better (interpretability, CV, and IC)?
+##
+pl.nhlreg <- gamlr(player, y, family="binomial")
+cv.pl.nhlreg <- cv.gamlr(player, y, family="binomial", verb=T)
+PlotSetup('pl_cv_nhl_gamlr')
 par(mfrow=c(1,2))
-plot(cv.nhlreg)
-plot(ll, AIC(nhlreg_std)/n, ylim = c(33,35.5),
-     xlab="log lambda", ylab="IC/n", pch=19, col="orange")
-abline(v=ll[which.min(AIC(nhlreg_std))], col="orange", lty=3)
-abline(v=ll[which.min(BIC(nhlreg_std))], col="green", lty=3)
-abline(v=ll[which.min(AICc(nhlreg_std))], col="black", lty=3)
-points(ll, BIC(nhlreg_std)/n, pch=19, col="green")
-points(ll, AICc(nhlreg_std)/n, pch=19, col="black")
-legend("topleft", bty="n",
-       fill=c("black","orange","green"),legend=c("AICc","AIC","BIC"))
+plot(cv.pl.nhlreg)
+plot(cv.pl.nhlreg$gamlr)
 PlotDone()
+
+PlotIC(pl.nhlreg, cv.pl.nhlreg, n, 'ic_pl_nhl')
