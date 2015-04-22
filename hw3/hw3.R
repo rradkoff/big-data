@@ -120,9 +120,11 @@ PlotDone()
 cv.nhlreg <- cv.gamlr(x, y, 
                       free=1:(ncol(config)+ncol(team)), ## free denotes unpenalized columns
                       family="binomial", verb=T)
-PlotSetup('cv_nhl_gamlr')
-par(mfrow=c(1,2))
+PlotSetup('cv_nhl_gamlr_a')
 plot(cv.nhlreg)
+PlotDone()
+
+PlotSetup('cv_nhl_gamlr_b')
 plot(cv.nhlreg$gamlr)
 PlotDone()
 
@@ -140,9 +142,13 @@ GetICs <- function(reg.gamlr, reg.cv.gamlr) {
 print(GetICs(nhlreg_std, cv.nhlreg))
 
 PlotIC <- function(reg.gamlr, reg.cv.gamlr, n, file, ylim=NULL) {
-  PlotSetup(file)
   ll <- log(reg.gamlr$lambda) ## the sequence of lambdas
+  
+  PlotSetup(paste(file, "_a", sep=''))
   plot(reg.cv.gamlr)
+  PlotDone()
+  
+  PlotSetup(paste(file, "_b", sep=''))
   plot(ll, AIC(reg.gamlr)/n, ylim = ylim,
        xlab="log lambda", ylab="IC/n", pch=19, col="orange")
   abline(v=ll[which.min(AIC(reg.gamlr))], col="orange", lty=3)
@@ -164,9 +170,11 @@ PlotIC(nhlreg_std, cv.nhlreg, n, 'ic_nhl', ylim = c(33, 35.5))
 ##
 pl.nhlreg <- gamlr(player, y, family="binomial")
 cv.pl.nhlreg <- cv.gamlr(player, y, family="binomial", verb=T)
-PlotSetup('pl_cv_nhl_gamlr')
-par(mfrow=c(1,2))
+PlotSetup('pl_cv_nhl_gamlr_a')
 plot(cv.pl.nhlreg)
+PlotDone()
+
+PlotSetup('pl_cv_nhl_gamlr_b')
 plot(cv.pl.nhlreg$gamlr)
 PlotDone()
 
