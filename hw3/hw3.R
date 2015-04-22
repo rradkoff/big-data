@@ -112,3 +112,39 @@ plot(pen_pd ~ bet, type="l", col=1, main="Cost Function with Standardization",
 lines(pen_jt ~ bet, col=2)
 legend("top", c("Pavel Datsyuk", "Jeff Toms"), lty=c(1,1), col=c(1,2), bty = "n")
 PlotDone()
+
+##
+## Compare model selection methods for the nhlreg lasso.
+## Consider both IC and CV (you’ll want to create cv.nhlreg).
+##
+cv.nhlreg <- cv.gamlr(x, y, 
+                      free=1:(ncol(config)+ncol(team)), ## free denotes unpenalized columns
+                      family="binomial", verb=T)
+PlotSetup('cv_nhl_gamlr')
+par(mfrow=c(1,2))
+plot(cv.nhlreg)
+plot(cv.nhlreg$gamlr)
+PlotDone()
+
+## log lambdas selected under various criteria
+log(nhlreg_std$lambda[which.min(AICc(nhlreg_std))])
+log(nhlreg_std$lambda[which.min(AIC(nhlreg_std))])
+log(nhlreg_std$lambda[which.min(BIC(nhlreg_std))])
+log(cv.nhlreg$lambda.min)
+log(cv.nhlreg$lambda.1se)
+
+## plot CV results and the various IC
+PlotSetup('cv_nhl_ic')
+ll <- log(nhlreg_std$lambda) ## the sequence of lambdas
+par(mfrow=c(1,2))
+plot(cv.nhlreg)
+plot(ll, AIC(nhlreg_std)/n, ylim = c(33,35.5),
+     xlab="log lambda", ylab="IC/n", pch=19, col="orange")
+abline(v=ll[which.min(AIC(nhlreg_std))], col="orange", lty=3)
+abline(v=ll[which.min(BIC(nhlreg_std))], col="green", lty=3)
+abline(v=ll[which.min(AICc(nhlreg_std))], col="black", lty=3)
+points(ll, BIC(nhlreg_std)/n, pch=19, col="green")
+points(ll, AICc(nhlreg_std)/n, pch=19, col="black")
+legend("topleft", bty="n",
+       fill=c("black","orange","green"),legend=c("AICc","AIC","BIC"))
+PlotDone()
