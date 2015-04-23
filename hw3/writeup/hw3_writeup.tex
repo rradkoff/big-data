@@ -88,8 +88,6 @@ In this section we explore what happens when the team, season and special play e
 
 With this new model, we run the Gamma-Lasso regression as before as well as the 5-fold CV lasso.  With the default choice of $lambda.min.ratio$ we noticed that the CV average MSE never displays a minima.  To satisfy our curiosity, we lowered this parameter to $\exp{-10}$ and re-ran the CV lasso.  After re-running it, we found a minima at $log(\lambda)=-9.46$, a value which includes a majority of the covariates in the final model (see Figure~\vref{fig:pl_cv_nhl}).  Next we ran the Gamma-Lasso regression with the same $lambda.min.ratio$ and found the AIC, AICc, and BIC information criteria for the run (see Figure~\vref{fig:pl_ic_nhl} and Table~\vref{tab:pl_ic}).
 
-We find that the AIC and AICc never reach a minima; therefore with these selection criteria, they choose all covariates for the model. <TRANSITION> Deviance always decreases as more degrees of freedom are added.  <Explain why minima occurs>, <Explain why no minima occurs>.  <Explain that these results show that our model is either not idea, or the ideal model really does include all covariates> <Since we have the other model, it is clear that we have become victim of Omitted variable bias>.
-
 \begin{equation}
   AICc = \texttt{Deviance} + 2df\frac{n}{n-df-1}
   \label{eq:AICc}
@@ -102,6 +100,14 @@ We find that the AIC and AICc never reach a minima; therefore with these selecti
   BIC = \texttt{Deviance} + df * ln(n)
   \label{eq:BIC}
 \end{equation}
+
+Since best choice of $\lambda$ based on these information criteria is the one that 
+Each of these equations ``penalizes'' additional degrees of freedom (i.e. the addition of covariates into the model) 
+
+We find that the AIC and AICc never reach a minima; therefore with these selection criteria, they choose all covariates for the model. To understand this, we examine Equations~\eqref{eq:AICc}, \eqref{eq:AIC}, \& \eqref{eq:BIC}.
+
+<TRANSITION> Deviance always decreases as more degrees of freedom are added.  <Explain why minima occurs>, <Explain why no minima occurs>.  <Explain that these results show that our model is either not idea, or the ideal model really does include all covariates> <Since we have the other model, it is clear that we have become victim of Omitted variable bias>.
+
 
 \begin{enumerate}
   \item The AIC and AICc have no minima (see Figure~\vref{fig:pl_ic_nhl_b}) selecting all of the covariates for the model.
