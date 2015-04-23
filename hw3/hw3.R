@@ -165,7 +165,7 @@ PlotIC <- function(reg.gamlr, reg.cv.gamlr, n, file, ylim=NULL) {
   PlotDone()
 
   colors <- c('orange', 'green', 'black', 'blue', 'purple')
-  ics <- GetICs(nhlreg_std, cv.nhlreg)
+  ics <- GetICs(reg.gamlr, reg.cv.gamlr)
   PlotSetup(paste(file, "_c", sep=''))
   plot(reg.gamlr, col='darkgray', select=0)
   abline(v=ics$lambda, col=colors, lty=5, lwd=2)
@@ -180,7 +180,7 @@ PlotIC(nhlreg_std, cv.nhlreg, n, 'ic_nhl', ylim = c(33, 35.5))
 ## change if we ignored this info (i.e., fit a player-only model)?
 ## Which scheme is better (interpretability, CV, and IC)?
 ##
-log_lambda <- -12
+log_lambda <- -10
 pl.nhlreg <- gamlr(player, y, family="binomial", lambda.min.ratio=exp(log_lambda))
 cv.pl.nhlreg <- cv.gamlr(player, y, family="binomial", verb=T, lambda.min.ratio=exp(log_lambda))
 PlotSetup('pl_cv_nhl_gamlr_a')

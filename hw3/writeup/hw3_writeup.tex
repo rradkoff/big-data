@@ -23,9 +23,9 @@ For a given player \textit{j}, the model estimates the odds multiplier that a go
 \end{itemize}
 To use one example, the coefficient on Alex Ovechkin is 0.30. This means that a goal scored while Ovechkin is on the ice is $\exp(0.30)=1.35$ times as likely to be scored by his team, the Washington Capitals, than by their opponents. Put differently, if a goal is scored while Ovi is on the ice, it is 35 percent more likely that it is scored by the Caps than by their opponents.
 
-We can sort the array of player coefficients to determine the 10 most and least valuable players in the data set. We show the results in Table~\ref{tab:best10} and Table~\ref{tab:worst10}. This evaluation metric accords with our intution about hockey. The list of 10 best players includes some of the conventionally-regarded best players of the last decade, which tells us the model is doing a reasonably good job of quantifying performance. It also includes one player (Tyler Toffoli) who has only played since 2013, although his brief career has been successful to date. Table~\ref{tab:best10} and Table~\ref{tab:worst10} have a column labeled \textbf{G}, displaying the number of goals a player was on the ice for. We can see that Toffoli is indeed an inexperienced player compared to veterans like Joe Thornton and Pavel Datsyuk
+We can sort the array of player coefficients to determine the 10 most and least valuable players in the data set. We show the results in Table~\ref{tab:best10} and Table~\ref{tab:worst10}. This evaluation metric accords with our intuition about hockey. The list of 10 best players includes some of the conventionally-regarded best players of the last decade, which tells us the model is doing a reasonably good job of quantifying performance. It also includes one player (Tyler Toffoli) who has only played since 2013, although his brief career has been successful to date. Table~\ref{tab:best10} and Table~\ref{tab:worst10} have a column labeled \textbf{G}, displaying the number of goals a player was on the ice for. We can see that Toffoli is indeed an inexperienced player compared to veterans like Joe Thornton and Pavel Datsyuk
 
-By this performance metric, the best and worst players are both outliers and most players have a 0 rating. The sample includes 2439 players and only 646 have non-zero ratings (390 have net positive and 256 have net negative ratings). We can see in Figure~\ref{fig:play_rtg} that only a small handful of players are significantly better or significanlty worse than average.
+By this performance metric, the best and worst players are both outliers and most players have a 0 rating. The sample includes 2439 players and only 646 have non-zero ratings (390 have net positive and 256 have net negative ratings). We can see in Figure~\ref{fig:play_rtg} that only a small handful of players are significantly better or significantly worse than average.
 
 \begin{figure}[!htb]
   \centering
@@ -47,7 +47,7 @@ We ran the Gamma-Lasso regression setting \texttt{standardize=TRUE} and the resu
 
 Datsyuk is a long-tenured player who has been on the ice for 1725 goals; he is ranked 7th by our logit regression model. Toms had a long career in the NHL and minor leagues but played his last NHL game in 2002, seeing action in only eight games and being on the ice for only four goals (which are the only four included in our data set). For Datsyuk, $\mathrm{var}(x_j)=0.0248$ while for Toms, $\mathrm{var}(x_j)=\num{5.7597e-5}$.
 
-Figure~\ref{fig:cost_fcn} shows what the lasso penatly functions look like for each player \textit{after} they have been scaled by the standard deviation of $x_j$. We can see that there is a very high cost for the coefficient on Pavel Datsyuk and almost no cost on the coefficeint for Jeff Toms. What this means for the estimation is that the coefficient on Datsyuk is very likely to be small, and the coefficeint on Toms is very likely to be larger. This is in fact what we see from running the Gamma-Lasso regression setting \texttt{standardize=TRUE}; the coefficnet on Datsyuk is 0.2908 while the coefficent on Toms is 1.7381.
+Figure~\ref{fig:cost_fcn} shows what the lasso penalty functions look like for each player \textit{after} they have been scaled by the standard deviation of $x_j$. We can see that there is a very high cost for the coefficient on Pavel Datsyuk and almost no cost on the coefficient for Jeff Toms. What this means for the estimation is that the coefficient on Datsyuk is very likely to be small, and the coefficient on Toms is very likely to be larger. This is in fact what we see from running the Gamma-Lasso regression setting \texttt{standardize=TRUE}; the coefficient on Datsyuk is 0.2908 while the coefficient on Toms is 1.7381.
 
 \begin{figure}[!htb]
   \centering
@@ -56,43 +56,44 @@ Figure~\ref{fig:cost_fcn} shows what the lasso penatly functions look like for e
   \label{fig:cost_fcn}
 \end{figure}
 
-\section{}
+\section{IC and CV Model Selection}
+
+For this discussion we are looking at 3 information criteria, AIC, AICc, and BIC, used in model selection.  To compare these different criteria, we employ a 5-fold cross-validation to provide an estimate of the Out-of-Sample error (see Figure~\vref{fig:cv_nhl}).  Included on that figure is the mean-squared error for the different folds across many different values for $\lambda$.  The $\lambda$ yielding the minimum average mean-squared error as well as the largest one yielding an average MSE no more than 1 standard error away from the minimum.  Choosing the value of $\lambda_{1se}$ will yield a simpler model (i.e. one with less coefficients), but one with, potentially, a higher mean-squared error for any new data samples.
+
+Since cross-validation is expensive (in terms of compute-time), the goal is to find another information criteria that will approximate the $\lambda$s provided by the cross-validated model.  Figure~\vref{fig:ic_nhl} shows the `gamlr' coefficient path plot with varying $\lambda$s.  The $\lambda$s that minimize AIC, AICc, and BIC as well as CV.min and CV.1se are also shown in the verticals on the plot (see Table~\vref{tab:ic} for the numerical values).  \em{Note: In Figure~\vref{fig:ic_nhl} that AIC and AICc are almost identical therefore one is obscured by the other.}  From these data we see that both AIC/AICc do a reasonable job at estimating CV.min, opting for a more complex model at the expense of slightly worse MSE for new samples.  The BIC chooses a much simpler model, with far fewer coefficients than even the one prescribed by CV.1se.  Because the MSE for new samples will likely be higher than that chosen by AIC and AICc, BIC is likely inferior to these other information criteria.
 
 \begin{figure}
   \centering
   \begin{subfigure}[b]{0.49\textwidth}
     \includegraphics[width=\textwidth]{cv_nhl_gamlr_a.eps}
     \caption{}
-    %\label{fig:hhgrad}
+    \label{fig:cv_nhl}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.49\textwidth}
-    \includegraphics[width=\textwidth]{cv_nhl_gamlr_b.eps}
+    \includegraphics[width=\textwidth]{ic_nhl_c.eps}
     \caption{}
-    %\label{fig:income}
+    \label{fig:ic_nhl}
   \end{subfigure}
   \caption{}
 \end{figure}
 
 \input{ic.tex}
 
-\begin{figure}
-  \centering
-  \begin{subfigure}[b]{0.49\textwidth}
-    \includegraphics[width=\textwidth]{ic_nhl_a.eps}
-    \caption{}
-    %\label{fig:hhgrad}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[b]{0.49\textwidth}
-    \includegraphics[width=\textwidth]{ic_nhl_b.eps}
-    \caption{}
-    %\label{fig:income}
-  \end{subfigure}
-  \caption{}
-\end{figure}
+\section{Removing Team/Special Play From the Regression}
 
-\section{}
+In this section we explore what happens when the team, season and special play effects are removed from the model.  The new model is therefore governed by:
+
+\[ \log\left[\frac{Pr(y=1)}{1-Pr(y=1)}\right] = \beta_0 + \sum_{\texttt{homeplyr}} \beta_j + \sum_{\texttt{awayplyr}} \beta_j \]
+
+\begin{enumerate}
+  \item Bad Model
+  \item $AICc = DEV + \frac{n}{n-df-1}2*df$
+  \item As we add degrees of freedom always expect deviance to go down
+  \item As we add degress of freedom expect rhs to go up
+  \item In a good model, the deviance decreases at a slower rate than the IC ``penalty'' before the minimum
+  \item In a bad model, the deviance decreases at a faster rate than the penalty (each degree of freedom helps that much more)
+\end{enumerate}
 
 \begin{figure}
   \centering
@@ -103,7 +104,7 @@ Figure~\ref{fig:cost_fcn} shows what the lasso penatly functions look like for e
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.49\textwidth}
-    \includegraphics[width=\textwidth]{pl_cv_nhl_gamlr_b.eps}
+    \includegraphics[width=\textwidth]{ic_pl_nhl_c.eps}
     \caption{}
     %\label{fig:income}
   \end{subfigure}
@@ -111,21 +112,5 @@ Figure~\ref{fig:cost_fcn} shows what the lasso penatly functions look like for e
 \end{figure}
 
 \input{pl_ic.tex}
-
-\begin{figure}
-  \centering
-  \begin{subfigure}[b]{0.49\textwidth}
-    \includegraphics[width=\textwidth]{ic_pl_nhl_a.eps}
-    \caption{}
-    %\label{fig:hhgrad}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[b]{0.49\textwidth}
-    \includegraphics[width=\textwidth]{ic_pl_nhl_b.eps}
-    \caption{}
-    %\label{fig:income}
-  \end{subfigure}
-  \caption{}
-\end{figure}
 
 \end{document}
