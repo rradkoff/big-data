@@ -226,5 +226,5 @@ abline(v=0, col = "gray60")
 abline(h=0, col = "gray60")
 
 ## count how many players the stats agree/disagree on
-agree <- pm[adj_pm!=0]*adj_pm[adj_pm!=0]
-agree <- agree[agree>0]
+agree <- pm[adj_pm!=0]*adj_pm[adj_pm!=0]>0
+table(agree)
