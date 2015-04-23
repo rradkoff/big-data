@@ -60,7 +60,7 @@ Figure~\ref{fig:cost_fcn} shows what the lasso penalty functions look like for e
 
 For this discussion we are looking at 3 information criteria, AIC, AICc, and BIC, used in model selection.  To compare these different criteria, we employ a 5-fold cross-validation to provide an estimate of the Out-of-Sample error (see Figure~\vref{fig:cv_nhl}).  Included on that figure is the mean-squared error for the different folds across many different values for $\lambda$.  The $\lambda$ yielding the minimum average mean-squared error as well as the largest one yielding an average MSE no more than 1 standard error away from the minimum.  Choosing the value of $\lambda_{1se}$ will yield a simpler model (i.e. one with less coefficients), but one with, potentially, a higher mean-squared error for any new data samples.
 
-Since cross-validation is expensive (in terms of compute-time), the goal is to find another information criteria that will approximate the $\lambda$s provided by the cross-validated model.  Figure~\vref{fig:ic_nhl} shows the `gamlr' coefficient path plot with varying $\lambda$s.  The $\lambda$s that minimize AIC, AICc, and BIC as well as CV.min and CV.1se are also shown in the verticals on the plot (see Table~\vref{tab:ic} for the numerical values).  \em{Note: In Figure~\vref{fig:ic_nhl} that AIC and AICc are almost identical therefore one is obscured by the other.}  From these data we see that both AIC/AICc do a reasonable job at estimating CV.min, opting for a more complex model at the expense of slightly worse MSE for new samples.  The BIC chooses a much simpler model, with far fewer coefficients than even the one prescribed by CV.1se.  Because the MSE for new samples will likely be higher than that chosen by AIC and AICc, BIC is likely inferior to these other information criteria.
+Since cross-validation is expensive (in terms of compute-time), the goal is to find another information criteria that will approximate the $\lambda$s provided by the cross-validated model.  Figure~\vref{fig:ic_nhl} shows the `gamlr' coefficient path plot with varying $\lambda$s.  The $\lambda$s that minimize AIC, AICc, and BIC as well as CV.min and CV.1se are also shown in the verticals on the plot (see Table~\vref{tab:ic} for the numerical values).  \textit{Note: In Figure~\vref{fig:ic_nhl} that AIC and AICc are almost identical therefore one is obscured by the other.}  From these data we see that both AIC/AICc do a reasonable job at estimating CV.min, opting for a more complex model at the expense of slightly worse MSE for new samples.  The BIC chooses a much simpler model, with far fewer coefficients than even the one prescribed by CV.1se.  Because the MSE for new samples will likely be higher than that chosen by AIC and AICc, BIC is likely inferior to these other information criteria.
 
 \begin{figure}
   \centering
@@ -85,6 +85,15 @@ Since cross-validation is expensive (in terms of compute-time), the goal is to f
 In this section we explore what happens when the team, season and special play effects are removed from the model.  The new model is therefore governed by:
 
 \[ \log\left[\frac{Pr(y=1)}{1-Pr(y=1)}\right] = \beta_0 + \sum_{\texttt{homeplyr}} \beta_j + \sum_{\texttt{awayplyr}} \beta_j \]
+
+With this new model, we run the Gamma-Lasso regression as before as well as the 5-fold cross-validated lasso.
+
+Will wrap this up tomorrow morning, but basically will say:
+\begin{enumerate}
+  \item we had to lower lambda
+  \item we think that the model is bad and the various ICs show it (and a discussion of what we noted today)
+  \item the AICs rightly indicate that we should just include all of the covariates
+\end{enumerate}
 
 \begin{enumerate}
   \item Bad Model
