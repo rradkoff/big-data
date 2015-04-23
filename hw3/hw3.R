@@ -198,3 +198,33 @@ print(xtable(ICs, label="tab:pl_ic", caption="ICs for Player-Only Data"),
       sanitize.text.function=function(x){x}, file=GetFilename('pl_ic.tex'))
 
 PlotIC(pl.nhlreg, cv.pl.nhlreg, n, 'ic_pl_nhl')
+
+##
+## Bonus
+## Can you translate player effects into something comparable to classic P/M?
+## How do things compare?
+##
+
+## convert player effects (beta_j) to probabilities
+## keep only players with non-zero player effects
+Baicc_pr <- 1/(1+exp(-Baicc))
+Baicc_pr <- Baicc_pr[Baicc!=0]
+
+## count number of goals player was on the ice for
+nGoals <- colSums(abs(player[, match(names(Baicc_pr), colnames(player))]))
+
+## use goals and player effects to calculate adjusted plus/minus
+adj_pm <- nGoals*(2*Baicc_pr - 1)
+
+## calculate plus/minus to compare
+pm <- colSums(player[, match(names(Baicc_pr), colnames(player))])
+
+## plot to compare (non-zero adj_pm vals only)
+plot(pm, adj_pm, main="Adjusted Plus-Minus vs. Classic Plus-Minus",
+     xlab="Classic Plus-Minus", ylab="Adjusted Plus-Minus")
+abline(v=0, col = "gray60")
+abline(h=0, col = "gray60")
+
+## count how many players the stats agree/disagree on
+agree <- pm[adj_pm!=0]*adj_pm[adj_pm!=0]
+agree <- agree[agree>0]
