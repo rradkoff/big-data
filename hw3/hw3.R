@@ -108,9 +108,9 @@ pen_jt <- abs(bet)*sqrt(var(player[,"JEFF_TOMS"]))
 
 PlotSetup('cost_fcn')
 plot(pen_pd ~ bet, type="l", col=1, main="Cost Function with Standardization", 
-     xlab="beta", ylab="penalty")
-lines(pen_jt ~ bet, col=2)
-legend("top", c("Pavel Datsyuk", "Jeff Toms"), lty=c(1,1), col=c(1,2), bty = "n")
+     xlab="beta", ylab="penalty", lty=1, lwd=3)
+lines(pen_jt ~ bet, col=2, lwd=3)
+legend("top", c("Pavel Datsyuk", "Jeff Toms"), lty=1, lwd=3, col=c(1,2), bty = "n")
 PlotDone()
 
 ##

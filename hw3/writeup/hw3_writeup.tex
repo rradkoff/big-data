@@ -82,11 +82,31 @@ Since cross-validation is expensive (in terms of compute-time), the goal is to f
 
 \section{Removing Team/Special Play From the Regression}
 
-In this section we explore what happens when the team, season and special play effects are removed from the model.  The new model is therefore governed by:
+In this section we explore what happens when the team, season and special play effects are removed from the model.  Very similar to the original model, the new model is therefore governed by:
 
 \[ \log\left[\frac{Pr(y=1)}{1-Pr(y=1)}\right] = \beta_0 + \sum_{\texttt{homeplyr}} \beta_j + \sum_{\texttt{awayplyr}} \beta_j \]
 
-With this new model, we run the Gamma-Lasso regression as before as well as the 5-fold cross-validated lasso.
+With this new model, we run the Gamma-Lasso regression as before as well as the 5-fold CV lasso.  With the default choice of $lambda.min.ratio$ we noticed that the CV average MSE never displays a minima.  To satisfy our curiosity, we lowered this parameter to $\exp{-10}$ and re-ran the CV lasso.  After re-running it, we found a minima at $log(\lambda)=-9.46$, a value which includes a majority of the covariates in the final model (see Figure~\vref{fig:pl_cv_nhl}).  Next we ran the Gamma-Lasso regression with the same $lambda.min.ratio$ and found the AIC, AICc, and BIC information criteria for the run (see Figure~\vref{fig:pl_ic_nhl} and Table~\vref{tab:pl_ic}).
+
+We find that the AIC and AICc never reach a minima; therefore with these selection criteria, they choose all covariates for the model. <TRANSITION> Deviance always decreases as more degrees of freedom are added.  <Explain why minima occurs>, <Explain why no minima occurs>.  <Explain that these results show that our model is either not idea, or the ideal model really does include all covariates> <Since we have the other model, it is clear that we have become victim of Omitted variable bias>.
+
+\begin{equation}
+  AICc = \texttt{Deviance} + 2df\frac{n}{n-df-1}
+  \label{eq:AICc}
+\end{equation}
+\begin{equation}
+  AIC = \texttt{Deviance} + 2df
+  \label{eq:AIC}
+\end{equation}
+\begin{equation}
+  BIC = \texttt{Deviance} + df * ln(n)
+  \label{eq:BIC}
+\end{equation}
+
+\begin{enumerate}
+  \item The AIC and AICc have no minima (see Figure~\vref{fig:pl_ic_nhl_b}) selecting all of the covariates for the model.
+  \item With the exception of the BIC, the CV lasso and the other ICs select almost all of the covariates for the model.
+\end{enumerate}
 
 Will wrap this up tomorrow morning, but basically will say:
 \begin{enumerate}
@@ -109,16 +129,24 @@ Will wrap this up tomorrow morning, but basically will say:
   \begin{subfigure}[b]{0.49\textwidth}
     \includegraphics[width=\textwidth]{pl_cv_nhl_gamlr_a.eps}
     \caption{}
-    %\label{fig:hhgrad}
+    \label{fig:pl_cv_nhl}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.49\textwidth}
     \includegraphics[width=\textwidth]{ic_pl_nhl_c.eps}
     \caption{}
-    %\label{fig:income}
+    \label{fig:pl_ic_nhl}
   \end{subfigure}
   \caption{}
 \end{figure}
+
+\begin{figure}[!htb]
+  \centering
+  \includegraphics[scale=.5]{ic_pl_nhl_b.eps}
+  \caption{}
+  \label{fig:pl_ic_nhl_b}
+\end{figure}
+
 
 \input{pl_ic.tex}
 
