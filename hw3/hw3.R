@@ -235,7 +235,7 @@ compare <- cbind(pm, pm2, adj_pm, agree)
 ## plot to compare (non-zero adj_pm vals only)
 PlotSetup('pm_compare')
 plot(pm2, adj_pm, main="Adjusted Plus-Minus vs. Classic Plus-Minus",
-     xlab="Classic Plus-Minus", ylab="Adjusted Plus-Minus")
+     xlab="Classic Plus-Minus", ylab="Adjusted Plus-Minus", pch=19)
 abline(v=0, col = "gray60")
 abline(h=0, col = "gray60")
 PlotDone()
