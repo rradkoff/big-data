@@ -146,7 +146,7 @@ GetICs <- function(reg.gamlr, reg.cv.gamlr) {
 }
 print(GetICs(nhlreg_std, cv.nhlreg))
 ICs <- GetICs(nhlreg_std, cv.nhlreg)
-colnames(ICs) <- c('$log(\\lambda)$', 'Covariates Selected')
+colnames(ICs) <- c('$\\log(\\lambda)$', 'Covariates Selected')
 print(xtable(ICs, label="tab:ic", caption="ICs for NHL Data"),
       sanitize.text.function=function(x){x}, file=GetFilename('ic.tex'))
 
@@ -198,7 +198,7 @@ PlotDone()
 
 print(GetICs(pl.nhlreg, cv.pl.nhlreg))
 ICs <- GetICs(pl.nhlreg, cv.pl.nhlreg)
-colnames(ICs) <- c('$log(\\lambda)$', 'Covariates Selected')
+colnames(ICs) <- c('$\\log(\\lambda)$', 'Covariates Selected')
 print(xtable(ICs, label="tab:pl_ic", caption="ICs for Player-Only Data"),
       sanitize.text.function=function(x){x}, file=GetFilename('pl_ic.tex'))
 
