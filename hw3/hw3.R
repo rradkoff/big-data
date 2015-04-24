@@ -63,7 +63,7 @@ print(xtable(worst_tab, label="tab:worst10", caption="Bottom 10 NHL Players (200
 ## vizualize
 PlotSetup('player_rtg')
 plot(Baicc, main="Player Rating Coefficients",
-     xlab="Players [Ranked Best to Worst]", ylab="Rating Coefficient")
+     xlab="Players [Ranked Best to Worst]", ylab="Rating Coefficient", pch=19)
 PlotDone()
 
 ## 
