@@ -222,16 +222,19 @@ nGoals <- colSums(abs(player[, match(names(Baicc_pr), colnames(player))]))
 adj_pm <- nGoals*(2*Baicc_pr - 1)
 
 ## calculate plus/minus to compare
+## pm -- what the documentation says to do
+## pm2 -- what Taddy says to do on Piazza -- this is the correct P/M stat
 pm <- colSums(player[, match(names(Baicc_pr), colnames(player))])
+pm2 <- colSums(player[, match(names(Baicc_pr), colnames(player))]*c(-1,1)[y+1])
 
 ## count how many players the stats agree/disagree on
-agree <- pm[adj_pm!=0]*adj_pm[adj_pm!=0]>0
+agree <- pm2[adj_pm!=0]*adj_pm[adj_pm!=0]>0
 table(agree)
-compare <- cbind(pm, adj_pm, agree)
+compare <- cbind(pm, pm2, adj_pm, agree)
 
 ## plot to compare (non-zero adj_pm vals only)
 PlotSetup('pm_compare')
-plot(pm, adj_pm, main="Adjusted Plus-Minus vs. Classic Plus-Minus",
+plot(pm2, adj_pm, main="Adjusted Plus-Minus vs. Classic Plus-Minus",
      xlab="Classic Plus-Minus", ylab="Adjusted Plus-Minus")
 abline(v=0, col = "gray60")
 abline(h=0, col = "gray60")
