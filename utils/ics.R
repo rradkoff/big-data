@@ -30,7 +30,8 @@ PlotICs <- function(reg.gamlr, reg.cv.gamlr, file, legend_loc = "bottomleft") {
   ics <- GetICs(reg.gamlr, reg.cv.gamlr)
   PlotSetup(file)
   plot(reg.gamlr, col='darkgray', select=0)
-  abline(v=ics$lambda, col=colors, lty=5, lwd=2)
+  abline(v=ics$lambda, col=colors, 
+         lty=c(2, 3, 2, 2, 2), lwd=2)
   legend(legend_loc, bty="n", fill=colors, legend=row.names(ics))
   PlotDone()
 }

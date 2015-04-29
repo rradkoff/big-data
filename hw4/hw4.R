@@ -1,6 +1,7 @@
 rm(list = ls())
 
 source('../utils/source_me.R', chdir = T)
+OutputToFile = T
 
 ## microfinance network 
 ## data from BANERJEE, CHANDRASEKHAR, DUFLO, JACKSON 2012
@@ -129,7 +130,9 @@ print(dim(x)) # it's big
 # Create a model for the log(degree+1) based on the model matrix
 d <- log(degree + 1)
 treat <- gamlr(x, d)
-plot(treat)
+treat.cv <- cv.gamlr(x, d, verb=TRUE)
+
+PlotICs(treat, treat.cv, "treat_aic")
 
 # Predict dhat
 dhat <- predict(treat, x, type = "response")
@@ -140,6 +143,22 @@ print(sprintf("cor(d, dhat) = %f", cor(drop(dhat), d)))
 ################################################################################
 # Q3: Predict estimator for d on loan
 ################################################################################
+
+colnames(dhat) <- c("dhat")
 causal <- gamlr(cBind(d, dhat, x), hh$loan, free = 2, type = "binary")
-plot(causal)
+causal.cv <- cv.gamlr(cBind(d, dhat, x), hh$loan, free = 2, type = "binary")
+
+PlotICs(causal, causal.cv, "causal_aic")
+
 print(sprintf("coef(causal)['d']=%f", coef(causal)["d",]))
+
+################################################################################
+# Q4: Naive lasso
+################################################################################
+
+naive <- gamlr(cBind(d, x), hh$loan, type = "binary")
+naive.cv <- cv.gamlr(cBind(d, x), hh$loan, type = "binary")
+
+PlotICs(naive, naive.cv, "naive_aic")
+
+print(sprintf("coef(naive)['d']=%f", coef(naive)["d",]))
