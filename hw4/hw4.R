@@ -69,17 +69,35 @@ degree[is.na(degree)] <- 0 # unconnected houses, not in our graph
 # 1: glm.fit: algorithm did not converge 
 # 2: glm.fit: fitted probabilities numerically 0 or 1 occurred 
 
+################################################################################
+# Q1: Transform Degree
+################################################################################
+
 # Add loan to the vertices
 V(hhnet)$loan <- hh[V(hhnet), 'loan']
 neighborsWithLoans <- unlist(lapply(get.adjlist(hhnet), function (neis) {
   sum(V(hhnet)[neis]$loan)
 }))[zebra]
 fractionWithLoan <- neighborsWithLoans/degree
+names(fractionWithLoan) <- rownames(hh)
+fractionWithLoan[is.na(fractionWithLoan)] <- 0
 
-PlotSetup("degrees_frac_with_loan")
+PlotSetup('degrees_frac_with_loan')
 hist(fractionWithLoan)
 PlotDone()
 
-PlotSetup("degrees")
+# Need to add one before taking log (3477 have zero fraction)
+# print(sum(fractionWithLoan == 0))
+PlotSetup('degrees_frac_with_loan_log')
+hist(log(fractionWithLoan+1))
+PlotDone()
+
+PlotSetup('degrees')
 hist(degree)
+PlotDone()
+
+# Need to add one before taking log (449 have zero degree)
+# print(sum(degree == 0))
+PlotSetup('degrees_log')
+hist(log(degree+1))
 PlotDone()
