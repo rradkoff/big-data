@@ -162,3 +162,20 @@ naive.cv <- cv.gamlr(cBind(d, x), hh$loan, type = "binary")
 PlotICs(naive, naive.cv, "naive_aic")
 
 print(sprintf("coef(naive)['d']=%f", coef(naive)["d",]))
+
+################################################################################
+# Q5: Bootstrapping
+################################################################################
+
+gamma <- c(); 
+n <- nrow(hh)
+
+for(b in 1:100) {
+  print(b)
+  ib <- sample(1:n,n,replace=TRUE)
+  
+  
+  fb <- gamlr(cBind(d, dhat, x), hh$loan, free = 2, type = "binary")
+  gamma <- c(gamma,coef(fb)["d",]) 
+}
+hist(gamma); abline(v=coef(causal)["d",], col=2)
