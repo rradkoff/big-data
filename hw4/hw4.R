@@ -101,3 +101,22 @@ PlotDone()
 PlotSetup('degrees_log')
 hist(log(degree+1))
 PlotDone()
+
+################################################################################
+# Q2: Model & Predict Degree
+################################################################################
+require(gamlr)
+RefactorBaseNA <- function(var) {
+  return(factor(var, levels = c(NA, levels(var)), exclude = NULL))
+}
+hh$village <- RefactorBaseNA(hh$village)
+hh$religion <- RefactorBaseNA(hh$religion)
+hh$roof <- RefactorBaseNA(hh$roof)
+hh$ownership <- RefactorBaseNA(hh$ownership)
+x <- sparse.model.matrix(~.^2, data=hh)[,-1]
+dim(x)
+
+treat <- gamlr(x, log(degree+1))
+plot(treat)
+dhat <- predict(treat, x, type = "response")
+plot(dhat, log(degree+1), bty = "n", pch = 21, bg = 8)
