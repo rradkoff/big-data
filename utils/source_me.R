@@ -8,3 +8,6 @@ plotOpts <- data.frame(Prefix = "output/", Width = 6, Height = 4, Units = "in",
 
 # Source the plot utilities
 source('plot_utils.R')
+
+# Source the ICs extractors for gamlr
+source("ics.R")
