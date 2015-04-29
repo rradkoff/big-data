@@ -134,6 +134,7 @@ plot(treat)
 dhat <- predict(treat, x, type = "response")
 # What do we plot here?  I think this is what we want, but not sure.
 plot(dhat, d, bty = "n", pch = 21, bg = 8)
+print(sprintf("cor(d, dhat) = %f", cor(drop(dhat), d)))
 
 ################################################################################
 # Q3: Predict estimator for d on loan
