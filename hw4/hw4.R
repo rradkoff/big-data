@@ -169,13 +169,33 @@ print(sprintf("coef(naive)['d']=%f", coef(naive)["d",]))
 
 gamma <- c(); 
 n <- nrow(hh)
-
-for(b in 1:100) {
-  print(b)
+for (b in 1:40) {
   ib <- sample(1:n,n,replace=TRUE)
   
+  # Sample x and d
+  xb <- x[ib,]
+  db <- d[ib]
+
+  # Predict dhat for sample
+  treatb <- gamlr(xb, db)
+  dhatb <- predict(treat, xb, type = 'response')
+  colnames(dhatb) <- c('dhat')
+
+  # Now regress loan on dhat, d, and x
+  loanb <- hh$loan[ib]
+  fb <- gamlr(cBind(db, dhatb, xb), loanb, free = 2, type = "binary")
+  gamma <- c(gamma,coef(fb)["db",])
   
-  fb <- gamlr(cBind(d, dhat, x), hh$loan, free = 2, type = "binary")
-  gamma <- c(gamma,coef(fb)["d",]) 
+  print(b)
 }
 hist(gamma); abline(v=coef(causal)["d",], col=2)
+
+#
+# Piazza questions:
+# 1) Why do we need to bootstrap with n observations?
+# 2) How do we know when to create a model matrix that interacts
+#    all covariates with each other?
+# 3) Is there an optimal n:p ratio (p is the number of x's in the model matrix)
+# 4) Does loan == 0 mean that someone (1) applied for a loan and was rejected,
+#    (2) they didn't apply for a loan, or, (3) either/both.
+#
