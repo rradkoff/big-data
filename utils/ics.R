@@ -17,6 +17,14 @@ GetICs <- function(reg.gamlr, reg.cv.gamlr) {
     row.names = 'ic'))
 }
 
+SaveICTable <- function(reg.gamlr, reg.cv.gamlr, label, caption, file) {
+  ics <- GetICs(reg.gamlr, reg.cv.gamlr)
+  colnames(ics) <- c('$\\log(\\lambda)$', 'Covariates Selected')
+  print(xtable(ics, label=label, caption=caption),
+        sanitize.text.function=function(x){x}, 
+        file=GetFilename(paste(file, '.tex', sep='')))
+}
+
 PlotICs <- function(reg.gamlr, reg.cv.gamlr, file, legend_loc = "bottomleft") {
   colors <- c('orange', 'green', 'black', 'blue', 'purple')
   ics <- GetICs(reg.gamlr, reg.cv.gamlr)
