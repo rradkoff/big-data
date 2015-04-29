@@ -119,10 +119,11 @@ hh$ownership <- RefactorBaseNA(hh$ownership)
 #
 # Do we need to remove loan from the model matrix?  I think we might.
 #
+hhNoLoan <- hh[,-which(colnames(hh) %in% c('loan'))]
 
 # Create the sparse model matrix interacting everything with everything
 # Is this what we want to do here?
-x <- sparse.model.matrix(~.^2, data=hh)[,-1]
+x <- sparse.model.matrix(~.^2, data=hhNoLoan)[,-1]
 print(dim(x)) # it's big
 
 # Create a model for the log(degree+1) based on the model matrix
@@ -139,4 +140,6 @@ print(sprintf("cor(d, dhat) = %f", cor(drop(dhat), d)))
 ################################################################################
 # Q3: Predict estimator for d on loan
 ################################################################################
-# causal <- gamlr(cBind(d, dhat, x))
+causal <- gamlr(cBind(d, dhat, x), hh$loan, free = 2, type = "binary")
+plot(causal)
+print(sprintf("coef(causal)['d']=%f", coef(causal)["d",]))
