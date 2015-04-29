@@ -109,14 +109,23 @@ require(gamlr)
 RefactorBaseNA <- function(var) {
   return(factor(var, levels = c(NA, levels(var)), exclude = NULL))
 }
+
+# Add a NA factor to each, and make the base NA
 hh$village <- RefactorBaseNA(hh$village)
 hh$religion <- RefactorBaseNA(hh$religion)
 hh$roof <- RefactorBaseNA(hh$roof)
 hh$ownership <- RefactorBaseNA(hh$ownership)
-x <- sparse.model.matrix(~.^2, data=hh)[,-1]
-dim(x)
 
+# Create the sparse model matrix interacting everything with everything
+# Is this what we want to do here?
+x <- sparse.model.matrix(~.^2, data=hh)[,-1]
+print(dim(x)) # it's big
+
+# Create a model for the log(degree+1) based on the model matrix
 treat <- gamlr(x, log(degree+1))
 plot(treat)
+
+# Predict dhat
 dhat <- predict(treat, x, type = "response")
+# What do we plot here?  I think this is what we want, but not sure.
 plot(dhat, log(degree+1), bty = "n", pch = 21, bg = 8)
