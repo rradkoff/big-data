@@ -1,4 +1,5 @@
 require(gamlr)
+require(xtable)
 
 ## log lambdas selected under various criteria
 GetICs <- function(reg.gamlr, reg.cv.gamlr) {

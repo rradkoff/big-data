@@ -107,15 +107,9 @@ PlotDone()
 # Q2: Model & Predict Degree
 ################################################################################
 require(gamlr)
-RefactorBaseNA <- function(var) {
-  return(factor(var, levels = c(NA, levels(var)), exclude = NULL))
-}
 
 # Add a NA factor to each, and make the base NA
-hh$village <- RefactorBaseNA(hh$village)
-hh$religion <- RefactorBaseNA(hh$religion)
-hh$roof <- RefactorBaseNA(hh$roof)
-hh$ownership <- RefactorBaseNA(hh$ownership)
+hh <- naref(hh)
 
 #
 # Do we need to remove loan from the model matrix?  I think we might.
@@ -132,13 +126,21 @@ d <- log(degree + 1)
 treat <- gamlr(x, d)
 treat.cv <- cv.gamlr(x, d, verb=TRUE)
 
+SaveICTable(treat, treat.cv, "tab:treat_ic", "Treatment IC Table", "treat_ic")
 PlotICs(treat, treat.cv, "treat_aic")
 
 # Predict dhat
 dhat <- predict(treat, x, type = "response")
-# What do we plot here?  I think this is what we want, but not sure.
-plot(dhat, d, bty = "n", pch = 21, bg = 8)
-print(sprintf("cor(d, dhat) = %f", cor(drop(dhat), d)))
+
+# Plot d vs dhat
+dhatCor <- cor(drop(dhat), d)
+PlotSetup('d_vs_dhat')
+plot(dhat, d, bty = "n", pch = 21, bg = 'gray',
+     main = 'd vs. dhat')
+legend("bottomright", bty = 'y', pch = 21, pt.bg = 'gray',
+       legend = sprintf('cor(d, dhat) = %4.2f', dhatCor))
+PlotDone()
+print(sprintf("cor(d, dhat) = %f", dhatCor))
 
 ################################################################################
 # Q3: Predict estimator for d on loan
@@ -148,6 +150,7 @@ colnames(dhat) <- c("dhat")
 causal <- gamlr(cBind(d, dhat, x), hh$loan, free = 2, type = "binary")
 causal.cv <- cv.gamlr(cBind(d, dhat, x), hh$loan, free = 2, type = "binary")
 
+SaveICTable(causal, causal.cv, "tab:causal_ic", "Causal IC Table", "causal_ic")
 PlotICs(causal, causal.cv, "causal_aic")
 
 print(sprintf("coef(causal)['d']=%f", coef(causal)["d",]))
@@ -159,6 +162,7 @@ print(sprintf("coef(causal)['d']=%f", coef(causal)["d",]))
 naive <- gamlr(cBind(d, x), hh$loan, type = "binary")
 naive.cv <- cv.gamlr(cBind(d, x), hh$loan, type = "binary")
 
+SaveICTable(naive, naive.cv, "tab:naive_ic", "Naive IC Table", "naive_ic")
 PlotICs(naive, naive.cv, "naive_aic")
 
 print(sprintf("coef(naive)['d']=%f", coef(naive)["d",]))

@@ -11,3 +11,4 @@ source('plot_utils.R')
 
 # Source the ICs extractors for gamlr
 source("ics.R")
+source("naref.R")
