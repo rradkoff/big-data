@@ -167,11 +167,13 @@ print(sprintf("coef(naive)['d']=%f", coef(naive)["d",]))
 # Q5: Bootstrapping
 ################################################################################
 
-gamma <- c(); 
+gamma <- c();
 n <- nrow(hh)
-for (b in 1:40) {
+numBootstrap <- 100
+cat(sprintf('bootstrap(%d) ', numBootstrap))
+for (b in 1:numBootstrap) {
   ib <- sample(1:n,n,replace=TRUE)
-  
+
   # Sample x and d
   xb <- x[ib,]
   db <- d[ib]
@@ -185,10 +187,15 @@ for (b in 1:40) {
   loanb <- hh$loan[ib]
   fb <- gamlr(cBind(db, dhatb, xb), loanb, free = 2, type = "binary")
   gamma <- c(gamma,coef(fb)["db",])
-  
-  print(b)
+
+  cat(sprintf("%d,", b))
 }
-hist(gamma); abline(v=coef(causal)["d",], col=2)
+cat("done.\n")
+PlotSetup('bootstrap_hist')
+hist(gamma, breaks=10);
+abline(v=coef(causal)["d",], col=2)
+PlotDone()
+summary(gamma)
 
 #
 # Piazza questions:
