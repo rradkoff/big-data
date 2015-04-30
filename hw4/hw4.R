@@ -201,6 +201,7 @@ hist(gamma, breaks=10);
 abline(v=coef(causal)["d",], col=2)
 PlotDone()
 summary(gamma)
+print(sprintf("gamma mean=%f, std-dev=%f", mean(gamma), sqrt(var(gamma))))
 
 #
 # Piazza questions:
