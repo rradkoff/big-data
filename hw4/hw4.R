@@ -2,6 +2,7 @@ rm(list = ls())
 
 source('../utils/source_me.R', chdir = T)
 OutputToFile = T
+plotOpts$Prefix = "writeup/"
 
 ## microfinance network 
 ## data from BANERJEE, CHANDRASEKHAR, DUFLO, JACKSON 2012
