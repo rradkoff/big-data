@@ -28,7 +28,9 @@ Node connectivity (which we are calling \texttt{degree}) is measured by the numb
 
 In this section, we build a model to predict a node's degree by using only our control variables. Our model is: 
 
-\[ d = \beta_0 + \bm{X} \bm{\beta} + \varepsilon \]
+\begin{equation} \label{eq:treat}
+d(x) = \beta_0 + \bm{X} \bm{\beta} + \nu
+\end{equation}
 
 where $d$ is a node's number of degrees, $\bm{X}$ is a vector of control variables including village, religion, type of roof on home, rooms and beds in home, a dummy variable for having electricity in home, whether a home is owned, and whether the person is a ``leader'' in the village. 
 
@@ -48,6 +50,29 @@ This is a positive result. It tells us that most of the variation in degree, whi
 \section{Effect of Node Connectivity on Loan Propensity}
 \label{sec:model}
 
+In this section, we use our estimate of predicted degree ($\hat{d}$) to build a model for loan propensity based on node connectivity. We include $\hat{d}$ in our regression model:
+\begin{equation} \label{eq:causal}
+\log\left(\frac{p}{1-p}\right) = \beta_0 + d \gamma + \hat{d}(x) \delta + \bm{X}\bm{\beta} + \varepsilon
+\end{equation}
+where $p = \Pr(\text{loan}=1|\bm{X})$. We can substitute in our definition of $\hat{d}(x)$ from equation~\ref{eq:treat}:
+\begin{equation}
+\log\left(\frac{p}{1-p}\right) = \beta_0 + d \gamma + \left(\beta_0 + \bm{X} \bm{\beta} + \nu\right) \delta + \bm{X}\bm{\beta} + \varepsilon
+\end{equation}
+which simplifies to
+\begin{equation}
+\log\left(\frac{p}{1-p}\right) = \beta_0 + \gamma \nu + \hat{d}(x) (\gamma + \delta) + \bm{X}\bm{\beta}
+\end{equation}
+By estimating the model in equation~\ref{eq:causal}, we can isolate the parameter $\gamma$, which is ultimately the effect of the independent variation in $d$ on the propensity to take out a loan. 
+
+As in Section~\ref{sec:predict}, we use a Gamma-Lasso regression and see that the $\log(\lambda)$ values for the AICc and CV.Min are roughly similar (-5.37 and -5.13, respectively, shown in Table~\ref{tab:causal_ic} and plotted in Figure~\ref{fig:causal_aic} in the Appendix). This tells us our model is reasonably estimated; we proceed using the model chosen by AICc.
+
+The coefficent of interest in this regression is $\gamma$, the effect of exogenous changes in degree connectivity on propensity to take out a loan. In our model, $\gamma$ is 0.0145, which means that having one additional connection (i.e. degree increased by one) increases the odds of taking out a microfinance loan by 1.46 percent\footnote{$100 \cdot \left( \exp(0.0145) - 1 \right) = 1.46$}. This seems like a reasonable estimate \textemdash the coefficient is small but positive, indicating that knowing more people makes one very slightly more likely to take out a loan. We can imagine a story in which information travels more efficeintly to those who are more connected, but it is reasonable to assume that there are much more significant predictors of loan propensity than how many friends a person has.
+
+In Table~\ref{tab:pos} and~\ref{tab:neg}, we see the 5 most positive and negative predictors of loan propensity. 
+
+\include{pos}
+\include{neg}
+
 \section{Naive Estimation of Loan Propensity}
 
 \section{Bootstrapping Uncertainty}
@@ -64,5 +89,14 @@ This is a positive result. It tells us that most of the variation in degree, whi
 \end{figure}
 
 \include{treat_ic}
+
+\begin{figure}[!htb]
+  \centering
+  \includegraphics[scale=.5]{treat_aic.eps}
+  \caption{Gamma-Lasso Regression for Loan Propensity on Degree}
+  \label{fig:causal_aic}
+\end{figure}
+
+\include{causal_ic}
 
 \end{document}
