@@ -4,6 +4,8 @@ source('../utils/source_me.R', chdir = T)
 OutputToFile = T
 plotOpts$Prefix = "writeup/"
 
+library(stringr)
+
 ## microfinance network 
 ## data from BANERJEE, CHANDRASEKHAR, DUFLO, JACKSON 2012
 
@@ -104,6 +106,12 @@ PlotSetup('degrees_log')
 hist(log(degree+1))
 PlotDone()
 
+# The main objective in these transformations is to achieve linear relationships 
+# with the dependent variable (or, really, with its logit)
+# dependent variable = loan
+# independent variable = degree
+
+
 ################################################################################
 # Q2: Model & Predict Degree
 ################################################################################
@@ -112,9 +120,7 @@ require(gamlr)
 # Add a NA factor to each, and make the base NA
 hh <- naref(hh)
 
-#
 # Do we need to remove loan from the model matrix?  I think we might.
-#
 hhNoLoan <- hh[,-which(colnames(hh) %in% c('loan'))]
 
 # Create the sparse model matrix interacting everything with everything
@@ -144,6 +150,22 @@ PlotDone()
 print(sprintf("cor(d, dhat) = %f", dhatCor))
 
 ################################################################################
+# Addendum: see how errors are distributed 
+################################################################################
+eps <- d - dhat
+hist(as.matrix(eps), breaks=50,
+     main="Errors of X on log(1+degree)",
+     xlab="Regression Residual", ylab="Frequency")
+
+treat_log <- gamlr(x, degree)
+dhat_log <- predict(treat_log, x, type = "response")
+eps_log <- degree - dhat_log
+plot(as.matrix(eps_log) ~ x)
+hist(as.matrix(eps_log), breaks=50,
+     main="Errors of X on degree",
+     xlab="Regression Residual", ylab="Frequency")
+
+################################################################################
 # Q3: Predict estimator for d on loan
 ################################################################################
 
@@ -155,6 +177,39 @@ SaveICTable(causal, causal.cv, "tab:causal_ic", "Causal IC Table", "causal_ic")
 PlotICs(causal, causal.cv, "causal_aic")
 
 print(sprintf("coef(causal)['d']=%f", coef(causal)["d",]))
+print(sprintf("odds increase by %f percent", 100*(exp(coef(causal)["d",])-1) ))
+
+## see which are the significant predictors
+AICc <- coef(causal)[,1]
+AICc <- AICc[AICc!=0]
+AICc <- sort(AICc, decreasing=TRUE)
+print("5 most positive predictors")
+print(head(AICc, n=5))
+print("5 most negative predictors")
+print(tail(AICc, n=5))
+
+pospred <- head(AICc, n=5)
+tab_pos = cbind(str_replace(colnames(x)[match(names(pospred), colnames(x))], "_", " "),
+                sprintf(pospred, fmt='%#.4f'), 
+                sprintf(100*(exp(pospred)-1), fmt='%#.4f'), 
+                sprintf(colSums(x[,match(names(pospred), colnames(x))]), fmt='%i'))
+colnames(tab_pos) <- c("$x$", "$\\beta_j$", "odds multiplier", "n")
+print(xtable(tab_pos, label="tab:pos", 
+             caption="Most Significant Positive Predictors"),
+      sanitize.text.function=function(x){x}, file=GetFilename('pos.tex'))
+
+negpred <- tail(AICc, n=5)
+tab_neg = cbind(str_replace(colnames(x)[match(names(negpred), colnames(x))], "_", " "), 
+                sprintf(negpred, fmt='%#.4f'), 
+                sprintf(100*(exp(negpred)-1), fmt='%#.4f'),
+                sprintf(colSums(x[,match(names(negpred), colnames(x))]), fmt='%i'))
+colnames(tab_neg) <- c("$x$", "$\\beta_j$", "odds multiplier", "n")
+print(xtable(tab_neg, label="tab:neg", 
+             caption="Most Significant Negative Predictors"),
+      sanitize.text.function=function(x){x}, file=GetFilename('neg.tex'))
+
+## gut check
+# dim(hh[hh$village==4&hh$roof=="thatch",])
 
 ################################################################################
 # Q4: Naive lasso
@@ -178,21 +233,21 @@ numBootstrap <- 100
 cat(sprintf('bootstrap(%d) ', numBootstrap))
 for (b in 1:numBootstrap) {
   ib <- sample(1:n,n,replace=TRUE)
-
+  
   # Sample x and d
   xb <- x[ib,]
   db <- d[ib]
-
+  
   # Predict dhat for sample
   treatb <- gamlr(xb, db)
   dhatb <- predict(treat, xb, type = 'response')
   colnames(dhatb) <- c('dhat')
-
+  
   # Now regress loan on dhat, d, and x
   loanb <- hh$loan[ib]
   fb <- gamlr(cBind(db, dhatb, xb), loanb, free = 2, type = "binary")
   gamma <- c(gamma,coef(fb)["db",])
-
+  
   cat(sprintf("%d,", b))
 }
 cat("done.\n")

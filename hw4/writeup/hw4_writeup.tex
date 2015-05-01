@@ -68,9 +68,14 @@ As in Section~\ref{sec:predict}, we use a Gamma-Lasso regression and see that th
 
 The coefficent of interest in this regression is $\gamma$, the effect of exogenous changes in degree connectivity on propensity to take out a loan. In our model, $\gamma$ is 0.0145, which means that having one additional connection (i.e. degree increased by one) increases the odds of taking out a microfinance loan by 1.46 percent\footnote{$100 \cdot \left( \exp(0.0145) - 1 \right) = 1.46$}. This seems like a reasonable estimate \textemdash the coefficient is small but positive, indicating that knowing more people makes one very slightly more likely to take out a loan. We can imagine a story in which information travels more efficeintly to those who are more connected, but it is reasonable to assume that there are much more significant predictors of loan propensity than how many friends a person has.
 
-In Table~\ref{tab:pos} and~\ref{tab:neg}, we see the 5 most positive and negative predictors of loan propensity. 
+In Table~\ref{tab:pos} and~\ref{tab:neg}, we see the 5 most positive and negative predictors of loan propensity. At first glance, it appears that there are a few very positive factors that would increase propensity to take out a loan. For example, living in village 4 and having a thatch roof makes one 56.7 percent more likely to have a loan. Upon closer examination, though, there is only one person in our sample in village 4 with a thatch roof, so we cannot infer much from this coefficient. In fact, the top 5 coefficients have sample sizes of $n<5$.
+
+The coefficeints in Table~\ref{tab:neg} are more meaningful as the sub-sample sizes are sufficiently large to draw conclusions from. For example, Hindus in village 71 are 4.7 percent less likely to take out a loan. We are sufficiently confident in this coefficient because the sample size of Hindus in village 71 is 252. 
+
+This seems to be one drawback to using a matrix of control factors in which all possible terms interact with each other. In many cases, the Gamma-Lasso regression does not throw out coefficients that we might want to ignore anyway because of sample sizes that are insufficiently large. 
 
 \include{pos}
+
 \include{neg}
 
 \section{Naive Estimation of Loan Propensity}
