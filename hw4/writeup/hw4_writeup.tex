@@ -106,9 +106,8 @@ The coefficients in Table~\ref{tab:neg} are more meaningful as the sub-sample si
 
 This seems to be one drawback to using a matrix of control factors in which all possible terms interact with each other. In many cases, the Gamma-Lasso regression does not throw out coefficients that we might want to ignore anyway because of sample sizes that are insufficiently large. 
 
-\include{pos}
-
-\include{neg}
+\input{pos.tex}
+\input{neg.tex}
 
 \section{Naive Estimation of Loan Propensity}
 
@@ -122,6 +121,29 @@ As in the previous sections, we use a Gamma-Lasso regression.  Here, again, we s
 
 \section{Bootstrapping Uncertainty}
 
+In this section, we estimate our uncertainty in the $\gamma$ found in Section~\ref{sec:model} using the bootstrap method.  To accomplish this, we successively take n random samples (with replacement from our data-set), and run the same two regressions discussed in Sections~\ref{sec:predict} & \ref{sec:model}.  That is, we run a Gamma-Lasso regression and predict each node's degree ($\hat{d}$) and then, using this prediction, run the Gamma-Lasso to determine the effect of \texttt(d) ($\gamma$) on the propensity to obtain a loan.  These sample - regression - prediction - regression steps are performed 100 times; each time, the estimate of $\gamma$ is saved.
+
+From our new estimates of $\gamma$, uncertainty in our original $\gamma$ is measured by finding the standard deviation of the samples.  Figure~\ref{fig:bootstrap_hist} shows a histogram of these $\gamma$'s.  The distribution mean is 0.0168, which is notably different than the one found in Section~\ref{sec:model} (0.0145).  However, with a $\sigma = 0.00422$, the 95\% confidence interval for the unconditional uncertainty in $\gamma$ is $\mu \pm 1.96\sigma = \left[0.00849, 0.0250\right]$, which easily contains our previous estimate.  In terms of $\log(\text{odds})$ this confidence interval concludes that each additional degree of connection corresponds to a lift between $\left[0.852\%, 2.53\%]$ in the odds of obtaining a loan.  This range quite a bit higher than we would have previously guessed; while still significantly larger than 0\%, the wide range does seem to suggest that other factors may
+
+%gamma mean=0.016760, std-dev=0.004221
+%mean(gamma)+1.96*sqrt(var(gamma))
+%[1] 0.02503385
+%> mean(gamma)-1.96*sqrt(var(gamma))
+%[1] 0.008486115
+%100 * (exp(0.008486115)-1)
+%[1] 0.8522224
+%> 100 * (exp(0.02503385)-1)
+%[1] 2.534983
+%> 100 * (exp(0.0168)-1)
+%[1] 1.694191
+
+\begin{figure}[!htb]
+  \centering
+  \includegraphics[scale=.5]{bootstrap_hist.eps}
+  \caption{Distribution of $\gamma$ via Bootstrap Method (k=100)}
+  \label{fig:bootstrap_hist}
+\end{figure}
+
 \section{Experimental Design}
 
 \section{Appendix}
@@ -133,7 +155,7 @@ As in the previous sections, we use a Gamma-Lasso regression.  Here, again, we s
   \label{fig:treat_aic}
 \end{figure}
 
-\include{treat_ic}
+\input{treat_ic.tex}
 
 \begin{figure}[!htb]
   \centering
@@ -142,7 +164,7 @@ As in the previous sections, we use a Gamma-Lasso regression.  Here, again, we s
   \label{fig:causal_aic}
 \end{figure}
 
-\include{causal_ic}
+\input{causal_ic.tex}
 
 \begin{figure}[!htb]
   \centering
@@ -151,7 +173,7 @@ As in the previous sections, we use a Gamma-Lasso regression.  Here, again, we s
   \label{fig:naive_aic}
 \end{figure}
 
-\include{naive_ic}
+\input{naive_ic.tex}
 
 
 \end{document}
