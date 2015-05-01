@@ -193,7 +193,7 @@ tab_pos = cbind(str_replace(colnames(x)[match(names(pospred), colnames(x))], "_"
                 sprintf(pospred, fmt='%#.4f'), 
                 sprintf(100*(exp(pospred)-1), fmt='%#.4f'), 
                 sprintf(colSums(x[,match(names(pospred), colnames(x))]), fmt='%i'))
-colnames(tab_pos) <- c("$x$", "$\\beta_j$", "odds multiplier", "n")
+colnames(tab_pos) <- c("$x$", "$\\beta_j$", "$\\Delta$ odds (\\%)", "n")
 print(xtable(tab_pos, label="tab:pos", 
              caption="Most Significant Positive Predictors"),
       sanitize.text.function=function(x){x}, file=GetFilename('pos.tex'))
@@ -203,7 +203,7 @@ tab_neg = cbind(str_replace(colnames(x)[match(names(negpred), colnames(x))], "_"
                 sprintf(negpred, fmt='%#.4f'), 
                 sprintf(100*(exp(negpred)-1), fmt='%#.4f'),
                 sprintf(colSums(x[,match(names(negpred), colnames(x))]), fmt='%i'))
-colnames(tab_neg) <- c("$x$", "$\\beta_j$", "odds multiplier", "n")
+colnames(tab_neg) <- c("$x$", "$\\beta_j$", "$\\Delta$ odds (\\%)", "n")
 print(xtable(tab_neg, label="tab:neg", 
              caption="Most Significant Negative Predictors"),
       sanitize.text.function=function(x){x}, file=GetFilename('neg.tex'))
