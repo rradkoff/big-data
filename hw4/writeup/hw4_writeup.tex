@@ -19,7 +19,6 @@ Node connectivity (which we are calling \texttt{degree}) is measured by the numb
 One of the transformations we initially considered was to transform our metric from just \texttt{degree} to be the ratio of relationships a household has that also obtained loans.  The hope here was that the fraction of one's immediate network of relationships that had loans would be roughly normally distributed.  Unfortunately from Figure~\ref{fig:frac_loan} we can see that this was not the case.  While slightly less logarithmic, much of the distribution's mass was spread concentrated around 0, indicating that most of one's network had not obtained loans.  An attempt to make it more normal by taking the $\log$ of this fraction is also shown Figure~\ref{fig:log_frac_loan}.  As we can clearly see from this figure, the histogram is no more normal than before.  In the end this attempt was abandoned.
 
 Another attempt was made to transform degree directly.  This time, we focused on simply taking $\log(degree)$.  However, since a few households appear to be isolated (i.e. not in the graph), taking the log directly would result in many NaN's.  This is avoided by simply adding one to degree (since degree cannot be $<0$ by definition) before taking the natural log: $\log(degree+1)$.  The resulting distribution is shown in Figure~\ref{fig:log_degrees} and appears to be more normally distributed than the other normalization attempt.  This transformation of \texttt{degree} will be used throughout these analyses as \texttt{d}
-
 \begin{equation}
 d = \log(degree+1)
 \end{equation}
@@ -59,7 +58,6 @@ d = \log(degree+1)
 \label{sec:predict}
 
 In this section, we build a model to predict a node's degree by using only our control variables. Our model is: 
-
 \begin{equation} \label{eq:treat}
 d(x) = \beta_0 + \bm{X} \bm{\beta} + \nu
 \end{equation}
@@ -123,9 +121,9 @@ In terms of odds, each additional connection increases the odds of taking out a 
 
 \section{Bootstrapping Uncertainty}
 
-In this section, we estimate our uncertainty in the $\gamma$ found in Section~\ref{sec:model} using the bootstrap method.  To accomplish this, we successively take n random samples (with replacement from our data-set), and run the same two regressions discussed in Sections~\ref{sec:predict} & \ref{sec:model}.  That is, we run a Gamma-Lasso regression and predict each node's degree ($\hat{d}$) and then, using this prediction, run the Gamma-Lasso to determine the effect of \texttt(d) ($\gamma$) on the propensity to obtain a loan.  These sample - regression - prediction - regression steps are performed 100 times; each time, the estimate of $\gamma$ is saved.
+In this section, we estimate our uncertainty in the $\gamma$ found in Section~\ref{sec:model} using the bootstrap method.  To accomplish this, we successively take n random samples (with replacement from our data-set), and run the same two regressions discussed in Sections~\ref{sec:predict} \& \ref{sec:model}.  That is, we run a Gamma-Lasso regression and predict each node's degree ($\hat{d}$) and then, using this prediction, run the Gamma-Lasso to determine the effect of \texttt(d) ($\gamma$) on the propensity to obtain a loan.  These sample - regression - prediction - regression steps are performed 100 times; each time, the estimate of $\gamma$ is saved.
 
-From our new estimates of $\gamma$, uncertainty in our original $\gamma$ is measured by finding the standard deviation of the samples.  Figure~\ref{fig:bootstrap_hist} shows a histogram of these $\gamma$'s.  The distribution mean is 0.0168, which is notably different than the one found in Section~\ref{sec:model} (0.0145).  However, with a $\sigma = 0.00422$, the 95\% confidence interval for the unconditional uncertainty in $\gamma$ is $\mu \pm 1.96\sigma = \left[0.00849, 0.0250\right]$, which easily contains our previous estimate.  In terms of $\log(\text{odds})$ this confidence interval concludes that each additional degree of connection corresponds to a lift between $\left[0.852\%, 2.53\%]$ in the odds of obtaining a loan.  This range quite a bit higher than we would have previously guessed and seems to suggest that the degree of household connectedness isn't the best predictor of loan propensity.
+From our new estimates of $\gamma$, uncertainty in our original $\gamma$ is measured by finding the standard deviation of the samples.  Figure~\ref{fig:bootstrap_hist} shows a histogram of these $\gamma$'s.  The distribution mean is 0.0168, which is notably different than the one found in Section~\ref{sec:model} (0.0145).  However, with a $\sigma = 0.00422$, the 95\% confidence interval for the unconditional uncertainty in $\gamma$ is $\mu \pm 1.96\sigma = \left[0.00849, 0.0250\right]$, which easily contains our previous estimate.  In terms of $\log(\text{odds})$ this confidence interval concludes that each additional degree of connection corresponds to a lift between $\left[0.852\%, 2.53\%\right]$ in the odds of obtaining a loan.  This range quite a bit higher than we would have previously guessed and seems to suggest that the degree of household connectedness isn't the best predictor of loan propensity.
 
 %gamma mean=0.016760, std-dev=0.004221
 %mean(gamma)+1.96*sqrt(var(gamma))
