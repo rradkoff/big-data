@@ -14,7 +14,11 @@
 
 \section{Node Connectivity Transformation}
 
-Node connectivity (which we are calling \texttt{degree}) is measured by the number of edges for each node in a network. In this context, \texttt{degree} tells us the number of relationships that a household in our population has. We observe in Figure~\ref{fig:degrees} that \texttt{degree} is distributed logarithmically.
+Node connectivity (which we are calling \texttt{degree}) is measured by the number of edges for each node in a network. In this context, \texttt{degree} tells us the number of relationships that a household in our population has. We observe in Figure~\ref{fig:degrees} that \texttt{degree} is distributed logarithmically.  Because one of the assumptions of linear regression requires all variables to be normally distributed, we will need to transform \texttt{degree} to make it more ``normal''.
+
+One of the transformations we initially considered was to transform our metric from just \texttt{degree} to be the ratio of relationships a household has that also obatined loans.  The hope here was that the fraction of one's immediate network of relationships that had loans would be roughly normally distributed.  Unfortunately from Figure~\ref{fig:frac_loan} we can see that this was not the case.  While slightly less logarithmic, much of the distribution's mass was spread concentrated around 0, indicating that most of one's network had not obtained loans.  An attempt to make it more normal by taking the $\log$ of this fraction is also shown Figure~\ref{fig:log_frac_loan}.  As we can clearly see from this figure, the histogram is no more normal than before.  In the end this attempt was abandoned.
+
+Another attempt was made to transform degree directly.  This time, we focused on simply taking $\log(degree)$.  However, since a few households appear to be isolated (i.e. not in the graph), taking the log directly would result in many NaN's.  This is avoided by simply adding one to degree (since degree cannot be <0 by defintion) before taking the natural log: $\log(degree+1)$.  The resulting distribution is shown in Figure~\ref{fig:log_degrees} and appears to be more normally distributed than the other normalization attempt.  This transformation of \texttt{degree} will be used throughout these analyses.
 
 \begin{figure}[!htb]
   \centering
@@ -22,6 +26,30 @@ Node connectivity (which we are calling \texttt{degree}) is measured by the numb
   \caption{Distribution of \texttt{degree}}
   \label{fig:degrees}
 \end{figure}
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth]{degrees_frac_with_loan.eps}
+    \caption{Distribution of Connected Households with Loans}
+    \label{fig:frac_loan}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth]{degrees_frac_with_loan_log.eps}
+    \caption{Log Distribution of Connected Network with Loans}
+    \label{fig:log_frac_loan}
+  \end{subfigure}
+  \caption{Normalization of Degree: Fraction of Household's Network with Loans}
+\end{figure}
+
+\begin{figure}[!htb]
+  \centering
+  \includegraphics[scale=.5]{degrees_log.eps}
+  \caption{Distribution of $\log(\texttt{degree}+1)$}
+  \label{fig:log_degrees}
+\end{figure}
+
 
 \section{Predicting Node Connectivity from Controls}
 \label{sec:predict}
