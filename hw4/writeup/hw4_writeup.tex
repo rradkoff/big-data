@@ -16,9 +16,13 @@
 
 Node connectivity (which we are calling \texttt{degree}) is measured by the number of edges for each node in a network. In this context, \texttt{degree} tells us the number of relationships that a household in our population has. We observe in Figure~\ref{fig:degrees} that \texttt{degree} is distributed logarithmically.  Because one of the assumptions of linear regression requires all variables to be normally distributed, we will need to transform \texttt{degree} to make it more ``normal''.
 
-One of the transformations we initially considered was to transform our metric from just \texttt{degree} to be the ratio of relationships a household has that also obatined loans.  The hope here was that the fraction of one's immediate network of relationships that had loans would be roughly normally distributed.  Unfortunately from Figure~\ref{fig:frac_loan} we can see that this was not the case.  While slightly less logarithmic, much of the distribution's mass was spread concentrated around 0, indicating that most of one's network had not obtained loans.  An attempt to make it more normal by taking the $\log$ of this fraction is also shown Figure~\ref{fig:log_frac_loan}.  As we can clearly see from this figure, the histogram is no more normal than before.  In the end this attempt was abandoned.
+One of the transformations we initially considered was to transform our metric from just \texttt{degree} to be the ratio of relationships a household has that also obtained loans.  The hope here was that the fraction of one's immediate network of relationships that had loans would be roughly normally distributed.  Unfortunately from Figure~\ref{fig:frac_loan} we can see that this was not the case.  While slightly less logarithmic, much of the distribution's mass was spread concentrated around 0, indicating that most of one's network had not obtained loans.  An attempt to make it more normal by taking the $\log$ of this fraction is also shown Figure~\ref{fig:log_frac_loan}.  As we can clearly see from this figure, the histogram is no more normal than before.  In the end this attempt was abandoned.
 
-Another attempt was made to transform degree directly.  This time, we focused on simply taking $\log(degree)$.  However, since a few households appear to be isolated (i.e. not in the graph), taking the log directly would result in many NaN's.  This is avoided by simply adding one to degree (since degree cannot be <0 by defintion) before taking the natural log: $\log(degree+1)$.  The resulting distribution is shown in Figure~\ref{fig:log_degrees} and appears to be more normally distributed than the other normalization attempt.  This transformation of \texttt{degree} will be used throughout these analyses.
+Another attempt was made to transform degree directly.  This time, we focused on simply taking $\log(degree)$.  However, since a few households appear to be isolated (i.e. not in the graph), taking the log directly would result in many NaN's.  This is avoided by simply adding one to degree (since degree cannot be $<0$ by definition) before taking the natural log: $\log(degree+1)$.  The resulting distribution is shown in Figure~\ref{fig:log_degrees} and appears to be more normally distributed than the other normalization attempt.  This transformation of \texttt{degree} will be used throughout these analyses as \texttt{d}
+
+\begin{equation}
+d = \log(degree+1)
+\end{equation}
 
 \begin{figure}[!htb]
   \centering
@@ -94,11 +98,11 @@ By estimating the model in equation~\ref{eq:causal}, we can isolate the paramete
 
 As in Section~\ref{sec:predict}, we use a Gamma-Lasso regression and see that the $\log(\lambda)$ values for the AICc and CV.Min are roughly similar (-5.37 and -5.13, respectively, shown in Table~\ref{tab:causal_ic} and plotted in Figure~\ref{fig:causal_aic} in the Appendix). This tells us our model is reasonably estimated; we proceed using the model chosen by AICc.
 
-The coefficent of interest in this regression is $\gamma$, the effect of exogenous changes in degree connectivity on propensity to take out a loan. In our model, $\gamma$ is 0.0145, which means that having one additional connection (i.e. degree increased by one) increases the odds of taking out a microfinance loan by 1.46 percent\footnote{$100 \cdot \left( \exp(0.0145) - 1 \right) = 1.46$}. This seems like a reasonable estimate \textemdash the coefficient is small but positive, indicating that knowing more people makes one very slightly more likely to take out a loan. We can imagine a story in which information travels more efficeintly to those who are more connected, but it is reasonable to assume that there are much more significant predictors of loan propensity than how many friends a person has.
+The coefficient of interest in this regression is $\gamma$, the effect of exogenous changes in degree connectivity on propensity to take out a loan. In our model, $\gamma$ is 0.0145, which means that having one additional connection (i.e. degree increased by one) increases the odds of taking out a micro-finance loan by 1.46 percent\footnote{$100 \cdot \left( \exp(0.0145) - 1 \right) = 1.46$}. This seems like a reasonable estimate \textemdash the coefficient is small but positive, indicating that knowing more people makes one very slightly more likely to take out a loan. We can imagine a story in which information travels more efficiently to those who are more connected, but it is reasonable to assume that there are much more significant predictors of loan propensity than how many friends a person has.
 
 In Table~\ref{tab:pos} and~\ref{tab:neg}, we see the 5 most positive and negative predictors of loan propensity. At first glance, it appears that there are a few very positive factors that would increase propensity to take out a loan. For example, living in village 4 and having a thatch roof makes one 56.7 percent more likely to have a loan. Upon closer examination, though, there is only one person in our sample in village 4 with a thatch roof, so we cannot infer much from this coefficient. In fact, the top 5 coefficients have sample sizes of $n<5$.
 
-The coefficeints in Table~\ref{tab:neg} are more meaningful as the sub-sample sizes are sufficiently large to draw conclusions from. For example, Hindus in village 71 are 4.7 percent less likely to take out a loan. We are sufficiently confident in this coefficient because the sample size of Hindus in village 71 is 252. 
+The coefficients in Table~\ref{tab:neg} are more meaningful as the sub-sample sizes are sufficiently large to draw conclusions from. For example, Hindus in village 71 are 4.7 percent less likely to take out a loan. We are sufficiently confident in this coefficient because the sample size of Hindus in village 71 is 252. 
 
 This seems to be one drawback to using a matrix of control factors in which all possible terms interact with each other. In many cases, the Gamma-Lasso regression does not throw out coefficients that we might want to ignore anyway because of sample sizes that are insufficiently large. 
 
@@ -107,6 +111,14 @@ This seems to be one drawback to using a matrix of control factors in which all 
 \include{neg}
 
 \section{Naive Estimation of Loan Propensity}
+
+In this section, run a simple regression of the $\log(odds)$ of obtaining a loan on \texttt{X} and \texttt{d} (see equation~\ref{eq:naive} for the model).  Here we neglect to remove any of the influencers in \texttt{X} (i.e. the rest of the model) that are also correlated with \texttt{d}.
+
+\begin{equation} \label{eq:naive}
+\log\left(\frac{p}{1-p}\right) = \beta_0 + d \gamma + \bm{X}\bm{\beta} + \varepsilon
+\end{equation}
+
+As in the previous sections, we use a Gamma-Lasso regression.  Here, again, we see that the AICc and the CV.Min are roughly similar (-5.39 and -5.07 respectively, shown in Table~\ref{tab:naive_ic} and plotted in Figure~\ref{fig:naive_aic} in the Appendix).  We do note, perhaps with hindsight bias, that the there is a slightly larger divergence between the choices of $\log(\lambda)$ than in the previous sections.  Using the Gamma-Lasso with the AICc selection criteria, we see that the coefficient ($\gamma$) associated with \texttt{d} is significant and equal to 0.0138.  In terms of odds, each additional connection increases the odds of taking out a loan by 1.39\%\footnote{$100 \cdot \left( \exp(0.0138) - 1\right) = 1.39$}.  This result is very similar from Section~\ref{sec:model} where each connection increased the odds of taking out a loan by 1.46\%.  These vales are similar, but ultimately, differ because some of the effects of \texttt{d} that can be predicted by \texttt{X} have not been controlled for in our model.  It seems that neglecting to control for these confounders may not lead to an outright incorrect answer, but rather to one that is subtly different.  In this case the increase odds differ by each additional connection only differs by 5\%.
 
 \section{Bootstrapping Uncertainty}
 
@@ -131,5 +143,15 @@ This seems to be one drawback to using a matrix of control factors in which all 
 \end{figure}
 
 \include{causal_ic}
+
+\begin{figure}[!htb]
+  \centering
+  \includegraphics[scale=.5]{naive_aic.eps}
+  \caption{Gamma-Lasso Regression for Naive Loan Propensity}
+  \label{fig:naive_aic}
+\end{figure}
+
+\include{naive_ic}
+
 
 \end{document}
