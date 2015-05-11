@@ -1,0 +1,54 @@
+\documentclass[11pt, fleqn]{article}
+\input{header.tex}
+
+\newtheorem{rlabel}{R-Snippet}
+\crefname{rlabel}{r-snippet}{r-snippets}
+\Crefname{rlabel}{R-Snippet}{R-Snippets}
+
+\setlength{\parskip}{12pt} % Sets a blank line in between paragraphs
+\setlength\parindent{0pt} % Sets the indent for each paragraph to zero
+
+\title{Big Data HW \#5}
+\author{Will Clark \& Matthew DeLio \\ 41201-01}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+<<setup, include=FALSE>>=
+library(knitr)
+knit_hooks$set(rlabel = function(before, options, envir) {
+  if (before) sprintf('\\begin{rlabel}\\label{r:%s}\\hfill{}', options$label) else '\\end{rlabel}'
+})
+opts_chunk$set(cache=TRUE, echo=FALSE, autodep=TRUE, results='hide', fig.align='center', out.width='.49\\linewidth')
+@
+
+\section{}
+%See \autoref{code:test-c}
+
+<<test-c>>=
+x=1:10
+sd(x) # standard deviation
+@
+
+
+\Vref{fig:fig1,fig:fig2,r:test-c,r:test-c2}
+
+\vref{fig:fig1,fig:fig2,r:test-c,r:test-c2}
+
+Separately:
+\cref{fig:fig2}
+\cref{r:test-c2}
+
+<<fig, fig.cap='two plots', fig.subcap=c('one plot', 'the other one')>>=
+plot(1:10)
+plot(rnorm(10), pch=19)
+@
+
+\section{Appendix}
+<<test-c, ref.label='test-c', rlabel=TRUE, eval=FALSE, echo=TRUE>>=
+@
+<<test-c2, ref.label='test-c', rlabel=TRUE, eval=FALSE, echo=TRUE>>=
+@
+
+\end{document}
