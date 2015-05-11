@@ -23,32 +23,75 @@ knit_hooks$set(rlabel = function(before, options, envir) {
 opts_chunk$set(cache=TRUE, echo=FALSE, autodep=TRUE, results='hide', fig.align='center', out.width='.49\\linewidth')
 @
 
-\section{}
-%See \autoref{code:test-c}
+<<start, include=FALSE>>=
+## actors network example
 
-<<test-c>>=
-x=1:10
-sd(x) # standard deviation
+library(igraph)
+
+### GRAPH
+## read in a graph in the `graphml' formal: xml for graphs.
+## it warns about pre-specified ids, but we want this here
+## (these ids match up with the castlists in movies.txt)
+actnet <- read.graph("actors.graphml",format="graphml")
+@
+
+\section{Plotting the Actors' Network}
+<<q1, include=FALSE>>=
+
+@
+
+\section{}
+<<q3, include=FALSE>>=
+### TRANSACTION
+## read in the table of actor ids for movies
+## this is a bit complex, because the movie names
+## contain all sorts of special characters.
+movies <- read.table("movies.txt", sep="\t", 
+  row.names=1, as.is=TRUE, comment.char="", quote="")
+## it's a 1 column matrix.  treat it like a vector
+movies <- drop(as.matrix(movies))
+## each element is a comma-separated set of actor ids.  
+## use `strsplit' to break these out
+movies <- strsplit(movies,",")
+## and finally, match ids to names from actnet
+casts <- lapply(movies, 
+	function(m) V(actnet)$name[match(m,V(actnet)$id)])
+## check it
+casts['True Romance']
+## format as arules transaction baskets
+library(arules)
+casttrans <- as(casts, "transactions")
+
+
+## Set up STM information
+castsize <- unlist(lapply(casts, function(m) length(m)))
+## see ?rep.int: we're just repeating movie names for each cast member
+acti <- factor(rep.int(names(casts),times=castsize))
+## actors
+actj <- factor(unlist(casts), levels=V(actnet)$name)
+## format as STM (if you specify without `x', its binary 0/1)
+actmat <- sparseMatrix(i=as.numeric(acti),j=as.numeric(actj),
+		dimnames=list(movie=levels(acti),actor=levels(actj)))
+
+## count the number of appearences by actor
+nroles <- colSums(actmat)
+names(nroles) <- colnames(actmat)
 @
 
 
-\Vref{fig:fig1,fig:fig2,r:test-c,r:test-c2}
 
-\vref{fig:fig1,fig:fig2,r:test-c,r:test-c2}
+\Vref{r:start}
 
-Separately:
-\cref{fig:fig2}
-\cref{r:test-c2}
+\section{Kevin Bacon}
 
+\section{Appedix}
 <<fig, fig.cap='two plots', fig.subcap=c('one plot', 'the other one')>>=
 plot(1:10)
 plot(rnorm(10), pch=19)
 @
 
 \section{Appendix}
-<<test-c, ref.label='test-c', rlabel=TRUE, cache=FALSE, eval=FALSE, echo=TRUE>>=
-@
-<<test-c2, ref.label='test-c', rlabel=TRUE, cache=FALSE, eval=FALSE, echo=TRUE>>=
+<<start, ref.label='start', rlabel=TRUE, cache=FALSE, eval=FALSE, echo=TRUE>>=
 @
 
 \end{document}
