@@ -46,9 +46,9 @@ plot(rnorm(10), pch=19)
 @
 
 \section{Appendix}
-<<test-c, ref.label='test-c', rlabel=TRUE, eval=FALSE, echo=TRUE>>=
+<<test-c, ref.label='test-c', rlabel=TRUE, cache=FALSE, eval=FALSE, echo=TRUE>>=
 @
-<<test-c2, ref.label='test-c', rlabel=TRUE, eval=FALSE, echo=TRUE>>=
+<<test-c2, ref.label='test-c', rlabel=TRUE, cache=FALSE, eval=FALSE, echo=TRUE>>=
 @
 
 \end{document}
