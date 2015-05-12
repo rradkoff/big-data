@@ -53,9 +53,11 @@ plot(actnet, vertex.label=NA, edge.curved=F, vertex.size=5, margin=0)
 
 <<all_actor_calc>>=
 all_actors <- length(V(actnet))
+mostConnectedDegree <- max(degree(actnet))
+mostConnectedActor <- V(actnet)[which.max(degree(actnet))]$name
 @
 
-In this section we plot the actors' network as a whole (see \Vref{fig:all_actors}).  For this plot, the node-size remained constant with the vertex color varying based on an actor's degree of connectedness (more blue for less connected and more red for well connected).  The data-set has \Sexpr{all_actors} actors in it.  The degree of connectedness in the set of actors is shown in \Vref{fig:actor_hist}.
+In this section we plot the actors' network as a whole (see \Vref{fig:all_actors}).  For this plot, the node-size remained constant with the vertex color varying based on an actor's degree of connectedness (more blue for less connected and more red for well connected).  The data-set has \Sexpr{all_actors} actors in it.  The degree of connectedness in the set of actors is shown in \Vref{fig:actor_hist}.  This histogram shows that most actors have worked with between 40 and 60 other actors, although the heavy tail in this distribution indicates that many have worked with far more.  For instance ``\Sexpr{mostConnectedActor}'' has worked with \Sexpr{mostConnectedDegree} others.
 
 <<actor_hist, fig.cap="Histogram of Actors' Connectedness">>=
 hist(degree(actnet), col='lightblue', xlab='Degree of Connectedness', main='')
