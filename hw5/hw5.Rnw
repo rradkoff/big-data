@@ -21,6 +21,7 @@ knit_hooks$set(rlabel = function(before, options, envir) {
   if (before) sprintf('\\begin{rlabel}\\label{r:%s}\\hfill{}', options$label) else '\\end{rlabel}'
 })
 opts_chunk$set(cache=TRUE, echo=FALSE, autodep=TRUE, results='hide', fig.align='center', out.width='.49\\linewidth')
+options(scipen = 1, digits = 2)
 @
 
 <<start, include=FALSE>>=
@@ -35,12 +36,83 @@ library(igraph)
 actnet <- read.graph("actors.graphml",format="graphml")
 @
 
-\section{Plotting the Actors' Network}
-<<q1, include=FALSE>>=
-
+<<palette, include=FALSE>>=
+# Original Palette
+# paletteF <- colorRampPalette(c("#FFFFD4", "#FED98E", "#FE9929", "#D95F0E", "#993404"), 
+#                              space = "Lab")
+paletteF <- colorRampPalette(c("#4444FE", "#44DD44", "#FED98E","#D95F0E"), space = "Lab")
+plot(1:100, pch=19, col=paletteF(100)[1:100])
 @
 
-\section{}
+\section{Plotting the Actors' Network}
+<<all_actors, fig.cap="Visualization of Actors' Network", out.width='.98\\linewidth'>>=
+V(actnet)$color <- paletteF(max(degree(actnet)) - min(degree(actnet)) + 1)[degree(actnet) - min(degree(actnet)) + 1]
+V(actnet)$frame.color <- V(actnet)$color
+plot(actnet, vertex.label=NA, edge.curved=F, vertex.size=5, margin=0)
+@
+
+<<all_actor_calc>>=
+all_actors <- length(V(actnet))
+@
+
+In this section we plot the actors' network as a whole (see \Vref{fig:all_actors}).  For this plot, the node-size remained constant with the vertex color varying based on an actor's degree of connectedness (more blue for less connected and more red for well connected).  The data-set has \Sexpr{all_actors} actors in it.  The degree of connectedness in the set of actors is shown in \Vref{fig:actor_hist}.
+
+<<actor_hist, fig.cap="Histogram of Actors' Connectedness">>=
+hist(degree(actnet), col='lightblue', xlab='Degree of Connectedness', main='')
+@
+
+\section{Kevin Bacon}
+<<bacon_start>>=
+actor = "Bacon, Kevin"
+actor1st <- graph.neighborhood(actnet, 1, V(actnet)[actor])[[1]]
+actor2nd <- graph.neighborhood(actnet, 2, V(actnet)[actor])[[1]]
+actor3rd <- graph.neighborhood(actnet, 3, V(actnet)[actor])[[1]]
+@
+
+<<bacon, fig.cap="Kevin Bacon's Network", fig.subcap=c('1st Degree', '2nd Degree', '3rd Degree'), out.width='.32\\linewidth'>>=
+# Generate actor vertex-sizes based on the degree of connectedness on the 
+# overall actor network.  These constants were found by manually tuning the
+# size histogram.
+actorSizes <- 3*log(0.5*degree(actnet)+1)+1
+
+# Color the nodes for the 1st-degree plot
+V(actor1st)$color <- "red"
+V(actor1st)[actor]$color <- "black"
+V(actor1st)$frame.color <- V(actor1st)$color
+V(actor1st)$size <- actorSizes[V(actor1st)]
+plot(actor1st, vertex.label=NA, edge.curved=F, margin=0)
+
+# Color the nodes for the 2nd-degree plot
+V(actor2nd)$color <- "green"
+V(actor2nd)[V(actor1st)]$color <- "red"
+V(actor2nd)[actor]$color <- "black"
+V(actor2nd)$frame.color <- V(actor2nd)$color
+V(actor2nd)$size <- actorSizes[V(actor2nd)]
+plot(actor2nd, vertex.label=NA, edge.curved=F, margin=0)
+
+# Color the nodes for the 3rd-degree plot
+V(actor3rd)$color <- "blue"
+V(actor3rd)[V(actor2nd)]$color <- "green"
+V(actor3rd)[V(actor1st)]$color <- "red"
+V(actor3rd)[actor]$color <- "black"
+V(actor3rd)$frame.color <- V(actor3rd)$color
+V(actor3rd)$size <- actorSizes[V(actor3rd)]
+plot(actor3rd, vertex.label=NA, edge.curved=F, margin=0)
+@
+
+Kevin Bacon's network can be visualized in \Vref{fig:bacon}.  In each of these plots, the node-size of each actor is sized according to their degree within the overall actors' network.  That is, larger degree actors have bigger nodes.  The coloring scheme used was to label 3rd-degree connections blue, 2nd-degree green, 1st-degree red, with Kevin Bacon's node colored black (see \Vref{r:bacon} for code used to generate these plots).
+
+<<bacon_calc>>=
+act1stBigger <- sum(degree(actnet)[V(actor1st)] > degree(actnet)[actor])/length(V(actor1st))*100
+act1stConns <- length(V(actor1st))-1
+act2ndBigger <- sum(degree(actnet)[V(actor2nd)] > degree(actnet)[actor])/length(V(actor2nd))*100
+act2ndConns <- length(V(actor2nd))-1
+act3rdBigger <- sum(degree(actnet)[V(actor3rd)] > degree(actnet)[actor])/length(V(actor3rd))*100
+act3rdConns <- length(V(actor3rd))-1
+@
+
+In \Cref{fig:bacon1} we see his 1st-degree connections and note that while Kevin Bacon is relatively well connected with \Sexpr{act1stConns} connections, \Sexpr{act1stBigger}\% of his connections have a higher degree than he does. In \Cref{fig:bacon2} we visualize 2nd-degree connections and note that of the \Sexpr{act2ndConns} connections, \Sexpr{act2ndBigger}\% have a higher degree.  Also because of the way R rendered the visualization, we cannot really see any 1st degree conenctions.  In \Cref{fig:bacon3} we visualize 3rd-degree connections and see a much better visual dispersion of the three types of connections.  Of the \Sexpr{act3rdConns} connections, \Sexpr{act3rdBigger}\% have more connections than Kevin Bacon.  
+
 <<q3, include=FALSE>>=
 ### TRANSACTION
 ## read in the table of actor ids for movies
@@ -78,20 +150,8 @@ nroles <- colSums(actmat)
 names(nroles) <- colnames(actmat)
 @
 
-
-
-\Vref{r:start}
-
-\section{Kevin Bacon}
-
-\section{Appedix}
-<<fig, fig.cap='two plots', fig.subcap=c('one plot', 'the other one')>>=
-plot(1:10)
-plot(rnorm(10), pch=19)
-@
-
 \section{Appendix}
-<<start, ref.label='start', rlabel=TRUE, cache=FALSE, eval=FALSE, echo=TRUE>>=
+<<bacon, ref.label='bacon', rlabel=TRUE, cache=FALSE, eval=FALSE, echo=TRUE>>=
 @
 
 \end{document}
