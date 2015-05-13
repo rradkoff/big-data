@@ -115,13 +115,14 @@ act3rdConns <- length(V(actor3rd))-1
 
 In \Cref{fig:bacon1} we see his 1st-degree connections and note that while Kevin Bacon is relatively well connected with \Sexpr{act1stConns} connections, \Sexpr{act1stBigger}\% of his connections have a higher degree than he does. In \Cref{fig:bacon2} we visualize 2nd-degree connections and note that of the \Sexpr{act2ndConns} connections, \Sexpr{act2ndBigger}\% have a higher degree.  Also because of the way R rendered the visualization, we cannot really see any 1st degree conenctions.  In \Cref{fig:bacon3} we visualize 3rd-degree connections and see a much better visual dispersion of the three types of connections.  Of the \Sexpr{act3rdConns} connections, \Sexpr{act3rdBigger}\% have more connections than Kevin Bacon.  
 
+\section{Most Common and Connected Actors}
 <<q3, include=FALSE>>=
 ### TRANSACTION
 ## read in the table of actor ids for movies
 ## this is a bit complex, because the movie names
 ## contain all sorts of special characters.
 movies <- read.table("movies.txt", sep="\t", 
-  row.names=1, as.is=TRUE, comment.char="", quote="")
+                     row.names=1, as.is=TRUE, comment.char="", quote="")
 ## it's a 1 column matrix.  treat it like a vector
 movies <- drop(as.matrix(movies))
 ## each element is a comma-separated set of actor ids.  
@@ -129,7 +130,7 @@ movies <- drop(as.matrix(movies))
 movies <- strsplit(movies,",")
 ## and finally, match ids to names from actnet
 casts <- lapply(movies, 
-	function(m) V(actnet)$name[match(m,V(actnet)$id)])
+                function(m) V(actnet)$name[match(m,V(actnet)$id)])
 ## check it
 casts['True Romance']
 ## format as arules transaction baskets
@@ -145,12 +146,40 @@ acti <- factor(rep.int(names(casts),times=castsize))
 actj <- factor(unlist(casts), levels=V(actnet)$name)
 ## format as STM (if you specify without `x', its binary 0/1)
 actmat <- sparseMatrix(i=as.numeric(acti),j=as.numeric(actj),
-		dimnames=list(movie=levels(acti),actor=levels(actj)))
+                       dimnames=list(movie=levels(acti),actor=levels(actj)))
 
 ## count the number of appearences by actor
 nroles <- colSums(actmat)
 names(nroles) <- colnames(actmat)
 @
+
+<<freq_connect_count>>=
+nroles <- nroles[order(nroles,decreasing=TRUE)]
+most_common <- nroles[1]
+
+degree <- degree(actnet)
+degree <- degree[order(degree,decreasing=TRUE)]
+most_connected <- degree[1]
+@
+
+We can determine the most common actors by summing up the columns of the actors' matrix and sorting the result. The actor appearing in the most films is \textbf{\Sexpr{names(most_common)}}, who appeared in \Sexpr{most_common} films. The most connected actor is \textbf{\Sexpr{names(most_connected)}}, who has been in at least one film with \Sexpr{most_connected} other actors.
+
+<<shortest_path>>=
+names <- colnames(actmat) 
+nactors <- dim(actmat)[2] 
+a1 <- sample(1:nactors, 1) 
+a2 <- sample(1:nactors, 1) 
+common_movies <- c() 
+spath <- get.shortest.paths(actnet, from=a1, to=a2)$vpath[[1]] 
+for ( k in 1:(length(spath)-1) ) { 
+  m1 <- seq_along(casts)[sapply(casts, FUN=function(X) names[spath[k]] %in% X)] 
+  m2 <- seq_along(casts)[sapply(casts, FUN=function(X) names[spath[k+1]] %in% X)] 
+  common_movies[k] <- paste(names[spath[k]], "was in", names(casts)[intersect(m1, m2)],  
+                            "with ", names[spath[k+1]])  
+} 
+@ 
+
+Here, we randomly select two actors \textbf{\Sexpr{names[a1]}} and \textbf{\Sexpr{names[a2]}}. The shortest path between them contains \Sexpr{length(spath)-1} vertices: \Sexpr{common_movies}
 
 \section{Appendix}
 <<bacon, ref.label='bacon', rlabel=TRUE, cache=FALSE, eval=FALSE, echo=TRUE>>=

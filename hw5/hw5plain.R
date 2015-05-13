@@ -65,12 +65,14 @@ nactors <- dim(actmat)[2]
 a1 <- sample(1:nactors, 1)
 a2 <- sample(1:nactors, 1)
 print( paste("two random actors:", names[a1], "and", names[a2]) )
+common_movies <- c()
 
 spath <- get.shortest.paths(actnet, from=a1, to=a2)$vpath[[1]]
 print( paste("-- shortest path between", names[a1], "and", names[a2], "--") )
 for ( k in 1:(length(spath)-1) ) {
   m1 <- seq_along(casts)[sapply(casts, FUN=function(X) names[spath[k]] %in% X)]
   m2 <- seq_along(casts)[sapply(casts, FUN=function(X) names[spath[k+1]] %in% X)]
+#   common_movies[k] <- names(casts)[intersect(m1, m2)]
   print( paste(names[spath[k]], "was in", names(casts)[intersect(m1, m2)], 
                "with ", names[spath[k+1]]) ) 
 }
@@ -86,4 +88,4 @@ for ( k in 1:(length(spath)-1) ) {
 
 nfilms <- length(names(casts))
 actrules <- apriori(casttrans, 
-                      parameter=list(support=.001, confidence=.1))
+                      parameter=list(support=.01, confidence=.1))
