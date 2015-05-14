@@ -93,10 +93,11 @@ actrules <- apriori(casttrans, parameter=list(support=.001, confidence=.1))
 ## regression-based alternative to arules
 ##
 
-rhs <- ar[,"Buchanan, Colin (I)"]
-lhs <- ar[,"Royle, David (I)"]
+rhs <- actmat[,"Buchanan, Colin (I)"]
+lhs <- actmat[,"Royle, David (I)"]
 actreg <- glm(lhs ~ rhs, family="binomial")
 print(summary(actreg))
 b <- sum(coef(actreg))
 p <- 1/(1+exp(-b)) # matches confidence of first act rule
 
+# but for some silly reason I can't get the marginal probability...this should be easy
