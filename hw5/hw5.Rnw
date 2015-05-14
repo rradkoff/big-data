@@ -47,10 +47,17 @@ plot(1:100, pch=19, col=paletteF(100)[1:100])
 @
 
 \section{Plotting the Actors' Network}
-<<all_actors, fig.cap="Visualization of Actors' Network", out.width='.98\\linewidth'>>=
+<<all_actors, fig.cap="Visualization of Actors' Network", fig.subcap=c('Connected Network', 'Network Clustering'), out.width='.49\\linewidth'>>=
 V(actnet)$color <- paletteF(max(degree(actnet)) - min(degree(actnet)) + 1)[degree(actnet) - min(degree(actnet)) + 1]
 V(actnet)$frame.color <- V(actnet)$color
 plot(actnet, vertex.label=NA, edge.color="#4444440F", edge.curved=F, vertex.size=5, margin=0)
+
+V(actnet)$color <- "#00000001"
+V(actnet)$frame.color <- V(actnet)$color
+plot(actnet, vertex.label=NA, edge.color="#44444400", edge.curved=F, vertex.size=5, margin=0)
+
+V(actnet)$color <- paletteF(max(degree(actnet)) - min(degree(actnet)) + 1)[degree(actnet) - min(degree(actnet)) + 1]
+V(actnet)$frame.color <- V(actnet)$color
 @
 
 <<all_actor_calc>>=
@@ -173,9 +180,14 @@ most_connected <- which.max(actDegree)
 
 We can determine the most common actors by summing up the columns of the actors' matrix and sorting the result. The actor appearing in the most films is \textbf{\Sexpr{cleanActNames[most_common]}}, who appeared in \Sexpr{nroles[most_common]} films has appeared with \Sexpr{actDegree[most_common]} other actors. The most connected actor is \textbf{\Sexpr{cleanActNames[most_connected]}} has been in \Sexpr{nroles[most_connected]} films and has worked with a total of \Sexpr{actDegree[most_connected]} actors.
 
+2 x-tables <- 1 with 5 most common actors (# of connections), 1 with 5 most connected (# of conn)
+
+Appendix stuff:
+Histogram of cast sizes
+Optional <- largest casts
+
 <<shortest_path>>=
 nactors <- dim(actmat)[2] 
-srand(983875)
 actSample <- sample(1:nactors, 2) 
 common_movies <- c()
 spath <- get.shortest.paths(actnet, from=actSample[1], to=actSample[2])$vpath[[1]] 
@@ -195,9 +207,18 @@ Here, we randomly select two actors \textbf{\Sexpr{cleanActNames[actSample[1]]}}
 \section{Association Rules}
 <<arules>>=
 library(xtable)
-actrules <- apriori(casttrans, parameter=list(support=.001, confidence=.7))
+actrulesLowSupport <- apriori(casttrans, parameter=list(support=.0001, confidence=.1, maxlen=2))
+lenActrules <- length(actrulesLowSupport)
+
+actrules <- apriori(casttrans, parameter=list(support=.001, confidence=.1, maxlen=2))
 write(actrules, 'actrules.csv', sep=';')
-xtable(read.csv('actrules.csv', sep=';'))
+actrules <- read.csv('actrules.csv', sep=';')
+# strsplit(as.character(actrules$rules), split=' => ')
+#
+#
+# rules$rules <- gsub("\\{(.+),\\s+(.+)\\}", "{\\2 \\1}", rules$rules)
+# rules$rules <- gsub("\\{(.*)(\\(.+\\))(.*)\\}", "{\\1 \\3 \\2}", rules$rules)
+# rules$rules <- gsub("\\s+", " ", rules$rules)
 nfilms <- length(names(casts))
 min_support <- nroles[which.max(nroles)] / nfilms
 @
