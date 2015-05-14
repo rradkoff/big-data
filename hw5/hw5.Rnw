@@ -22,7 +22,7 @@ library(knitr)
 knit_hooks$set(rlabel = function(before, options, envir) {
   if (before) sprintf('\\begin{rlabel}\\label{r:%s}\\hfill{}', options$label) else '\\end{rlabel}'
 })
-opts_chunk$set(cache=FALSE, echo=FALSE, autodep=TRUE, results='hide', fig.align='center', out.width='.49\\linewidth')
+opts_chunk$set(cache=TRUE, echo=FALSE, autodep=TRUE, results='hide', fig.align='center', out.width='.49\\linewidth')
 options(scipen = 1, digits = 3)
 @
 
@@ -42,7 +42,7 @@ actnet <- read.graph("actors.graphml",format="graphml")
 # Original Palette
 # paletteF <- colorRampPalette(c("#FFFFD4", "#FED98E", "#FE9929", "#D95F0E", "#993404"), 
 #                              space = "Lab")
-paletteF <- colorRampPalette(c("#4444FE", "#44DD44", "#FED98E","#D95F0E"), space = "Lab")
+paletteF <- colorRampPalette(c("#4444FE80", "#44DD4480", "#FED98E80","#D95F0E80"), alpha=T)
 plot(1:100, pch=19, col=paletteF(100)[1:100])
 @
 
@@ -50,7 +50,7 @@ plot(1:100, pch=19, col=paletteF(100)[1:100])
 <<all_actors, fig.cap="Visualization of Actors' Network", out.width='.98\\linewidth'>>=
 V(actnet)$color <- paletteF(max(degree(actnet)) - min(degree(actnet)) + 1)[degree(actnet) - min(degree(actnet)) + 1]
 V(actnet)$frame.color <- V(actnet)$color
-plot(actnet, vertex.label=NA, edge.curved=F, vertex.size=5, margin=0)
+plot(actnet, vertex.label=NA, edge.color="#4444440F", edge.curved=F, vertex.size=5, margin=0)
 @
 
 <<all_actor_calc>>=
@@ -80,28 +80,28 @@ actor3rd <- graph.neighborhood(actnet, 3, V(actnet)[actor])[[1]]
 actorSizes <- 3*log(0.5*degree(actnet)+1)+1
 
 # Color the nodes for the 1st-degree plot
-V(actor1st)$color <- "red"
-V(actor1st)[actor]$color <- "black"
+V(actor1st)$color <- "#FF000040"
+V(actor1st)[actor]$color <- "#00000080"
 V(actor1st)$frame.color <- V(actor1st)$color
 V(actor1st)$size <- actorSizes[V(actor1st)]
-plot(actor1st, vertex.label=NA, edge.curved=F, margin=0)
+plot(actor1st, vertex.label=NA, edge.color="#44444480", edge.curved=F, margin=0)
 
 # Color the nodes for the 2nd-degree plot
-V(actor2nd)$color <- "green"
-V(actor2nd)[V(actor1st)]$color <- "red"
-V(actor2nd)[actor]$color <- "black"
+V(actor2nd)$color <- "#00FF0040"
+V(actor2nd)[V(actor1st)]$color <- "#FF000040"
+V(actor2nd)[actor]$color <- "#00000080"
 V(actor2nd)$frame.color <- V(actor2nd)$color
 V(actor2nd)$size <- actorSizes[V(actor2nd)]
-plot(actor2nd, vertex.label=NA, edge.curved=F, margin=0)
+plot(actor2nd, vertex.label=NA, edge.color="#4444440F", edge.curved=F, margin=0)
 
 # Color the nodes for the 3rd-degree plot
-V(actor3rd)$color <- "blue"
-V(actor3rd)[V(actor2nd)]$color <- "green"
-V(actor3rd)[V(actor1st)]$color <- "red"
-V(actor3rd)[actor]$color <- "black"
+V(actor3rd)$color <- "#0000FF40"
+V(actor3rd)[V(actor2nd)]$color <- "#00FF0040"
+V(actor3rd)[V(actor1st)]$color <- "#FF000040"
+V(actor3rd)[actor]$color <- "#00000080"
 V(actor3rd)$frame.color <- V(actor3rd)$color
 V(actor3rd)$size <- actorSizes[V(actor3rd)]
-plot(actor3rd, vertex.label=NA, edge.curved=F, margin=0)
+plot(actor3rd, vertex.label=NA, edge.color="#4444440F", edge.curved=F, margin=0)
 @
 
 Kevin Bacon's network can be visualized in \Vref{fig:bacon}.  In each of these plots, the node-size of each actor is sized according to their degree within the overall actors' network.  That is, larger degree actors have bigger nodes.  The coloring scheme used was to label 3rd-degree connections blue, 2nd-degree green, 1st-degree red, with Kevin Bacon's node colored black (see \Vref{r:bacon} for code used to generate these plots).
