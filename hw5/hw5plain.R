@@ -87,5 +87,4 @@ for ( k in 1:(length(spath)-1) ) {
 ## Change minimum support to 0.001
 
 nfilms <- length(names(casts))
-actrules <- apriori(casttrans, 
-                      parameter=list(support=.01, confidence=.1))
+actrules <- apriori(casttrans, parameter=list(support=.001, confidence=.1))

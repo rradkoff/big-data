@@ -23,7 +23,7 @@ knit_hooks$set(rlabel = function(before, options, envir) {
   if (before) sprintf('\\begin{rlabel}\\label{r:%s}\\hfill{}', options$label) else '\\end{rlabel}'
 })
 opts_chunk$set(cache=FALSE, echo=FALSE, autodep=TRUE, results='hide', fig.align='center', out.width='.49\\linewidth')
-options(scipen = 1, digits = 2)
+options(scipen = 1, digits = 3)
 @
 
 <<start, include=FALSE>>=
@@ -190,7 +190,19 @@ for ( k in 1:(length(spath)-1) ) {
 }
 @ 
 
-Here, we randomly select two actors \textbf{\Sexpr{cleanActNames[actSample[1]]}} and \textbf{\Sexpr{cleanActNames[actSample[2]]}}. The shortest path between them contains \Sexpr{length(spath)-1} vertices: \Sexpr{common_movies}
+Here, we randomly select two actors \textbf{\Sexpr{cleanActNames[actSample[1]]}} and \textbf{\Sexpr{cleanActNames[actSample[2]]}}. The shortest path between them contains \Sexpr{length(spath)-1} vertices: \Sexpr{common_movies}.
+
+\section{Association Rules}
+<<arules>>=
+library(xtable)
+actrules <- apriori(casttrans, parameter=list(support=.001, confidence=.7))
+write(actrules, 'actrules.csv', sep=';')
+xtable(read.csv('actrules.csv', sep=';'))
+nfilms <- length(names(casts))
+min_support <- nroles[which.max(nroles)] / nfilms
+@
+We first looked for association rules with at least 0.01 percent support and 10 percent confidence, but it turns out that there are none. If we think about support as the unconditional probability of an actor being in a movie, then the maximum support of any actor in the network is for \textbf{\Sexpr{cleanActNames[most_common]}}: she appeared in \Sexpr{nroles[most_common]} out of a possible \Sexpr{nfilms} films, so her support would be \Sexpr{min_support}. Of course there would be no association rules with support of at least 0.01 if the maximum support of the network is less than this threshold.
+
 
 \section{Appendix}
 <<bacon, ref.label='bacon', rlabel=TRUE, cache=FALSE, eval=FALSE, echo=TRUE>>=
