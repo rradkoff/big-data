@@ -1,0 +1,13 @@
+rules;support;confidence;lift
+1;{Royle, David (I)} => {Buchanan, Colin (I)};0.00104704732653916;0.882352941176471;743.56401384083
+2;{Buchanan, Colin (I)} => {Royle, David (I)};0.00104704732653916;0.882352941176471;743.56401384083
+3;{Royle, David (I)} => {Clarke, Warren};0.00104704732653916;0.882352941176471;468.169934640523
+4;{Buchanan, Colin (I)} => {Clarke, Warren};0.00104704732653916;0.882352941176471;468.169934640523
+5;{George, Götz} => {Feik, Eberhard};0.00118665363674438;0.708333333333333;307.502525252525
+6;{Hegstrand, Michael} => {Laurinaitis, Joe};0.00104704732653916;1;895.375
+7;{Laurinaitis, Joe} => {Hegstrand, Michael};0.00104704732653916;0.9375;895.375
+8;{Foley, Mick} => {Austin, Steve (IV)};0.00104704732653916;0.882352941176471;665.294117647059
+9;{Austin, Steve (IV)} => {Foley, Mick};0.00104704732653916;0.789473684210526;665.294117647059
+10;{Buchanan, Colin (I),Royle, David (I)} => {Clarke, Warren};0.00104704732653916;1;530.592592592593
+11;{Clarke, Warren,Royle, David (I)} => {Buchanan, Colin (I)};0.00104704732653916;1;842.705882352941
+12;{Buchanan, Colin (I),Clarke, Warren} => {Royle, David (I)};0.00104704732653916;1;842.705882352941
