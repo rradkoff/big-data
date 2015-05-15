@@ -248,9 +248,50 @@ actrules <- data.frame(actrules, row.names='rules')
 print(xtable(actrules, digits = c(0, 6, 4, 2), caption = 'Association Rules', 
              label = 'tab:actrules'))
 @
-\Vref{tab:actrules}
-We first looked for association rules with at least 0.01 percent support and 10 percent confidence, but it turns out that there are none. If we think about support as the unconditional probability of an actor being in a movie, then the maximum support of any actor in the network is for \textbf{\Sexpr{cleanActNames[most_common]}}: she appeared in \Sexpr{nroles[most_common]} out of a possible \Sexpr{nfilms} films, so her support would be \Sexpr{min_support}. Of course there would be no association rules with support of at least 0.01 if the maximum support of the network is less than this threshold.
+We first looked for association rules with at least 0.01 percent support and 10 percent confidence; there are around \Sexpr{round(lenActrules/1000)} thousand such rules. To make the list of rules more managable to look at, we changed the minimum level of support from 0.01 percent to 0.1 percent. This change resulted in a set of 18 rules, displayed in \Vref{tab:actrules}
 
+We can take a close look at the first listed rule to understand what the association rules are telling us. The \texttt{lhs} variable is \textbf{David Royle} and the \texttt{rhs} variable is \textbf{Colin Buchanan}. The support of this rule is 0.00105, meaning that in our sample of films, there is a 0.105 percent chance of randomly drawing a film with both of these actors. The confidence of this rule is 0.882\textemdash given that \textbf{David Royle} is in a movie, there is an 88.2 percent chance that \textbf{Colin Buchanan} is in that movie as well. The lift of this rule is 744, which means that the probability of a movie having \textbf{Colin Buchanan} is 744 times higher if we know that \textbf{David Royle} is in the movie as well.
+
+A more intuitive way of thinking about these results is that for two actors A and B:
+\begin{itemize}
+  \item Support (for the rule) is the joint probability of A and B being in a film;
+  \item Confidence is the probability that B is in a film conditional on A being in the film; and
+  \item Lift is the ratio of confidence (conditional probability) to the unconditional probability (support) of B.
+\end{itemize}
+
+\section{Regression Alternative to Association Rules}
+<<append>>=
+lhs <- actmat[, "Royle, David (I)"]
+rhs <- actmat[, "Clarke, Warren"]
+actreg <- glm(rhs ~ lhs, family="binomial")
+print(summary(actreg))
+
+B <- sum(coef(actreg))
+conf <- 1/(1+exp(-B)) # matches confidence of first act rule
+sprintf("confidence: %.9f", conf)
+
+alpha <- coef(actreg)[1]
+# supp <- 1/(1+exp(-alpha)) # of LHS not rule
+supp <- mean(lhs*rhs)
+sprintf("support: %.7f", supp)
+
+lift <- conf/mean(lhs)
+sprintf("lift: %.4f", lift)
+@
+Here we look at one association rule and replicate its results with a binomial regression. We examine the association between \textbf{David Royle} and \textbf{Warren Clarke}:
+\begin{verbatim}
+lhs                    rhs               support  confidence  lift
+{Royle, David (I)} =>  {Clarke, Warren}  0.00105       0.882   468
+\end{verbatim}
+For notational purposes, we will abbreviate these two as $R$ and $C$, respectively. First, recognize that the conditional probability (i.e. confidence) can be found by regressing $C$ on $R$:
+\[ D_{i,C} = \alpha + D_{i,R} \beta_{R} \]
+$D_{i,R}$ and $D_{i,C}$ are dummy variables that equal 1 if the actor is in movie $i$ and 0 otherwise. The sum $\alpha + \beta_{R}$ is the odds multiplier on $C$ given $R$; we can convert this to a probability using the logit link:
+\[ P(C|R) = \frac{1}{1+\exp(\alpha+\beta_{R})} = \Sexpr{conf} \]
+This value matches the confidence of our selected rule. The support of our selected rule is the joint probability of $R$ and $C$ being in a film, which we can calculate as the mean of $D_{i,R} \cdot D_{i,C}$; since our variables are dummy variables with value 1 or 0, the mean of this product gives us the probability of both jointly occurring.
+\[ P(C,R) = \overline{D_{i,C} \cdot D_{i,R}} = \Sexpr{supp} \]
+This matches the support of our given rule. The lift is just the conditional probability (confidence) divided by the unconditional probability of $C$, which we can similarly calulate as the mean of $D_{i,C}$. The lift is:
+\[ \frac{P(C|R)}{P(C)} = \frac{1}{1+\exp(\alpha+\beta_{R})} \frac{1}{\overline{D_{i,C}}} = \Sexpr{lift} \]
+This also matches the lift of our given rule.
 
 \section{Appendix}
 <<shortgraph, fig.cap="Shortest Path Between Actors">>=
