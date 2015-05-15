@@ -86,18 +86,32 @@ for ( k in 1:(length(spath)-1) ) {
 ## Highest support is nroles[1]/nfilms = 0.004
 ## Change minimum support to 0.001
 
-nfilms <- length(names(casts))
-actrules <- apriori(casttrans, parameter=list(support=.001, confidence=.1))
+nfilms <- length(casts)
+actrules <- apriori(casttrans, parameter=list(support=0.1/100, confidence=.1))
 
 ##
 ## regression-based alternative to arules
 ##
 
-rhs <- actmat[,"Buchanan, Colin (I)"]
 lhs <- actmat[,"Royle, David (I)"]
+rhs <- actmat[,"Clarke, Warren"]
 actreg <- glm(lhs ~ rhs, family="binomial")
 print(summary(actreg))
-b <- sum(coef(actreg))
-p <- 1/(1+exp(-b)) # matches confidence of first act rule
+
+B <- sum(coef(actreg))
+conf <- 1/(1+exp(-B)) # matches confidence of first act rule
+sprintf("confidence: %.9f", conf)
+
+alpha <- coef(actreg)[1]
+# supp <- 1/(1+exp(-alpha)) # of LHS not rule
+supp <- sum(lhs*rhs)/nfilms
+sprintf("support: %.7f", supp)
+
+lift <- conf/mean(lhs)
+sprintf("lift: %.4f", lift)
+
+## support     0.001047047
+## confidence  0.8823529
+## lift        743.5640
 
 # but for some silly reason I can't get the marginal probability...this should be easy
