@@ -68,7 +68,7 @@ mostConnectedActor <- V(actnet)[which.max(degree(actnet))]$name
 
 In this section we plot the actors' network as a whole (see \Vref{fig:all_actors}).  For the plot on the left \ref{fig:all_actors1}, the node-size remained constant with the vertex color varying based on an actor's degree of connectedness (more blue for less connected and more red for well connected).  The data-set has \Sexpr{all_actors} actors in it.  The degree of connectedness in the set of actors is shown in \Vref{fig:actor_hist}.  This histogram shows that most actors have worked with between 40 and 60 other actors, although the heavy tail in this distribution indicates that many have worked with far more.  For instance ``\Sexpr{mostConnectedActor}'' has worked with \Sexpr{mostConnectedDegree} others.
 
-When initially inspecting \ref{fig:all_actors1} we got the impression we had dont something wrong.  It seemed there were not many nodes plotted on the graph.  To investigate this further, consider \ref{fig:all_actors2}.  In this graph, we used alpha blending (partial transparency) on each vertex node with $1/256^{th}$ alpha transparency per vertex.  Therefore if 256 or more vertices happened to overlap, it would look as if there were one opaque vertex in its place.  This plot clearly shows that the clusters we saw on the original graph were indeed that, clusters.  This indicates that many groups of actors, possibly from a particular region, or sub-genre, tend to work together.  Also, these two graphs indicate that there is a decent amount of cross-over.
+When initially inspecting \ref{fig:all_actors1} we got the impression we had done something wrong.  It seemed there were not many nodes plotted on the graph.  To investigate this further, consider \ref{fig:all_actors2}.  In this graph, we used alpha blending (partial transparency) on each vertex node with $1/256^{th}$ alpha transparency per vertex.  Therefore if 256 or more vertices happened to overlap, it would look as if there were one opaque vertex in its place.  This plot clearly shows that the clusters we saw on the original graph were indeed that, clusters.  This indicates that many groups of actors, possibly from a particular region, or sub-genre, tend to work together.  Also, these two graphs indicate that there is a decent amount of cross-over.
 
 <<actor_hist, fig.cap="Histogram of Actors' Connectedness">>=
 hist(degree(actnet), col='lightblue', xlab='Degree of Connectedness', main='')
@@ -124,7 +124,7 @@ act3rdBigger <- sum(degree(actnet)[V(actor3rd)] > degree(actnet)[actor])/length(
 act3rdConns <- length(V(actor3rd))-1
 @
 
-In \Cref{fig:bacon1} we see his 1st-degree connections and note that while Kevin Bacon is relatively well connected with \Sexpr{act1stConns} connections, \Sexpr{act1stBigger}\% of his connections have a higher degree than he does. In \Cref{fig:bacon2} we visualize 2nd-degree connections and note that of the \Sexpr{act2ndConns} connections, \Sexpr{act2ndBigger}\% have a higher degree.  Also because of the way R rendered the visualization, we cannot really see any 1st degree conenctions.  In \Cref{fig:bacon3} we visualize 3rd-degree connections and see a much better visual dispersion of the three types of connections.  Of the \Sexpr{act3rdConns} connections, \Sexpr{act3rdBigger}\% have more connections than Kevin Bacon.  
+In \Cref{fig:bacon1} we see his 1st-degree connections and note that while Kevin Bacon is relatively well connected with \Sexpr{act1stConns} connections, \Sexpr{act1stBigger}\% of his connections have a higher degree than he does. In \Cref{fig:bacon2} we visualize 2nd-degree connections and note that of the \Sexpr{act2ndConns} connections, \Sexpr{act2ndBigger}\% have a higher degree.  Also because of the way R rendered the visualization, we cannot really see any 1st degree connections.  In \Cref{fig:bacon3} we visualize 3rd-degree connections and see a much better visual dispersion of the three types of connections.  Of the \Sexpr{act3rdConns} connections, \Sexpr{act3rdBigger}\% have more connections than Kevin Bacon.  
 
 \section{Most Common and Connected Actors}
 <<q3, include=FALSE>>=
@@ -253,7 +253,7 @@ actrules <- actrules[c("lhs", "dir", "rhs", "support", "confidence", "lift")]
 colnames(actrules)[which(colnames(actrules)=="dir")] <- ""
 @
 
-We first looked for association rules with at least 0.01 percent support and 10 percent confidence; there are around \Sexpr{round(lenActrules/1000)} thousand such rules. To make the list of rules more managable to look at, we changed the minimum level of support from 0.01 percent to 0.1 percent. This change resulted in a set of 18 rules, displayed in \Vref{tab:actrules}
+We first looked for association rules with at least 0.01 percent support and 10 percent confidence; there are around \Sexpr{round(lenActrules/1000)} thousand such rules. To make the list of rules more manageable to look at, we changed the minimum level of support from 0.01 percent to 0.1 percent. This change resulted in a set of 18 rules, displayed in \Vref{tab:actrules}
 
 <<arules3, results='asis'>>=
 print(xtable(actrules, digits = c(0, 0, 0, 0, 5, 4, 2), caption = 'Association Rules', 
@@ -299,7 +299,7 @@ $D_{i,R}$ and $D_{i,C}$ are dummy variables that equal 1 if the actor is in movi
 \[ P(C|R) = \frac{1}{1+\exp(\alpha+\beta_{R})} = 0.882352941 \]
 This value matches the confidence of our selected rule. The support of our selected rule is the joint probability of $R$ and $C$ being in a film, which we can calculate as the mean of $D_{i,R} \cdot D_{i,C}$; since our variables are dummy variables with value 1 or 0, the mean of this product gives us the probability of both jointly occurring.
 \[ P(C,R) = \overline{D_{i,C} \cdot D_{i,R}} = 0.0010470 \]
-This matches the support of our given rule. The lift is just the conditional probability (confidence) divided by the unconditional probability of $C$, which we can similarly calulate as the mean of $D_{i,C}$. The lift is:
+This matches the support of our given rule. The lift is just the conditional probability (confidence) divided by the unconditional probability of $C$, which we can similarly calculate as the mean of $D_{i,C}$. The lift is:
 \[ \frac{P(C|R)}{P(C)} = \frac{1}{1+\exp(\alpha+\beta_{R})} \frac{1}{\overline{D_{i,C}}} = 743.5640 \]
 This also matches the lift of our given rule.
 
