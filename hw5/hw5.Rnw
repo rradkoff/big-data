@@ -293,7 +293,7 @@ Here we look at one association rule and replicate its results with a binomial r
 lhs                    rhs               support  confidence  lift
 {Royle, David (I)} =>  {Clarke, Warren}  0.00105       0.882   468
 \end{verbatim}
-For notational purposes, we will abbreviate these two as $R$ and $C$, respectively. First, recognize that the conditional probability (i.e. confidence) can be found by regressing $C$ on $R$:
+For notational purposes, we will abbreviate these two as $R$ and $C$ for \textit{Royle} and \textit{Clarke} respectively. First, recognize that the conditional probability (i.e. confidence) can be found by regressing $C$ on $R$:
 \[ D_{i,C} = \alpha + \beta_{R} D_{i,R} +\epsilon\]
 $D_{i,R}$ and $D_{i,C}$ are dummy variables that equal 1 if the actor is in movie $i$ and 0 otherwise. The sum $\alpha + \beta_{R}$ is the odds multiplier on $C$ given $R$; we can convert this to a probability using the logit link:
 \[ P(C|R) = \frac{1}{1+\exp(\alpha+\beta_{R})} = 0.882352941 \]
