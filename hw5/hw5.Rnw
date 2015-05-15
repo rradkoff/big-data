@@ -66,7 +66,9 @@ mostConnectedDegree <- max(degree(actnet))
 mostConnectedActor <- V(actnet)[which.max(degree(actnet))]$name
 @
 
-In this section we plot the actors' network as a whole (see \Vref{fig:all_actors}).  For this plot, the node-size remained constant with the vertex color varying based on an actor's degree of connectedness (more blue for less connected and more red for well connected).  The data-set has \Sexpr{all_actors} actors in it.  The degree of connectedness in the set of actors is shown in \Vref{fig:actor_hist}.  This histogram shows that most actors have worked with between 40 and 60 other actors, although the heavy tail in this distribution indicates that many have worked with far more.  For instance ``\Sexpr{mostConnectedActor}'' has worked with \Sexpr{mostConnectedDegree} others.
+In this section we plot the actors' network as a whole (see \Vref{fig:all_actors}).  For the plot on the left \ref{fig:all_actors1}, the node-size remained constant with the vertex color varying based on an actor's degree of connectedness (more blue for less connected and more red for well connected).  The data-set has \Sexpr{all_actors} actors in it.  The degree of connectedness in the set of actors is shown in \Vref{fig:actor_hist}.  This histogram shows that most actors have worked with between 40 and 60 other actors, although the heavy tail in this distribution indicates that many have worked with far more.  For instance ``\Sexpr{mostConnectedActor}'' has worked with \Sexpr{mostConnectedDegree} others.
+
+When initially inspecting \ref{fig:all_actors1} we got the impression we had dont something wrong.  It seemed there were not many nodes plotted on the graph.  To investigate this further, consider \ref{fig:all_actors2}.  In this graph, we used alpha blending (partial transparency) on each vertex node with $1/256^{th}$ alpha transparency per vertex.  Therefore if 256 or more vertices happened to overlap, it would look as if there were one opaque vertex in its place.  This plot clearly shows that the clusters we saw on the original graph were indeed that, clusters.  This indicates that many groups of actors, possibly from a particular region, or sub-genre, tend to work together.  Also, these two graphs indicate that there is a decent amount of cross-over.
 
 <<actor_hist, fig.cap="Histogram of Actors' Connectedness">>=
 hist(degree(actnet), col='lightblue', xlab='Degree of Connectedness', main='')
@@ -111,7 +113,7 @@ V(actor3rd)$size <- actorSizes[V(actor3rd)]
 plot(actor3rd, vertex.label=NA, edge.color="#4444440F", edge.curved=F, margin=0)
 @
 
-Kevin Bacon's network can be visualized in \Vref{fig:bacon}.  In each of these plots, the node-size of each actor is sized according to their degree within the overall actors' network.  That is, larger degree actors have bigger nodes.  The coloring scheme used was to label 3rd-degree connections blue, 2nd-degree green, 1st-degree red, with Kevin Bacon's node colored black (see \Vref{r:bacon} for code used to generate these plots).
+Kevin Bacon's network can be visualized in \Vref{fig:bacon}.  In each of these plots, the node-size of each actor is sized according to their degree within the overall actors' network.  That is, larger degree actors have bigger nodes.  The coloring scheme used was to label 3rd-degree connections blue, 2nd-degree green, 1st-degree red, with Kevin Bacon's node colored black.
 
 <<bacon_calc>>=
 act1stBigger <- sum(degree(actnet)[V(actor1st)] > degree(actnet)[actor])/length(V(actor1st))*100
@@ -192,7 +194,7 @@ colnames(mostWorking5) <- c("# of Connections", "# of Films")
 
 We can determine the most common actors by summing up the columns of the actors' matrix and sorting the result. The actor appearing in the most films is \textbf{\Sexpr{cleanActNames[most_common]}}, who appeared in \Sexpr{nroles[most_common]} films has appeared with \Sexpr{actDegree[most_common]} other actors. The most connected actor is \textbf{\Sexpr{cleanActNames[most_connected]}} has been in \Sexpr{nroles[most_connected]} films and has worked with a total of \Sexpr{actDegree[most_connected]} actors.
 
-Tables showing the most connected actors and busiest actors (by \# of movies completed) during the period are shown in \Vref{tab:conn,tab:busy} respectively.  Not surprisingly there is some overlap between the two; \textbf{\Sexpr{cleanActNames[most_connected]}} appears in both lists.
+Tables showing the most connected actors and busiest actors (by \# of movies completed) during the period are shown in \Vref{tab:conn,tab:busy} respectively.  Not surprisingly there is some overlap between the two; \textbf{\Sexpr{cleanActNames[most_connected]}} appears in both lists; it is also worth noting that Ron Jeremy is one of the busiest actors in the drama category where this data comes from.
 
 <<mostXtables, results='asis', cache=FALSE>>=
 library(xtable)
@@ -241,14 +243,22 @@ nfilms <- length(names(casts))
 min_support <- nroles[which.max(nroles)] / nfilms
 @
 
-<<arules2, results='asis', cache=FALSE>>=
+<<arules2>>=
 library(xtable)
 actrules <- read.csv('actrules.csv', sep=';')
-actrules <- data.frame(actrules, row.names='rules')
-print(xtable(actrules, digits = c(0, 6, 4, 2), caption = 'Association Rules', 
-             label = 'tab:actrules'))
+actrules$lhs <- sapply(strsplit(as.character(actrules$rules), " => "), "[", 1)
+actrules$rhs <- sapply(strsplit(as.character(actrules$rules), " => "), "[", 2)
+actrules <- cbind(actrules, "dir"="=>")
+actrules <- actrules[c("lhs", "dir", "rhs", "support", "confidence", "lift")]
+colnames(actrules)[which(colnames(actrules)=="dir")] <- ""
 @
+
 We first looked for association rules with at least 0.01 percent support and 10 percent confidence; there are around \Sexpr{round(lenActrules/1000)} thousand such rules. To make the list of rules more managable to look at, we changed the minimum level of support from 0.01 percent to 0.1 percent. This change resulted in a set of 18 rules, displayed in \Vref{tab:actrules}
+
+<<arules3, results='asis'>>=
+print(xtable(actrules, digits = c(0, 0, 0, 0, 5, 4, 2), caption = 'Association Rules', 
+             label = 'tab:actrules'), include.rownames=F)
+@
 
 We can take a close look at the first listed rule to understand what the association rules are telling us. The \texttt{lhs} variable is \textbf{David Royle} and the \texttt{rhs} variable is \textbf{Colin Buchanan}. The support of this rule is 0.00105, meaning that in our sample of films, there is a 0.105 percent chance of randomly drawing a film with both of these actors. The confidence of this rule is 0.882\textemdash given that \textbf{David Royle} is in a movie, there is an 88.2 percent chance that \textbf{Colin Buchanan} is in that movie as well. The lift of this rule is 744, which means that the probability of a movie having \textbf{Colin Buchanan} is 744 times higher if we know that \textbf{David Royle} is in the movie as well.
 
@@ -284,13 +294,13 @@ lhs                    rhs               support  confidence  lift
 {Royle, David (I)} =>  {Clarke, Warren}  0.00105       0.882   468
 \end{verbatim}
 For notational purposes, we will abbreviate these two as $R$ and $C$, respectively. First, recognize that the conditional probability (i.e. confidence) can be found by regressing $C$ on $R$:
-\[ D_{i,C} = \alpha + D_{i,R} \beta_{R} \]
+\[ D_{i,C} = \alpha + \beta_{R} D_{i,R} +\epsilon\]
 $D_{i,R}$ and $D_{i,C}$ are dummy variables that equal 1 if the actor is in movie $i$ and 0 otherwise. The sum $\alpha + \beta_{R}$ is the odds multiplier on $C$ given $R$; we can convert this to a probability using the logit link:
-\[ P(C|R) = \frac{1}{1+\exp(\alpha+\beta_{R})} = \Sexpr{conf} \]
+\[ P(C|R) = \frac{1}{1+\exp(\alpha+\beta_{R})} = 0.882352941 \]
 This value matches the confidence of our selected rule. The support of our selected rule is the joint probability of $R$ and $C$ being in a film, which we can calculate as the mean of $D_{i,R} \cdot D_{i,C}$; since our variables are dummy variables with value 1 or 0, the mean of this product gives us the probability of both jointly occurring.
-\[ P(C,R) = \overline{D_{i,C} \cdot D_{i,R}} = \Sexpr{supp} \]
+\[ P(C,R) = \overline{D_{i,C} \cdot D_{i,R}} = 0.0010470 \]
 This matches the support of our given rule. The lift is just the conditional probability (confidence) divided by the unconditional probability of $C$, which we can similarly calulate as the mean of $D_{i,C}$. The lift is:
-\[ \frac{P(C|R)}{P(C)} = \frac{1}{1+\exp(\alpha+\beta_{R})} \frac{1}{\overline{D_{i,C}}} = \Sexpr{lift} \]
+\[ \frac{P(C|R)}{P(C)} = \frac{1}{1+\exp(\alpha+\beta_{R})} \frac{1}{\overline{D_{i,C}}} = 743.5640 \]
 This also matches the lift of our given rule.
 
 \section{Appendix}
