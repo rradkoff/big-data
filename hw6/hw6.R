@@ -28,7 +28,8 @@ apply(counts109.x, 2, mean) # mean=0
 
 clusterSize <- seq(5, 35, 5)
 kmGroups = vector("list", length(clusterSize))
-ics <- data.frame(aicc=rep(NA, length(clusterSize)), 
+ics <- data.frame(k=rep(NA, length(clusterSize)),
+                  aicc=rep(NA, length(clusterSize)),
                   bic=rep(NA, length(clusterSize))) 
 for (i in 1:length(clusterSize)) {
   k <- clusterSize[i]
@@ -39,11 +40,12 @@ for (i in 1:length(clusterSize)) {
   toc()
   ## keep for model selection
   kmGroups[[i]] <- grp
+  ics$k[i] <- k
   ics$aicc[i] <- kIC(grp, "A")
   ics$bic[i] <- kIC(grp, "B")
 }
 
-kmK <- which.min(ics$bic)*5
+kmK <- clusterSize[which.min(ics$bic)]
 print( paste("BIC selects model with", kmK, "clusters") )
 
 ## look at most common words in each cluster
@@ -86,16 +88,20 @@ print( paste("Selected the K =", tpcs$K, "topic model") )
 ##    Compare to regression onto phrase percentages:
 ##
 
+sumIdeology <- function(party, k) {
+  classKReps <- names(g$cluster[g$cluster==k])
+  sum(congress109Ideology[classKReps,]$party==party)
+}
+
 ## tabulate party membership by K-means cluster.
 clust_party <- data.frame(numD=rep(NA, kmK), numI=rep(NA, kmK), 
                           numR=rep(NA, kmK), meanRepshare=rep(NA, kmK))
-clust_party$numD <- sapply(1:kmK, function(k) 
-  sum(congress109Ideology[names(g$cluster[g$cluster==k]),]$party=="D"))
-clust_party$numR <- sapply(1:kmK, function(k) 
-  sum(congress109Ideology[names(g$cluster[g$cluster==k]),]$party=="R"))
-clust_party$numI <- sapply(1:kmK, function(k) 
-  sum(congress109Ideology[names(g$cluster[g$cluster==k]),]$party=="I"))
-clust_party$meanRepshare <- sapply(1:kmK, function(k) 
-  mean(congress109Ideology[names(g$cluster[g$cluster==k]),]$repshare))
+clust_party$numD <- sapply(1:kmK, function(k) { return(sumIdeology("D", k)) })
+clust_party$numR <- sapply(1:kmK, function(k) { return(sumIdeology("R", k)) })
+clust_party$numI <- sapply(1:kmK, function(k) { return(sumIdeology("I", k)) })
+clust_party$meanRepshare <- sapply(1:kmK, function(k) {
+  classKReps <- names(g$cluster[g$cluster==k])
+  return(mean(congress109Ideology[classKReps,]$repshare))
+})
 
 ## to do: see what happens if we force 2 clusters
