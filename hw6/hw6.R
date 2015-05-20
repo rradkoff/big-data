@@ -4,7 +4,7 @@
 
 rm(list = ls())
 source('../utils/source_me.R', chdir = T)
-OutputToFile = T
+OutputToFile = F
 plotOpts$Prefix = "output/"
 
 library(textir)
@@ -24,27 +24,32 @@ counts109.x <- scale(congress109Counts)
 apply(counts109.x, 2, sd) # sd=1
 apply(counts109.x, 2, mean) # mean=0
 
-kmGroups = vector("list", 5)
-ics <- data.frame(aicc=rep(NA, 5), bic=rep(NA, 5)) 
-for (k in rep(1:5)*5) {
+clusterSize <- seq(5, 35, 5)
+kmGroups = vector("list", length(clusterSize))
+ics <- data.frame(aicc=rep(NA, length(clusterSize)), 
+                  bic=rep(NA, length(clusterSize))) 
+for (i in 1:length(clusterSize)) {
+  k <- clusterSize[i]
   print( paste("k-means with", k, "centers...") )
   tic()
   ## run k-means
   grp <- kmeans(x=counts109.x, centers=k, nstart=10) # x=congress109Counts
   toc()
   ## keep for model selection
-  kmGroups[[k/5]] <- grp
-  ics$aicc[k/5] <- kIC(grp, "A")
-  ics$bic[k/5] <- kIC(grp, "B")
+  kmGroups[[i]] <- grp
+  ics$aicc[i] <- kIC(grp, "A")
+  ics$bic[i] <- kIC(grp, "B")
 }
 
 ## plot results
+ylimits=c(min(ics$aicc/1000, ics$bic/1000), max(ics$aicc/1000, ics$bic/1000))
 PlotSetup('kmeans_ic_plot')
 plot(ics$aicc/1000, type="o", col="red", pch=19, main="Model Selection", 
-     xlab="# of Clusters", ylab="Information Criteria (thousands)", xaxt="n")
+     xlab="# of Clusters", ylab="Information Criteria (thousands)", xaxt="n",
+     ylim=ylimits)
 axis(1, at=rep(1:5), labels=rep(1:5)*5)     
 lines(ics$bic/1000, type="o", col="blue", pch=19)
-legend("topright", c("AICc", "BIC"), lty=1, pch=19, col=c("red", "blue"), bty="n")
+legend("bottomleft", c("AICc", "BIC"), lty=1, pch=19, col=c("red", "blue"), bty="n")
 PlotDone()
 
 ##
@@ -61,3 +66,4 @@ tic()
 tpcs <- topics(counts109.stm, K=(5:15), verb=TRUE)
 toc()
 print( paste("Selected the K =", tpcs$K, "topic model") )
+
