@@ -9,6 +9,7 @@ plotOpts$Prefix = "output/"
 
 library(textir)
 library(tictoc)
+library(maptpx)
 
 data(congress109)
 
@@ -19,9 +20,9 @@ data(congress109)
 ##
 
 ## standardize to mu=0; sigma=1
-xcounts <- scale(congress109Counts)
-apply(xcounts, 2, sd) # sd=1
-apply(xcounts, 2, mean) # mean=0
+counts109.x <- scale(congress109Counts)
+apply(counts109.x, 2, sd) # sd=1
+apply(counts109.x, 2, mean) # mean=0
 
 kmGroups = vector("list", 5)
 ics <- data.frame(aicc=rep(NA, 5), bic=rep(NA, 5)) 
@@ -29,7 +30,7 @@ for (k in rep(1:5)*5) {
   print( paste("k-means with", k, "centers...") )
   tic()
   ## run k-means
-  grp <- kmeans(x=congress109Counts, centers=k, nstart=10)
+  grp <- kmeans(x=counts109.x, centers=k, nstart=10) # x=congress109Counts
   toc()
   ## keep for model selection
   kmGroups[[k/5]] <- grp
@@ -45,3 +46,18 @@ axis(1, at=rep(1:5), labels=rep(1:5)*5)
 lines(ics$bic/1000, type="o", col="blue", pch=19)
 legend("topright", c("AICc", "BIC"), lty=1, pch=19, col=c("red", "blue"), bty="n")
 PlotDone()
+
+##
+## Q2
+## Fit a topic model for the speech counts. Use Bayes factors to
+## choose the number of topics, and interpret your chosen model.
+##
+
+## convert Matrix to `slam' simple_triplet_matrix
+counts109.stm <- as.simple_triplet_matrix(congress109Counts) 
+
+## chooses the number of topics using Bayes factor
+tic()
+tpcs <- topics(counts109.stm, K=(5:15), verb=TRUE)
+toc()
+print( paste("Selected the K =", tpcs$K, "topic model") )
