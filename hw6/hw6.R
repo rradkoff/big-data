@@ -28,7 +28,7 @@ apply(counts109.x, 2, mean) # mean=0
 
 clusterSizes <- c(2, 3, 4, seq(5, 35, 5))
 kmGroups = vector("list", length(clusterSizes))
-ics <- data.frame(k=rep(NA, length(clusterSizes)),
+ics <- data.frame(k=clusterSizes,
                   aicc=rep(NA, length(clusterSizes)),
                   bic=rep(NA, length(clusterSizes))) 
 for (i in 1:length(clusterSizes)) {
@@ -40,7 +40,6 @@ for (i in 1:length(clusterSizes)) {
   toc()
   ## keep for model selection
   kmGroups[[i]] <- grp
-  ics$k[i] <- k
   ics$aicc[i] <- kIC(grp, "A")
   ics$bic[i] <- kIC(grp, "B")
 }
@@ -49,7 +48,7 @@ kmK <- clusterSizes[which.min(ics$bic)]
 print( paste("BIC selects model with", kmK, "clusters") )
 
 ## look at most common words in each cluster
-g<-kmeans(x=counts109.x, centers=kmK, nstart=10)
+g <- kmGroups[[which.min(ics$bic)]]
 print(apply(g$centers,1,function(c) colnames(counts109.x)[order(-c)[1:10]]))
 
 ## plot results
@@ -88,28 +87,31 @@ print( paste("Selected the K =", tpcs$K, "topic model") )
 ##    Compare to regression onto phrase percentages:
 ##
 
-sumIdeology <- function(party, k) {
-  classKReps <- names(g$cluster[g$cluster==k])
-  sum(congress109Ideology[classKReps,]$party==party)
+summarizeClusters <- function(km) {
+  sumIdeology <- function(km, party, k) {
+    classKReps <- names(km$cluster[km$cluster==k])
+    sum(congress109Ideology[classKReps,]$party==party)
+  }
+  
+  numD <- sapply(1:length(km$size), function(k) { return(sumIdeology(km, "D", k)) })
+  numR <- sapply(1:length(km$size), function(k) { return(sumIdeology(km, "R", k)) })
+  numI <- sapply(1:length(km$size), function(k) { return(sumIdeology(km, "I", k)) })
+  num <- sapply(1:length(km$size), function(k) { return(sum(km$cluster == k)) })
+  meanRepshare <- sapply(1:length(km$size), function(k) {
+    classKReps <- names(km$cluster[km$cluster==k])
+    return(mean(congress109Ideology[classKReps,]$repshare))
+  })
+  return(data.frame(cluster=1:length(km$size), numD, numI, numR, num, meanRepshare))
 }
 
 ## tabulate party membership by K-means cluster.
-clust_party <- data.frame(cluster=1:kmK,
-                          numD=rep(NA, kmK), numI=rep(NA, kmK), 
-                          numR=rep(NA, kmK), num=rep(NA, kmK), 
-                          meanRepshare=rep(NA, kmK))
-clust_party$numD <- sapply(1:kmK, function(k) { return(sumIdeology("D", k)) })
-clust_party$numR <- sapply(1:kmK, function(k) { return(sumIdeology("R", k)) })
-clust_party$numI <- sapply(1:kmK, function(k) { return(sumIdeology("I", k)) })
-clust_party$num  <- sapply(1:kmK, function(k) { return(sum(g$cluster == k)) })
-clust_party$meanRepshare <- sapply(1:kmK, function(k) {
-  classKReps <- names(g$cluster[g$cluster==k])
-  return(mean(congress109Ideology[classKReps,]$repshare))
-})
-
+clust_party <- summarizeClusters(g)
 idx <- which.min(abs(clust_party$numD / clust_party$num - 0.5))
 non_partisan_cluster <- clust_party[idx, 'cluster']
 
-non_partisan_words <- as.data.frame(sort(g$centers[non_partisan_cluster,], decreasing = T)[1:10])
+non_partisan_words <- as.data.frame(
+  sort(g$centers[non_partisan_cluster,], decreasing = T)[1:10])
+colnames(non_partisan_words) = c('relative_frequency')
 
-## to do: see what happens if we force 2 clusters
+# 2-means cluster
+print(summarizeClusters(kmGroups[[which(clusterSizes == 2)]]))
