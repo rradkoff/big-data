@@ -7,6 +7,21 @@ source('../utils/source_me.R', chdir = T)
 OutputToFile = T
 plotOpts$Prefix = "writeup/"
 
+
+# TODO(mdelio) get this until utils.
+exportDataFrame <- function(data, file, caption, align = NULL, digits = NULL, 
+                            colNames = NULL) {
+  data_new <- data
+  if (!is.null(colNames)) {
+    colnames(data_new) <- c(colNames)
+  }
+  print(xtable(data_new, label=paste('tab:', file, sep=''), 
+               caption=caption, align=align, digits=digits),
+        sanitize.text.function=function(x){x},
+        file=GetFilename(paste(file, '.tex', sep='')))
+}
+
+
 library(textir)
 library(tictoc)
 library(maptpx)
@@ -49,7 +64,9 @@ print( paste("BIC selects model with", kmK, "clusters") )
 
 ## look at most common words in each cluster
 g <- kmGroups[[which.min(ics$bic)]]
-print(apply(g$centers,1,function(c) colnames(counts109.x)[order(-c)[1:10]]))
+gtop <- apply(g$centers,1,function(c) colnames(counts109.x)[order(-c)[1:3]])
+exportDataFrame(t(gtop), 'g_words', 'Top Phrases by Cluster',
+                colNames=c('First', 'Second', 'Third'))
 
 ## plot results
 ylimits=c(min(ics$aicc/1000, ics$bic/1000), max(ics$aicc/1000, ics$bic/1000))
@@ -77,6 +94,17 @@ tic()
 tpcs <- topics(counts109.stm, K=(5:15), verb=TRUE, tol=0.1)
 toc()
 print( paste("Selected the K =", tpcs$K, "topic model") )
+
+
+tpcs3 <- c()
+for (i in 1:tpcs$K) {
+  topic_top3 <- rownames(tpcs$theta)[order(tpcs$theta[,i], decreasing=TRUE)[1:3]]
+  tpcs3 = c(tpcs3, list(topic_top3))
+}
+tpcs3 <- t(as.data.frame(tpcs3))
+rownames(tpcs3) <- 1:tpcs$K
+exportDataFrame(tpcs3, 'tpcs3', caption = "Top-3 Topic Phrases", 
+                colNames = c('First', 'Second', 'Third'))
 
 ##
 ## Q3
@@ -106,21 +134,20 @@ summarizeClusters <- function(km) {
 ## tabulate party membership by K-means cluster.
 clust_party <- summarizeClusters(g)
 idx <- which.min(abs(clust_party$numD / clust_party$num - 0.5))
-colnames(clust_party) <- c('\\# Dem', '\\# Ind', '\\# Rep', 'Total', 'mean(RepShare)')
-print(xtable(clust_party, label='tab:k_means_summary', 
-             caption='Cluster with min BIC'),
-      sanitize.text.function=function(x){x},
-      file=GetFilename('k_means_summary.tex'))
+exportDataFrame(clust_party, 'k_means_summary', 'Cluster Summary for k=15 (min BIC)',
+                colNames = c('\\# Dem', '\\# Ind', '\\# Rep', 'Total', 'mean(RepShare)'))
 
 nonPartisanWords <- as.data.frame(sort(g$centers[idx,], decreasing = T)[1:10])
-colnames(nonPartisanWords) = c('relative_frequency')
-print(xtable(nonPartisanWords, label = 'tab:non_part_words'))
+exportDataFrame(nonPartisanWords, 'k_means_nonpart', 'Top 10 Non-Partisan Phrases from K-means',
+                colNames=c('Relative Frequency'))
 
 # 2-means cluster
 print(summarizeClusters(kmGroups[[which(clusterSizes == 2)]]))
-print(summarizeClusters(kmGroups[[which(clusterSizes == 3)]]))
+exportDataFrame(summarizeClusters(kmGroups[[which(clusterSizes == 3)]]),
+                'k_means_3', 'Cluster Summary for K=3',
+                colNames = c('\\# Dem', '\\# Ind', '\\# Rep', 'Total', 'mean(RepShare)'))
 
-# TODO(mdelio) Barplot of omega vs repub/democrat
+# Barplot of omega vs repub/democrat
 # Showingb the topics that are non-partisan.
 tFreqR <- colSums(tpcs$omega[congress109Ideology$party == 'R',])
 tFreqD <- colSums(tpcs$omega[congress109Ideology$party != 'R',])
@@ -133,10 +160,9 @@ PlotDone()
 
 nonPartisanTopic <- which.min(abs(tFreqR -tFreqD))
 nonPartisanTopicWords <- as.data.frame(sort(tpcs$theta[,7], decreasing=T)[1:10])
-colnames(nonPartisanTopicWords) <- c('$\\theta$')
-print(xtable(nonPartisanTopicWords, label='tab:non_part_topics', digits = 3),
-      sanitize.text.function=function(x){x},
-      file=GetFilename('non_part_topics.tex'))
+exportDataFrame(nonPartisanTopicWords, 'non_part_topics',
+                caption='Non-Partisan Topic Words', digits = 3,
+                colNames=c('$\\theta$'))
 
 # Look at AICc
 # cv.gamlr to get OOS
@@ -163,5 +189,20 @@ SaveICTable(repX, cv.repX, 'repx', "ICs for Republican ~ Phrase \\%")
 
 # Compare top 5 words from rep and repShare's largest coefficients (topics)
 # Compare these words to the highest/lowest ones from the repX regression.
+repXCoef <- drop(coef(repX))[-1]
+repXCoef <- repXCoef[repXCoef != 0]
+
+repXCoefP <- sort(repXCoef, decreasing = T)[1:5]
+repXCoefN <- sort(repXCoef)[1:5]
+repXCoefP <- repXCoefP[repXCoefP>0]
+repXCoefN <- repXCoefN[repXCoefN<0]
+
+exportDataFrame(as.data.frame(repXCoefN), 'repx_coef_n', 
+                caption='Top Phrases that Decrease Odds of Predicting Republican',
+                colNames=c("Coef"))
+
+exportDataFrame(as.data.frame(repXCoefP), 'repx_coef_p',
+                caption="Top Phrases that Increase Odds of Predicting Republican",
+                colNames=c("Coef"))
 
 # Expect better OOS R^2 on topic model vs phrase percentage model.

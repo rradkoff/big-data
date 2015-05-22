@@ -12,22 +12,82 @@
 \date{\today}
 \maketitle
 
-\section{Node Connectivity Transformation}
+\section{K-Means Clustering} \label{sec:kmeans}
 
-\section{Appendix}
-\input{non_part_topics.tex}
-\input{topic_repshare.tex}
-\input{repx.tex}
+In this section, we cluster the 109th congress phrase-counts to see what information can be obtained.  To accomplish this, we employ the K-Means clustering algorithm.  To choose the ``optimal'' cluster size, we employed varied the cluster-size from 2 to 35 and then used BIC to select the K with the minimum BIC, which should, hopefully good OOS clustering abilities.  \Vref{fig:kmeans_ic_plot} shows a plot of the information criteria while varying K; while the BIC finds a minima at 15, the AICc never reaches a minima.
+
+As discussed in class, these information criteria are of lower-quality than those used for regression.  A quick glance at \vref{tab:k_means_summary} backs up this theory as there are several clusters with just a single representative (leading us to believe that the cluster is overfitting), and no clear divide between the democrats, republicans, and independents.  A quick glance at the top-3 phrases used in each cluster is shown in \vref{tab:g_words}, shows that cluster phrases can be rather random.  Additionally, the bulk of the representatives are contained in a single cluster.  However, when the algorithm does have a clear separation between democrat and republican representatives, there is a clear divide.  Combining information from the cluster summary (\cref{tab:k_means_summary}) and the top-3 phrases table (\cref{tab:k_means_3}) phrases such as ``program.help'' vs ``illegal.immigration'' for Democrats and Republicans respectively indicate that the algorithm can cluster based on some partisan phrases.
+
+As a final note, for an experiment to see if K-means would do a better job clustering the two parties, we ran k-means with a cluster-size of 2 \& 3.  In both instances (see \vref{tab:k_means_3} for K=3), the bulk of the representatives were clustered together as when K=15.  This begs the question: are the two parties really all that different after all?
+
+\begin{figure}[!htb]
+  \centering
+  \includegraphics[scale=.5]{kmeans_ic_plot.eps}
+  \caption{Informaton Criteria for Varying K-means}
+  \label{fig:kmeans_ic_plot}
+\end{figure}
+
+\input{g_words.tex}
+
+\section{Topic Model}
+
+A topic model was constructed using \texttt{topics} command in R.  This multinomial model clusters the phrases used by the representatives into topics and is supposed to do a much better job than the K-means cluster from earlier.  The top-3 phrases for each topic (sorted by largest $P(phrase_i|topic_k)$) are found in \vref{tab:tpcs3}.  These phrases do indicate that this method does a really good job of finding related phrases.  There are few clusters that should probably be merged or otherwise modified (namely the 9th and 10th topics).  However, the vast majority of topics contain phrases that are very much inter-related; they are, in fact topics.  For example, the first topic appears to be about immigration, the second about civil rights, etc.
+
+\input{tpcs3.tex}
+
+\section{Connecting Unsupervised Clusters to Partisanship}
+\subsection{Party Membership by K-means Cluster}
+See \vref{tab:k_means_summary} for the party membership by K-means cluster.  As mentioned in the \cref{sec:kmeans}, the K-means clustering does not yield a ton of useful information about a representatives affiliation.  There are a handful of senators and congressman that are clearly grouped into their party, however, the vast majority end up in a single cluster.  This is likely because they argue against each other and therefore use each others' words in their speeches.  However, if taken at face-value, the cluster with almost an equal amount of republican and democratic members would likely denote phrases that are considered non-partisan.  These ``non-partisan'' phrases are found in \vref{tab:k_means_nonpart}, and do actually tend to indicate non-partisan phrases.
+
 \input{k_means_summary.tex}
+\input{k_means_nonpart.tex}
+
+\subsection{Non-Partisan Topics}
+
+Here we plot the topic-frequencies based on party affiliation.  \Vref{fig:topic} clearly shows that some topics are much more partisan than others.  For the topics with large deviation between the two parties, we can (using \vref{tab:tpcs3}) see that some topics, such as illegal immigration and civil rights, tend to align with our intuition on which phrases would be used more often by party members.  For the most part, these differences in frequencies exist and are quite noticeable.  However, one of the topics (\#7) appears to be non-partisan.  \Vref{tab:non_part_topics} shows the top 10 phrases from that topic and intuition confirms that many of these phrases are fairly non-partisan.
+
+\begin{figure}[!htb]
+  \centering
+  \includegraphics[scale=.5]{topic.eps}
+  \caption{Partisan Topic Frequencies}
+  \label{fig:topic}
+\end{figure}
+
+\input{non_part_topics.tex}
+
+\subsection{Party Membership \& Republican Share by Topic}
+
+In this section, we use the results from the topic clustering to predict party membership.  We employ a gamma lasso with and without cross-validation to regress political affiliation onto 
 
 \begin{figure}[!htb]
   \centering
   \includegraphics[scale=.5]{tpcs_rep.eps}
   \caption{Rep ~ $\Omega$ (Gamma Lasso Path with ICs)}
-  \label{fig:}
+  \label{fig:tpcs_rep}
 \end{figure}
 
+
+\section{Appendix}
+
+\input{k_means_3.tex}
 \input{topic_rep.tex}
+\input{topic_repshare}
+\input{repx.tex}
+
+
+% \input{non_part_topics.tex}
+% \input{topic_repshare.tex}
+% \input{repx.tex}
+% \input{k_means_summary.tex}
+
+% \begin{figure}[!htb]
+%   \centering
+%   \includegraphics[scale=.5]{tpcs_rep.eps}
+%   \caption{Rep ~ $\Omega$ (Gamma Lasso Path with ICs)}
+%   \label{fig:}
+% \end{figure}
+
+% \input{topic_rep.tex}
 
 % \begin{figure}
 %   \centering
