@@ -4,8 +4,8 @@
 
 rm(list = ls())
 source('../utils/source_me.R', chdir = T)
-OutputToFile = F
-plotOpts$Prefix = "output/"
+OutputToFile = T
+plotOpts$Prefix = "writeup/"
 
 library(textir)
 library(tictoc)
@@ -86,7 +86,6 @@ print( paste("Selected the K =", tpcs$K, "topic model") )
 ## -- Fit topic regressions for each of party and repshare.
 ##    Compare to regression onto phrase percentages:
 ##
-
 summarizeClusters <- function(km) {
   sumIdeology <- function(km, party, k) {
     classKReps <- names(km$cluster[km$cluster==k])
@@ -101,17 +100,68 @@ summarizeClusters <- function(km) {
     classKReps <- names(km$cluster[km$cluster==k])
     return(mean(congress109Ideology[classKReps,]$repshare))
   })
-  return(data.frame(cluster=1:length(km$size), numD, numI, numR, num, meanRepshare))
+  return(data.frame(numD, numI, numR, num, meanRepshare))
 }
 
 ## tabulate party membership by K-means cluster.
 clust_party <- summarizeClusters(g)
 idx <- which.min(abs(clust_party$numD / clust_party$num - 0.5))
-non_partisan_cluster <- clust_party[idx, 'cluster']
+colnames(clust_party) <- c('\\# Dem', '\\# Ind', '\\# Rep', 'Total', 'mean(RepShare)')
+print(xtable(clust_party, label='tab:k_means_summary', 
+             caption='Cluster with min BIC'),
+      sanitize.text.function=function(x){x},
+      file=GetFilename('k_means_summary.tex'))
 
-non_partisan_words <- as.data.frame(
-  sort(g$centers[non_partisan_cluster,], decreasing = T)[1:10])
-colnames(non_partisan_words) = c('relative_frequency')
+nonPartisanWords <- as.data.frame(sort(g$centers[idx,], decreasing = T)[1:10])
+colnames(nonPartisanWords) = c('relative_frequency')
+print(xtable(nonPartisanWords, label = 'tab:non_part_words'))
 
 # 2-means cluster
 print(summarizeClusters(kmGroups[[which(clusterSizes == 2)]]))
+print(summarizeClusters(kmGroups[[which(clusterSizes == 3)]]))
+
+# TODO(mdelio) Barplot of omega vs repub/democrat
+# Showingb the topics that are non-partisan.
+tFreqR <- colSums(tpcs$omega[congress109Ideology$party == 'R',])
+tFreqD <- colSums(tpcs$omega[congress109Ideology$party != 'R',])
+
+PlotSetup('topic')
+barplot(rbind(tFreqR, tFreqD), beside=T, col=c('red', 'blue'),
+        xlab='Topic', ylab='Relative Topic Frequency')
+legend('topright', legend=c('Republican', 'Democrat'), fill=c('red', 'blue'), )
+PlotDone()
+
+nonPartisanTopic <- which.min(abs(tFreqR -tFreqD))
+nonPartisanTopicWords <- as.data.frame(sort(tpcs$theta[,7], decreasing=T)[1:10])
+colnames(nonPartisanTopicWords) <- c('$\\theta$')
+print(xtable(nonPartisanTopicWords, label='tab:non_part_topics', digits = 3),
+      sanitize.text.function=function(x){x},
+      file=GetFilename('non_part_topics.tex'))
+
+# Look at AICc
+# cv.gamlr to get OOS
+# IS/OOS R^2
+rep <- gamlr(tpcs$omega, y = congress109Ideology$party == 'R', 
+             family = 'binomial', lambda.min.ratio = exp(-7))
+cv.rep <- cv.gamlr(tpcs$omega, y = congress109Ideology$party == 'R', 
+                   family = 'binomial', lambda.min.ratio = exp(-7))
+PlotICs(rep, cv.rep, 'tpcs_rep')
+# PlotICFunctions(rep, cv.rep, 'tpcs_rep_ics')
+SaveICTable(rep, cv.rep, 'topic_rep', "ICs for Republican ~ Topic $\\Omega$")
+
+repShare <- gamlr(tpcs$omega, y = congress109Ideology$repshare)
+cv.repShare <- cv.gamlr(tpcs$omega, y = congress109Ideology$repshare)
+PlotICs(repShare, cv.repShare, 'tpcs_rep_share')
+SaveICTable(repShare, cv.repShare, 'topic_repshare',
+            "ICs for Republican Share ~ Topic $\\Omega$")
+
+x<-100*congress109Counts/rowSums(congress109Counts)
+repX = gamlr(x, y=congress109Ideology$party == 'R', family = 'binomial')
+cv.repX = cv.gamlr(x, y=congress109Ideology$party == 'R', family = 'binomial', verb = T)
+PlotICs(repX, cv.repX, 'reg_phrase_pcnt')
+SaveICTable(repX, cv.repX, 'repx', "ICs for Republican ~ Phrase \\%")
+
+# Compare top 5 words from rep and repShare's largest coefficients (topics)
+# Compare these words to the highest/lowest ones from the repX regression.
+
+# Expect better OOS R^2 on topic model vs phrase percentage model.
