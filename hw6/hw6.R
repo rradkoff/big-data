@@ -173,19 +173,25 @@ cv.rep <- cv.gamlr(tpcs$omega, y = congress109Ideology$party == 'R',
                    family = 'binomial', lambda.min.ratio = exp(-7))
 PlotICs(rep, cv.rep, 'tpcs_rep')
 # PlotICFunctions(rep, cv.rep, 'tpcs_rep_ics')
-SaveICTable(rep, cv.rep, 'topic_rep', "ICs for Republican ~ Topic $\\Omega$")
+SaveICTable(rep, cv.rep, 'topic_rep', "ICs for Republican $\\sim$ Topic $\\omega$")
 
 repShare <- gamlr(tpcs$omega, y = congress109Ideology$repshare)
 cv.repShare <- cv.gamlr(tpcs$omega, y = congress109Ideology$repshare)
 PlotICs(repShare, cv.repShare, 'tpcs_rep_share')
 SaveICTable(repShare, cv.repShare, 'topic_repshare',
-            "ICs for Republican Share ~ Topic $\\Omega$")
+            "ICs for Republican Share $\\sim$ Topic $\\omega$")
 
 x<-100*congress109Counts/rowSums(congress109Counts)
 repX = gamlr(x, y=congress109Ideology$party == 'R', family = 'binomial')
 cv.repX = cv.gamlr(x, y=congress109Ideology$party == 'R', family = 'binomial', verb = T)
 PlotICs(repX, cv.repX, 'reg_phrase_pcnt')
-SaveICTable(repX, cv.repX, 'repx', "ICs for Republican ~ Phrase \\%")
+SaveICTable(repX, cv.repX, 'repx', "ICs for Republican $\\sim$ Phrase \\%")
+
+x<-100*congress109Counts/rowSums(congress109Counts)
+repShareX = gamlr(x, y=congress109Ideology$repshare)
+cv.repShareX = cv.gamlr(x, y=congress109Ideology$repshare, verb = T)
+PlotICs(repShareX, cv.repShareX, 'reg_phrase_pcnt_repshare')
+SaveICTable(repShareX, cv.repShareX, 'repsharex', "ICs for Republican Share $\\sim$ Phrase \\%")
 
 # Compare top 5 words from rep and repShare's largest coefficients (topics)
 # Compare these words to the highest/lowest ones from the repX regression.
@@ -199,10 +205,12 @@ repXCoefN <- repXCoefN[repXCoefN<0]
 
 exportDataFrame(as.data.frame(repXCoefN), 'repx_coef_n', 
                 caption='Top Phrases that Decrease Odds of Predicting Republican',
+                digits=4,
                 colNames=c("Coef"))
 
 exportDataFrame(as.data.frame(repXCoefP), 'repx_coef_p',
                 caption="Top Phrases that Increase Odds of Predicting Republican",
+                digits=4,
                 colNames=c("Coef"))
 
 # Expect better OOS R^2 on topic model vs phrase percentage model.

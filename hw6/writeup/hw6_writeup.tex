@@ -55,55 +55,63 @@ Here we plot the topic-frequencies based on party affiliation.  \Vref{fig:topic}
 
 \input{non_part_topics.tex}
 
-\subsection{Party Membership \& Republican Share by Topic}
+\subsection{Party Membership/Share by Topic}
 
-In this section, we use the results from the topic clustering to predict party membership.  We employ a gamma lasso with and without cross-validation to regress political affiliation onto 
+In this section, we use the results from the topic clustering to predict party membership.  We employ a gamma lasso with and without cross-validation to regress political affiliation onto the topic $\omega$'s chosen for each representative.  In general $\omega$'s give the percentage of a document (in this case a collection of speeches by a representative) that belongs to a given topic.  The hope is that the topics that are more likely to be discussed by, say a democrat, would help predict their party affiliation.  The gamma lasso and the cross-validated gamma lasso both include all 13 topics in the model, but completely disagree on the values of the information criteria (likely due to the small number of degrees of freedom).  \Vref{tab:topic_rep} shows that all three of the information criteria choose all 13 covariates and provide an in-sample $R^2$ of 56\%.  The OOS $R^2$ for the model chosen by cv.gamlr (using the CV.min rule) is a bit lower at $R^2=52\%$.
 
-\begin{figure}[!htb]
-  \centering
-  \includegraphics[scale=.5]{tpcs_rep.eps}
-  \caption{Rep ~ $\Omega$ (Gamma Lasso Path with ICs)}
-  \label{fig:tpcs_rep}
-\end{figure}
+\input{topic_rep.tex}
+
+Here we regress the ``republican share'' onto our topics.  While very similar to regressing the party membership above, this measure allows us to determine how much a the use of certain topics will predict how large the republican share is in one's district.  Note, that this might not predict who is a democrat vs a republican; in fact, we would expect that in contested districts/states, the republican share to be quite large even if the sitting representative is a democrat.  As before the gamma lasso with/without cross-validation is performed; the results are shown in \vref{tab:topic_repshare}.  Again we see that the in-sample $R^2$ each of the ICs is 37\%.  Using cross-validation and the CV.min selection rule, this $R^2$ drops to 35\%; just a touch lower than the in-sample ones.
+
+\input{topic_repshare.tex}
+
+Finally, we regress the party affiliation and republican share (separately) onto phrase frequency (measured in \%).  From \vref{tab:repx,tab:repsharex}, we see that, in both cases, AICc and CV.Min disagree quite a bit on the number of covariates to include.  Also, in-sample predictive power for the republican share (using AICc) is much higher than the out-of-sample one predicted/measured by the cross-validated gamma lasso.  Similarly, the $\lambda$ and $R^2$ found using AICc and CV.Min for the party affiliation also disagree widely.  This tends to indicate the phrase percentage, is not a great predictor of either of these. 
+
+\input{repx.tex}
+\input{repsharex.tex}
+
+\Vref{tab:repx_coef_p,tab:repx_coef_n} show both the positive and negative the phrase percentage coefficients that predict the odds of a representative being a republican.  The signals selected are actually, intuitively quite good; however, there are not too many signals actually selected in the end (only 4 signals that increase the odds of a republican and 32 that decrease).  The model is perhaps underfit by the AICc, but, ultimately, by not distilling the phrases into a more usable form, the signals, by themselves are just not that strong.  In this sense, the distillation of the phrases into topics gives us a powerful tool to analyze data.
+
+\input{repx_coef_p.tex}
+\input{repx_coef_n.tex}
 
 
+\clearpage
 \section{Appendix}
 
 \input{k_means_3.tex}
-\input{topic_rep.tex}
-\input{topic_repshare}
-\input{repx.tex}
 
+\begin{figure}
+  \centering
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth]{tpcs_rep.eps}
+    \caption{Regressing Party Affiliation}
+    \label{fig:tpcs_rep}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth]{tpcs_rep_share.eps}
+    \caption{Regressing District Republican Share}
+    \label{fig:tpcs_repshare}
+  \end{subfigure}
+  \caption{Topics as Predictors}
+\end{figure}
 
-% \input{non_part_topics.tex}
-% \input{topic_repshare.tex}
-% \input{repx.tex}
-% \input{k_means_summary.tex}
-
-% \begin{figure}[!htb]
-%   \centering
-%   \includegraphics[scale=.5]{tpcs_rep.eps}
-%   \caption{Rep ~ $\Omega$ (Gamma Lasso Path with ICs)}
-%   \label{fig:}
-% \end{figure}
-
-% \input{topic_rep.tex}
-
-% \begin{figure}
-%   \centering
-%   \begin{subfigure}[b]{0.49\textwidth}
-%     \includegraphics[width=\textwidth]{.eps}
-%     \caption{}
-%     \label{fig:}
-%   \end{subfigure}
-%   \hfill
-%   \begin{subfigure}[b]{0.49\textwidth}
-%     \includegraphics[width=\textwidth]{.eps}
-%     \caption{}
-%     \label{fig:}
-%   \end{subfigure}
-%   \caption{}
-% \end{figure}
+\begin{figure}
+  \centering
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth]{reg_phrase_pcnt.eps}
+    \caption{Regressing Party Affiliation}
+    \label{fig:pcnt_rep}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth]{reg_phrase_pcnt_repshare.eps}
+    \caption{Regressing District Republican Share}
+    \label{fig:pcnt_rep_share}
+  \end{subfigure}
+  \caption{Phrase \% as Predictors}
+\end{figure}
 
 
 % \input{.tex}
