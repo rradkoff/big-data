@@ -68,6 +68,13 @@ gtop <- apply(g$centers,1,function(c) colnames(counts109.x)[order(-c)[1:3]])
 exportDataFrame(t(gtop), 'g_words', 'Top Phrases by Cluster',
                 colNames=c('First', 'Second', 'Third'))
 
+## stem cell table
+stemcell <- cbind(g$centers[,"stem.cel"])
+colnames(stemcell) <- c("Relative Frequency")
+print(xtable(stemcell, label="tab:stemcell", 
+             caption="Stem Cell Phrase Incidence by Cluster"),
+      sanitize.text.function=function(x){x}, file=GetFilename('stemcell.tex'))
+
 ## plot results
 ylimits=c(min(ics$aicc/1000, ics$bic/1000), max(ics$aicc/1000, ics$bic/1000))
 PlotSetup('kmeans_ic_plot')
