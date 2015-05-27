@@ -32,7 +32,26 @@ heatmap(cor(fx), symm = T, main=('US exchange-rate Correlation Heatmap'),
 ###############################################################################
 # 2)
 ###############################################################################
+# TODO(mdelio) should we be transposing - evidence says yes, logic says no
+pca <- prcomp(t(fx), scale = T)
+plot(pca)
+zpca <- predict(pca)
 
+print(round(pca$rotation, digits=2))
+
+# I'm confused if we want to scale the columns or the rows (I think the columns?)
+sfx <- scale(fx)
+Km <- 3
+fx.km <- kmeans(t(sfx), centers = Km)
+
+# TODO(mdelio) - add xlims so that text doesn't get chopped
+plot(zpca[,1:2], type="n")
+text(x=zpca[,1], y=zpca[,2], labels=colnames(fx),
+     col=rainbow(Km, alpha=0.7)[fx.km$cluster])
+
+plot(zpca[,3:4], type="n")
+text(x=zpca[,3], y=zpca[,4], labels=colnames(fx),
+     col=rainbow(Km, alpha=0.7)[fx.km$cluster])
 
 ###############################################################################
 # 3)
