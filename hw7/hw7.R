@@ -56,7 +56,18 @@ text(x=zpca[,3], y=zpca[,4], labels=colnames(fx),
 ###############################################################################
 # 3)
 ###############################################################################
+# Is this what he means by "glm on first K"? Or does he mean glm on the first
+# cluster of currencies, or something else?
+spReg.glm <- glm(sp$sp500 ~ ., data=fx)
 
+require(gamlr)
+spReg <- gamlr(fx, sp$sp500)
+spReg.cv <- cv.gamlr(fx, sp$sp500, verb=T)
+plot(spReg.cv)
+PlotICFunctions(spReg, spReg.cv, 'spreg_ics')
+PlotICs(spReg, spReg.cv, 'spreg')
+SaveICTable(spReg, spReg.cv, 'spreg_ics',
+            "ICs for S\\&P500 Returns Regressed on FX Movements")
 
 ###############################################################################
 # 4)
