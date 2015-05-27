@@ -40,9 +40,9 @@ zpca <- predict(pca)
 print(round(pca$rotation, digits=2))
 
 # I'm confused if we want to scale the columns or the rows (I think the columns?)
-sfx <- scale(fx)
-Km <- 3
-fx.km <- kmeans(t(sfx), centers = Km)
+# Now I think the rows, so the columns of the transposed fx.
+Km <- 4
+fx.km <- kmeans(scale(t(fx)), centers = Km)
 
 # TODO(mdelio) - add xlims so that text doesn't get chopped
 plot(zpca[,1:2], type="n")
