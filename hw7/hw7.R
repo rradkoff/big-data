@@ -27,7 +27,6 @@ colnames(fx) <- str_replace(codes[colNames,], " ", "_")
 ###############################################################################
 # 1)
 ###############################################################################
-# heatmap(cor(fx), Rowv = NA, Colv = NA, symm = T)
 require(gplots)
 PlotSetup('heatmap')
 # Cannot figure out how to make it square...what a pain!
@@ -68,17 +67,13 @@ Km <- 4
 fx.km <- kmeans(scale(fx), centers = Km)
 
 # TODO(mdelio) - add xlims so that text doesn't get chopped
-PlotSetup('pca1_2')
-plot(zpca[,1:2], type="n", xlim = c(-20, 10))
-text(x=zpca[,1], y=zpca[,2], labels=rownames(fx),
+plot(zpca[,1:2], type="n")
+text(x=zpca[,1], y=zpca[,2], labels=colnames(fx),
      col=rainbow(Km, alpha=0.7)[fx.km$cluster])
-PlotDone()
 
-PlotSetup('pca3_4')
-plot(zpca[,3:4], type="n", xlim = c(-6, 4))
-text(x=zpca[,3], y=zpca[,4], labels=rownames(fx),
+plot(zpca[,3:4], type="n")
+text(x=zpca[,3], y=zpca[,4], labels=colnames(fx),
      col=rainbow(Km, alpha=0.7)[fx.km$cluster])
-PlotDone()
 
 ##
 ## look under the hood of PCA
@@ -106,6 +101,10 @@ PlotICFunctions(spReg, spReg.cv, 'spreg_ics')
 PlotICs(spReg, spReg.cv, 'spreg')
 SaveICTable(spReg, spReg.cv, 'spreg_ics',
             "ICs for S\\&P500 Returns Regressed on FX Principal Components")
+
+## what is PC23?
+pc23 <- sort(pca$rotation[,"PC23"])
+plot(pc23)
 
 ###############################################################################
 # 4)
