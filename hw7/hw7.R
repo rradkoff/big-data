@@ -118,7 +118,10 @@ SaveICTable(spReg.fx, spReg.fx.cv, 'spregfx_ics',
             "ICs for S\\&P500 Returns Regressed on FX Movements")
 
 # TODO(wclark3) -- lasso with PCs and covariates
-
+spReg.all <- gamlr(cbind(fx, pca$x), sp$sp500)
+spReg.all.cv <- cv.gamlr(cbind(fx, pca$x), sp$sp500, verb=T)
+SaveICTable(spReg.all, spReg.all.cv, 'spregall_ics',
+            "ICs for S\\&P500 Returns Regressed on FX Movements and Principal Components")
 
 ###############################################################################
 # Bonus)
