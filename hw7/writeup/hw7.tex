@@ -2,6 +2,10 @@
 
 \input{header.tex}
 
+\crefname{figure}{Figure}{Figures}
+\crefname{section}{Section}{Sections}
+\crefname{table}{Table}{Tables}
+
 \setlength{\parskip}{12pt} % Sets a blank line in between paragraphs
 \setlength\parindent{0pt} % Sets the indent for each paragraph to zero
 
@@ -13,19 +17,29 @@
 \maketitle
 
 \section{Foreign Exchange Factor Modeling} \label{sec:intro}
-
+% Discuss correlation amongst dimensions of fx. How does this relate to the applicability of factor modeling?
 % From Wikipedia: Principal component analysis (PCA) is a statistical procedure that uses an orthogonal transformation to convert a set of observations of possibly correlated variables into a set of values of linearly uncorrelated variables called principal components. 
+The data contained in \texttt{FXmonthly.csv} are monthly foreign exchange values between the us and various other countries.  To make them more comparable and useful for later analysis, we first transform them into a percentage gain.  From here, we can discover how independent the currency movements are by running a simple correlation.  To visualize the correlation between the different currency we employ a heatmap (see \vref{fig:heatmap}).  This heatmap shows the absolute value of the correlation\footnote{The absolute value was used in order to emphasize which currencies are correlated with each other regardless of the direction of correlation} between movements on various us/foreign currencies.  In the parlance of the heatmap, the whiter (or ``hotter'') colors are the ones that are more strongly correlated, whereas the redder (or ``colder'') ones are less strongly correlated.  While there does appear to be a reasonable amount of correlation between the different currencies, there are a few that standout as noticeably not correlated with any others: Venezuela, Sri Lanka,China, and Hong Kong.  These currencies, as will be discussed in more detail in \cref{sec:pca}, are fixed (or pegged) to a specific value and only rarely change.  Therefore it is unsurprising that there is little correlation between those and other currencies.
+
+The correlation between the various dimensions of fx is quite useful for factor modeling.  The point of principal component analysis (PCA) is to transform, through rotations, observations in one space into another.  The more correlated the various observations are, the better job the first few rotations (principal components) will do explaining the variation.  Therefore having highly correlated fx dimensions, which for the most-part, this data-set has, should yield better\footnote{``better'' in the sense that they may explain a large majority of the variation in fx} initial principal components.
+
+\begin{figure}[!htb]
+  \centering
+  \includegraphics[scale=.5]{heatmap.eps}
+  \caption{Foreign Exchange Correlation Heat-Map ($|cor(fx)|$)}
+  \label{fig:heatmap}
+\end{figure} 
 
 \section{Principal Components Analysis} \label{sec:pca}
 % Fit, plot, and interpret principal components.
 
-At first glance, our data set of monthly foreign exchange rates seems to have a lot of noise and very little signal. The goal of principal components analysis is to see if there are any patterns connecting variables in our data set, and if there are, use these relationships to reduce the dimensionality of our data. To this end, we use \texttt{prcomp} to find the principal components of foreign exchange movements. For each observation $i$, which is a month of foreign exchange rates for 23 currencies, the method estimates:
+At first glance, our data set of monthly foreign exchange rates seems to have a lot of noise and very little signal. The goal of principal components analysis is to see if there are any patterns connecting variables in our data set, and if there are, use these relationships to reduce the dimensionality of our data. To this end, we use \texttt{prcomp} to find the principal components of foreign exchange movements. For each observation, $i$, which is a month of foreign exchange rate growth (in \%) for 23 currencies, the method estimates:
 \begin{equation}
 E[x_i] = \varphi_i v_{i,1} + \varphi_2 v_{i,2} + ... + \varphi_k v_{i,k}
 \end{equation}
 We can now represent the data along the new set of dimensions $v_{i,j}$, which should reveal any latent patterns that were not observable when we were looking at the set of original dimensions $x_{i,j}$.
 
-We can start by looking at the scree plot of our PCA, shown in Figure~\ref{fig:screeplot}. This shows us the sorted eigenvalues of the covariance matrix of the scaled data; the highest eigenvalue is the principal component that explains most of the variation in the data. The steep drop off after the first bar tells us that the first principal component explains a large degree of the variability in our data.
+We can start by looking at the scree plot of our PCA, shown in \cref{fig:screeplot}. This shows us the sorted eigenvalues of the covariance matrix of the scaled data; the highest eigenvalue is the principal component that explains most of the variation in the data. The steep drop off after the first bar tells us that the first principal component explains a large degree of the variability in our data  (44\% in this case).
 
 \begin{figure}[!htb]
   \centering
@@ -34,7 +48,7 @@ We can start by looking at the scree plot of our PCA, shown in Figure~\ref{fig:s
   \label{fig:screeplot}
 \end{figure} 
 
-We can look at the rotations on the first principal component and see if there is any obvious interpretation. Figure~\ref{fig:pc1_pegs} shows the rotations of PC1 on each country; countries in red have floating exchange rates and countries in blue have fixed exchange rates (Venezuela, China, Hong Kong, and Sri Lanka). Given that all the pegged exchange rates are on one side and all the floating rates are on the other, we can tentatively conclude that the first principal component is really telling us about the fixed/floating divide. It makes sense that most of the variation in exchange rates would occur between those that are allowed to move freely and those that are not, and since PCA is supposed to find the latent sources of variation, it follows that this is the first dimension on which it chooses to sort the data.
+We can look at the rotations on the first principal component and see if there is any obvious interpretation. \cref{fig:pc1_pegs} shows the rotations of PC1 on each country; countries in red have floating exchange rates and countries in blue have fixed exchange rates (Venezuela, China, Hong Kong, and Sri Lanka). Given that all the pegged exchange rates are on one side and all the floating rates are on the other, we can tentatively conclude that the first principal component is really telling us about the fixed/floating divide. It makes sense that most of the variation in exchange rates would occur between those that are allowed to move freely and those that are not, and since PCA is supposed to find the latent sources of variation, it follows that this is the first dimension on which it chooses to sort the data.
 
 \begin{figure}[!htb]
   \centering
@@ -48,11 +62,11 @@ We can look at the rotations on the first principal component and see if there i
 % using both ‘glm on first K’ and lasso techniques.
 % Use the results to add to your factor interpretation.
 
-We can use our principal components from Section~\ref{sec:pca} to estimate monthly returns of the S\&P 500. First, we use only the first principal component in a standard regression model:
+We can use our principal components from \cref{sec:pca} to estimate monthly returns of the S\&P 500. First, we use only the first principal component in a standard regression model:
 \begin{equation}
 R_{SP,i} = \alpha + \beta_1 z_{1,i} + \varepsilon_{i}
 \end{equation}
-where $z_{1,i}$ is each observation projected in $v_{i,j}$ space. The in-sample $R^2$ of this regression is around 16 percent. Instead of running a standard linear regression on only one component, we can throw all the principal components into a lasso and see which coefficients are chosen. The model selected by the various decision criteria are shown in Table~\ref{tab:spreg_ics}. The model chosen by CV.min includes 16 of the possible 23 covariates, which is a fairly complex model given that PCA is intended to be a dimension reduction exercise. 
+where $z_{1,i}$ is each observation projected in $v_{i,j}$ space. The in-sample $R^2$ of this regression is around 16 percent. Instead of running a standard linear regression on only one component, we can throw all the principal components into a lasso and see which coefficients are chosen. The model selected by the various decision criteria are shown in \cref{tab:spreg_ics}. The model chosen by CV.min includes 16 of the possible 23 covariates, which is a fairly complex model given that PCA is intended to be a dimension reduction exercise. 
 
 \input{spreg_ics}
 
@@ -62,13 +76,13 @@ The average out-of-sample $R^2$ of the cross-validated lasso regressions are 31 
 % Fit lasso to the original covariates and
 % describe how it differs from PCR here.
 
-In this section, we estimate a lasso regression of S\&P 500 returns on all the foreign exchange covariates. The models selected by each decision criterion are listed in Table~\ref{tab:spregfx_ics}. We can see that there is a lot of variation in the models selected; the CV.min model includes 18 covariates while the CV.1se model only includes 3. Note that the average out-of-sample $R^2$ in this case 28 percent for the CV.min and 17 percent for the CV.1se model; this means we have lost predictive accuracy relative to the lasso regressions run on the principal components in Section~\ref{sec:sp500}. 
+In this section, we estimate a lasso regression of S\&P 500 returns on all the foreign exchange covariates. The models selected by each decision criterion are listed in \cref{tab:spregfx_ics}. We can see that there is a lot of variation in the models selected; the CV.min model includes 18 covariates while the CV.1se model only includes 3. Note that the average out-of-sample $R^2$ in this case 28 percent for the CV.min and 17 percent for the CV.1se model; this means we have lost predictive accuracy relative to the lasso regressions run on the principal components in \cref{sec:sp500}. 
 
-The difference between this set of regressions and the set in the previous section is that here we are regressing S\&P returns on the variables in $x_{i,j}$ space (the original set of dimensions). In the prior case, we were regressing market returns on the variables projected into $v_{i,j}$ space, which we estimated with our \texttt{prcomp} method. The former case should allow us to include only covariates that are independent of each other, because the principal components aggregate all sources of common variation in the data. In the latter set of regressions, we are including all the raw covariates, some of which we know from our heat map in Section~\ref{sec:intro} move quite closely with each other. Our expectation is that the PCA regression would give us better results, and this is validated by the better out-of-sample prediction generated by these regressions.
+The difference between this set of regressions and the set in the previous section is that here we are regressing S\&P returns on the variables in $x_{i,j}$ space (the original set of dimensions). In the prior case, we were regressing market returns on the variables projected into $v_{i,j}$ space, which we estimated with our \texttt{prcomp} method. The former case should allow us to include only covariates that are independent of each other, because the principal components aggregate all sources of common variation in the data. In the latter set of regressions, we are including all the raw covariates, some of which we know from our heat map in \cref{sec:intro} move quite closely with each other. Our expectation is that the PCA regression would give us better results, and this is validated by the better out-of-sample prediction generated by these regressions.
 
 \input{spregfx_ics}
 
-Another possibility is to run a lasso on all raw covariates and all principal components and see which coefficients are selected. The results of this lasso are presented in Table~\ref{tab:spregall_ics}. The model selected by CV.min has almost the same out-of-sample $R^2$ as the CV.min model of the regression on the raw covariates; we have not gained anything by including the raw covariates along with our principal components even though only 13 of the 20 covariates it selects are principal components. This suggests that if we were to use forex rates as a predictor of market returns, we would be better off using only a model that included principal components.
+Another possibility is to run a lasso on all raw covariates and all principal components and see which coefficients are selected. The results of this lasso are presented in \cref{tab:spregall_ics}. The model selected by CV.min has almost the same out-of-sample $R^2$ as the CV.min model of the regression on the raw covariates; we have not gained anything by including the raw covariates along with our principal components even though only 13 of the 20 covariates it selects are principal components. This suggests that if we were to use forex rates as a predictor of market returns, we would be better off using only a model that included principal components.
 
 \input{spregall_ics}
 
