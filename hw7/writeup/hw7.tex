@@ -13,8 +13,17 @@
 \maketitle
 
 \section{Foreign Exchange Factor Modeling} \label{sec:intro}
-
+% Discuss correlation amongst dimensions of fx. How does this relate to the applicability of factor modeling?
 % From Wikipedia: Principal component analysis (PCA) is a statistical procedure that uses an orthogonal transformation to convert a set of observations of possibly correlated variables into a set of values of linearly uncorrelated variables called principal components. 
+The data contained in \texttt{FXmonthly.csv} are monthly foreign exchange values between the us and various other countries.  To make them more comparable and useful for later analysis, we first transform them into a \%gain.  From here, we can discover how independent the currency movements are by running a simple correlation.  To visualize the correlation between the different currency we employ a heatmap (see \vref{fig:heatmap}).
+
+
+\begin{figure}[!htb]
+  \centering
+  \includegraphics[scale=.7]{heatmap.eps}
+  \caption{Foreign Exchange Correlation Heat-Map}
+  \label{fig:heatmap}
+\end{figure} 
 
 \section{Principal Components Analysis} \label{sec:pca}
 % Fit, plot, and interpret principal components.
