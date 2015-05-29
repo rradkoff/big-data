@@ -4,8 +4,8 @@
 
 rm(list = ls())
 source('../utils/source_me.R', chdir = T)
-OutputToFile = F
-plotOpts$Prefix = "output/"
+OutputToFile = T
+plotOpts$Prefix = "writeup/"
 
 
 ###############################################################################
@@ -21,14 +21,18 @@ fx <- (fx[2:120,]-fx[1:119,])/(fx[1:119,])
 
 # Substitute country names for the hard-to-read codes
 colNames <- gsub("\\w{2}(\\w{2})\\w{2}", "\\1", colnames(fx))
+require(stringr)
 colnames(fx) <- str_replace(codes[colNames,], " ", "_")
 
 ###############################################################################
 # 1)
 ###############################################################################
 # heatmap(cor(fx), Rowv = NA, Colv = NA, symm = T)
-heatmap(cor(fx), symm = T, main=('US exchange-rate Correlation Heatmap'),
-        col=heat.colors(32))
+require(gplots)
+PlotSetup('heatmap')
+# Cannot figure out how to make it square...what a pain!
+gplots::heatmap.2(cor(fx), symm = T, trace="none", density.info="none", margins = c(6,6))
+PlotDone()
 
 ###############################################################################
 # 2)
