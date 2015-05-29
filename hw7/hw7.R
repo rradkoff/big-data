@@ -21,7 +21,7 @@ fx <- (fx[2:120,]-fx[1:119,])/(fx[1:119,])
 
 # Substitute country names for the hard-to-read codes
 colNames <- gsub("\\w{2}(\\w{2})\\w{2}", "\\1", colnames(fx))
-require(stringr)
+library(stringr)
 colnames(fx) <- str_replace(codes[colNames,], " ", "_")
 
 ###############################################################################
@@ -39,7 +39,11 @@ PlotDone()
 ###############################################################################
 # TODO(mdelio) should we be transposing - evidence says yes, logic says no
 pca <- prcomp(fx, scale = T)
+
+PlotSetup('screeplot')
 plot(pca)
+PlotDone()
+
 zpca <- predict(pca)
 
 print(round(pca$rotation, digits=2))
@@ -51,11 +55,11 @@ fx.km <- kmeans(scale(fx), centers = Km)
 
 # TODO(mdelio) - add xlims so that text doesn't get chopped
 plot(zpca[,1:2], type="n")
-text(x=zpca[,1], y=zpca[,2], labels=colnames(fx),
+text(x=zpca[,1], y=zpca[,2], labels=rownames(fx),
      col=rainbow(Km, alpha=0.7)[fx.km$cluster])
 
 plot(zpca[,3:4], type="n")
-text(x=zpca[,3], y=zpca[,4], labels=colnames(fx),
+text(x=zpca[,3], y=zpca[,4], labels=rownames(fx),
      col=rainbow(Km, alpha=0.7)[fx.km$cluster])
 
 ###############################################################################
