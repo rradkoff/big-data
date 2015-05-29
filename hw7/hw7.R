@@ -30,7 +30,7 @@ colnames(fx) <- str_replace(codes[colNames,], " ", "_")
 require(gplots)
 PlotSetup('heatmap')
 # Cannot figure out how to make it square...what a pain!
-gplots::heatmap.2(cor(fx), symm = T, trace="none", density.info="none", margins = c(6,6))
+gplots::heatmap.2(abs(cor(fx)), symm = T, trace="none", density.info="none", margins = c(6,6))
 PlotDone()
 
 ###############################################################################
