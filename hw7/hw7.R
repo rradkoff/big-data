@@ -38,12 +38,26 @@ heatmap(cor(fx), symm = T, main=('US exchange-rate Correlation Heatmap'),
 pca <- prcomp(fx, scale = T)
 
 PlotSetup('screeplot')
-plot(pca)
+plot(pca, main="Scree Plot of Principal Component Analysis", 
+     xlab="Principal Components")
 PlotDone()
 
 zpca <- predict(pca)
 
 print(round(pca$rotation, digits=2))
+
+## Look for pattern in PC1
+print(round(sort(pca$rotation[,"PC1"]), digits=2))
+
+## plot pegged vs floating currencies
+pegs <- append(rep(0, 19), rep(1, 4))
+colors <- c("red","blue")[pegs+1]
+pc1 <- sort(pca$rotation[,"PC1"])
+PlotSetup("pc1_pegs")
+plot(pc1, col=colors, pch=19, main="Principal Component 1", 
+     xlab="Country", ylab="Rotation", xaxt="n")
+axis(1, at=1:23, labels=names(pc1))
+PlotDone()
 
 # I'm confused if we want to scale the columns or the rows (I think the columns?)
 # Now I think the rows, so the columns of the transposed fx.
@@ -59,16 +73,27 @@ plot(zpca[,3:4], type="n")
 text(x=zpca[,3], y=zpca[,4], labels=colnames(fx),
      col=rainbow(Km, alpha=0.7)[fx.km$cluster])
 
+##
+## look under the hood of PCA
+##
+
+cc <- cov(scale(fx))
+eig <- eigen(cc)
+barplot(sort(eig$values,decreasing=T)[1:10])
+
 ###############################################################################
 # 3)
 ###############################################################################
 # Is this what he means by "glm on first K"? Or does he mean glm on the first
 # cluster of currencies, or something else?
-spReg.glm <- glm(sp$sp500 ~ pca$x[,"PC1"])
+
+# spReg.glm <- glm(sp$sp500 ~ pca$x[,"PC1"], data=df1)
+spReg.glm <- glm(sp$sp500 ~ zpca[,"PC1"])
+1-spReg.glm$deviance/spReg.glm$null.deviance ## R2 = 16 percent
 
 require(gamlr)
 spReg <- gamlr(pca$x, sp$sp500)
-spReg.cv <- cv.gamlr(pca$x, sp$sp500, verb=T)
+spReg.cv <- cv.gamlr(pca$x, sp$sp500, verb=T, select="1se")
 plot(spReg.cv)
 PlotICFunctions(spReg, spReg.cv, 'spreg_ics')
 PlotICs(spReg, spReg.cv, 'spreg')

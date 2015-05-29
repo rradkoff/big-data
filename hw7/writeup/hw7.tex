@@ -25,7 +25,7 @@ E[x_i] = \varphi_i v_{i,1} + \varphi_2 v_{i,2} + ... + \varphi_k v_{i,k}
 \end{equation}
 We can now represent the data along the new set of dimensions $v_{i,j}$, which should reveal any latent patterns that were not observable when we were looking at the set of original dimensions $x_{i,j}$.
 
-We can start by looking at the scree plot of our PCA, shown in Figure~\vref{fig:screeplot}. This shows us the sorted eigenvalues of the covariance matrix of the scaled data; the highest eigenvalue is the principal component that explains most of the variation in the data. The steep drop off after the first bar tells us that the first principal component explains a large degree of the variability in our data.
+We can start by looking at the scree plot of our PCA, shown in Figure~\ref{fig:screeplot}. This shows us the sorted eigenvalues of the covariance matrix of the scaled data; the highest eigenvalue is the principal component that explains most of the variation in the data. The steep drop off after the first bar tells us that the first principal component explains a large degree of the variability in our data.
 
 \begin{figure}[!htb]
   \centering
@@ -34,7 +34,7 @@ We can start by looking at the scree plot of our PCA, shown in Figure~\vref{fig:
   \label{fig:screeplot}
 \end{figure} 
 
-We can look at the rotations on the first principal component and see if there is any obvious interpretation. Figure~\vref{fig:pc1_pegs} shows the rotations of PC1 on each country; countries in red have floating exchange rates and countries in blue have fixed exchange rates (Venezuela, China, Hong Kong, and Sri Lanka). Given that all the pegged exchange rates are on one side and all the floating rates are on the other, we can tentatively conclude that the first principal component is really telling us about the fixed/floating divide. It makes sense that most of the variation in exchange rates would occur between those that are allowed to move freely and those that are not, and since PCA is supposed to find the latent sources of variation, it follows that this is the first dimension on which it chooses to sort the data.
+We can look at the rotations on the first principal component and see if there is any obvious interpretation. Figure~\ref{fig:pc1_pegs} shows the rotations of PC1 on each country; countries in red have floating exchange rates and countries in blue have fixed exchange rates (Venezuela, China, Hong Kong, and Sri Lanka). Given that all the pegged exchange rates are on one side and all the floating rates are on the other, we can tentatively conclude that the first principal component is really telling us about the fixed/floating divide. It makes sense that most of the variation in exchange rates would occur between those that are allowed to move freely and those that are not, and since PCA is supposed to find the latent sources of variation, it follows that this is the first dimension on which it chooses to sort the data.
 
 \begin{figure}[!htb]
   \centering
@@ -44,6 +44,19 @@ We can look at the rotations on the first principal component and see if there i
 \end{figure} 
 
 \section{S\&P 500 Returns on Currency Factors} \label{sec:sp500}
+% Regress SP500 returns onto currency movement factors,
+% using both ‘glm on first K’ and lasso techniques.
+% Use the results to add to your factor interpretation.
+
+We can use our principal components from Section~\ref{sec:pca} to estimate monthly returns of the S\&P 500. First, we use only the first principal component in a standard regression model:
+\begin{equation}
+R_{SP,i} = \alpha + \beta_1 z_{1,i} + \varepsilon_{i}
+\end{equation}
+where $z_{1,i}$ is each observation projected in $v_{i,j}$ space. The in-sample $R^2$ of this regression is around 16 percent. Instead of running a standard linear regression on only one component, we can throw all the principal components into a lasso and see which coefficients are chosen. The model selected by the various decision criteria are shown in Table~\ref{tab:spreg_ics}. The model chosen by CV.min includes 16 of the possible 23 covariates, which is a fairly complex model given that PCA is intended to be a dimension reduction exercise. 
+
+\input{spreg_ics}
+
+The average out-of-sample $R^2$ of the cross-validated lasso regressions are 31 percent (for the CV.min model) and 21 percent (for the CV.1se model), so adding the extra set of principal components does increase the predictive accuracy of the model relative to the simple linear regression on only one principal component. Interestingly, the principal component with the highest coefficient in the CV.min lasso regression is PC23, the one that explains the least variation in the data set. If we look at the rotations on PC23, we see that all 21 are basically equal to zero, and one is very high and one is very low. The two outliers are the Euro and the Danish krone, which is pegged to the Euro. This means that the strongest predictor of S\&P returns in the currency data is just the US/EUR exchange rate, even though this is the dimension that explains the least amount of variation in the data.
 
 \section{Regression on All Covariates} \label{sec:regall}
 

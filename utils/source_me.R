@@ -13,3 +13,5 @@ source('plot_utils.R')
 source("ics.R")
 source("kIC.R")
 source("naref.R")
+
+source("deviance.R")
